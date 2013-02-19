@@ -104,10 +104,11 @@ public class Unit extends Actor {
     	if(Health<=0)
     	{
         	this.getParent().removeActor(this);
-    		visor.destroy();
-    		gun.Destroy();
-    		CollisionBody.destroyFixture(CollisionBody.getFixtureList().get(0));
-    		CollisionBody.setUserData(null);
+        	int fixtures = CollisionBody.getFixtureList().size();
+    		for(int i=0; i<fixtures; i++)
+    		{
+    			CollisionBody.destroyFixture(CollisionBody.getFixtureList().get(0));
+    		}
     		bodyPool.free(CollisionBody);
         	if(team.equals(BaseGame.LocalPlayerTeam))
     		{

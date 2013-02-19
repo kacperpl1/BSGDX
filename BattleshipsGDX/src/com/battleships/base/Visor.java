@@ -47,17 +47,16 @@ public class Visor {
 	    SensorFixture.setSensor(true);
 	}
 	
-	public void destroy()
+	public void checkDestroy()
 	{	
-		if(Owner.team == BaseGame.LocalPlayerTeam)
+		if(Owner.Health <=0)
 		{
 			VisorList.remove(this);
-			SensorFixture.setUserData(null);
-			Owner.CollisionBody.destroyFixture(SensorFixture);
 		}
 	}
 	public void draw(SpriteBatch batch) {
-		batch.draw(visionArea, -BaseGame.camera.position.x+Owner.CollisionBody.getPosition().x-256*visionArea.getScaleX(),
+		if(Owner.Health>0)
+			batch.draw(visionArea, -BaseGame.camera.position.x+Owner.CollisionBody.getPosition().x-256*visionArea.getScaleX(),
 				-BaseGame.camera.position.y+Owner.CollisionBody.getPosition().y-768*visionArea.getScaleX(), 
 				1024*visionArea.getScaleX(), 1024*visionArea.getScaleX());
 	}

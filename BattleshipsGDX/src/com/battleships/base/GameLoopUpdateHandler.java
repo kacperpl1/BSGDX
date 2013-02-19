@@ -1,5 +1,7 @@
 package com.battleships.base;
 
+import java.util.Iterator;
+
 public class GameLoopUpdateHandler{
 	
 	private float WaveDelay;
@@ -45,6 +47,14 @@ public class GameLoopUpdateHandler{
 		WaveCounter += pSecondsElapsed;
 		if(WaveCounter>WaveDelay)
 		{
+			Visor current;
+			Iterator<Visor> iter = Visor.VisorList.iterator();
+			while(iter.hasNext())
+			{
+				current = iter.next();
+				if(current.Owner.Health<=0)
+					iter.remove();
+			}
 			WaveCounter=0;
 			SpawnWave();
 		}

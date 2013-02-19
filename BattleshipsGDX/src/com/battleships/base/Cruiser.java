@@ -1,5 +1,6 @@
 package com.battleships.base;
 
+
 public class Cruiser extends Unit {
 	
 	private String lane;
@@ -31,10 +32,13 @@ public class Cruiser extends Unit {
     {
     	if(Health<=0)
     	{
+    		visor.checkDestroy();
         	this.getParent().removeActor(this);
-    		visor.destroy();
-    		gun.Destroy();
-    		CollisionBody.destroyFixture(CollisionBody.getFixtureList().get(0));
+        	int fixtures = CollisionBody.getFixtureList().size();
+    		for(int i=0; i<fixtures; i++)
+    		{
+    			CollisionBody.destroyFixture(CollisionBody.getFixtureList().get(0));
+    		}
     		CollisionBody.setUserData(null);
     		bodyPool.free(CollisionBody);
         	if(team.equals(BaseGame.LocalPlayerTeam))
