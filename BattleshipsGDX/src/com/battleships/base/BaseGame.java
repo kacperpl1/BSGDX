@@ -30,7 +30,10 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
@@ -69,6 +72,7 @@ public class BaseGame implements ApplicationListener {
 	private int w;
 	private int h;
 	private GL20 gl;
+	private boolean camToggle;
 	static String LocalPlayerTeam;
 	
 	@Override
@@ -107,11 +111,9 @@ public class BaseGame implements ApplicationListener {
 		
         fpsLogger = new FPSLogger();
         
-		hudStage = new Stage();
+		hudStage = new Stage(w, h, true);
 		gameStage = new Stage(w,h,true);
 		Gdx.input.setInputProcessor(hudStage);
-		
-		hudStage.setViewport(w, h, true);
 		
 		texture = new Texture(Gdx.files.internal("data/TilemapLow.png"));
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -123,6 +125,46 @@ public class BaseGame implements ApplicationListener {
 	        }
 		};
 		gameStage.addActor(Map);
+		
+		texture = new Texture(Gdx.files.internal("data/minimap.png"));
+		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		
+
+		final float minimapSize = Gdx.graphics.getWidth()*0.25f;
+		Actor miniMap = new Actor(){
+			Texture region = texture;
+	        public void draw (SpriteBatch batch, float parentAlpha) {
+	                batch.draw(region,0,0,minimapSize,minimapSize);
+	        }
+		};
+		camToggle = true;
+		miniMap.setTouchable(Touchable.enabled);
+		miniMap.addListener(new InputListener() {
+	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+	        	setCamPos(x,y);
+	        	camToggle = false;
+	                return true;
+	        }
+	        
+	        public void touchDragged (InputEvent event, float x, float y, int pointer) {
+	        	setCamPos(x,y);
+	        	camToggle = false;
+	    	}
+	        
+	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+	        	camToggle = true;
+	        }
+	        
+	        void setCamPos(float x, float y)
+	        {
+	        	gameStage.getCamera().position.set(
+				Math.max(Math.min((x-minimapSize/2)*(2048/minimapSize), 1024-w/2),-1024+w/2), 
+				Math.max(Math.min((y-minimapSize/2)*(2048/minimapSize), 1024-h/2),-1024+h/2), 0);
+	        	gameStage.getCamera().update();
+	        }
+		});
+		miniMap.setBounds(0, 0, minimapSize, minimapSize);
+		hudStage.addActor(miniMap);
 		
 		texture = new Texture(Gdx.files.internal("data/base.png"));
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
@@ -297,7 +339,7 @@ public class BaseGame implements ApplicationListener {
 		PlayerShip.setDesiredVelocity(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
 		physicsWorld.step(delta, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);  
 
-		
+		if(camToggle)
 		gameStage.getCamera().position.set(
 				Math.max(Math.min(PlayerShip.getX(), 1024-w/2),-1024+w/2), 
 				Math.max(Math.min(PlayerShip.getY(), 1024-h/2),-1024+h/2), 0);

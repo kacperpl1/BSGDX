@@ -26,7 +26,6 @@ public class Visor {
 			if(Owner instanceof Cruiser)
 				visionArea.setScale(0.75f);
 				
-				
 			VisorList.add(this);
 			createVisor();
 		}
