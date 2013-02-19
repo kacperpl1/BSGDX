@@ -1,0 +1,52 @@
+package com.battleships.base;
+
+public class GameLoopUpdateHandler{
+	
+	private float WaveDelay;
+	private float WaveCounter;
+	static float FrameDelay = 1f/15f;
+	
+	public GameLoopUpdateHandler()
+	{
+		WaveDelay = 30;
+		WaveCounter = WaveDelay;
+	}
+	
+	public void SpawnWave()
+	{
+
+		new Cruiser("red",-32, 512,"MID");
+		new Cruiser("red",0, 480,"MID");
+		new Cruiser("red",32, 512,"MID");
+		
+		new Cruiser("red",-256, 670,"LEFT");
+		new Cruiser("red",-288, 700,"LEFT");
+		new Cruiser("red",-256, 700,"LEFT");
+		
+		new Cruiser("red",256, 670,"RIGHT");
+		new Cruiser("red",288, 700,"RIGHT");
+		new Cruiser("red",256, 700,"RIGHT");
+
+		new Cruiser("blue",-32, -512,"MID");
+		new Cruiser("blue",0, -480,"MID");
+		new Cruiser("blue",32, -512,"MID");
+		
+		new Cruiser("blue",-256, -670,"LEFT");
+		new Cruiser("blue",-288, -700,"LEFT");
+		new Cruiser("blue",-256, -700,"LEFT");
+		
+		new Cruiser("blue",256, -670,"RIGHT");
+		new Cruiser("blue",288, -700,"RIGHT");
+		new Cruiser("blue",256, -700,"RIGHT");
+		
+	}
+
+	public void onUpdate(float pSecondsElapsed) {
+		WaveCounter += pSecondsElapsed;
+		if(WaveCounter>WaveDelay)
+		{
+			WaveCounter=0;
+			SpawnWave();
+		}
+	}
+}
