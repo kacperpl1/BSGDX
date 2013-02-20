@@ -88,7 +88,6 @@ public class BaseGame implements ApplicationListener {
 	    gl.glClearColor(0f,0f,0f,1f);
 		
 		physicsWorld = new World(new Vector2(0, 0), true); 
-		
 
 		BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.StaticBody; 
@@ -331,7 +330,7 @@ public class BaseGame implements ApplicationListener {
 		hudStage.act(Gdx.graphics.getDeltaTime());
 		hudStage.draw();
 		
-        //fpsLogger.log();
+        fpsLogger.log();
 
         //debugRenderer.render(physicsWorld, gameStage.getCamera().combined); 
 	}

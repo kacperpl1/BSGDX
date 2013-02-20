@@ -1,6 +1,5 @@
 package com.battleships.base;
 
-import java.util.LinkedList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -22,31 +21,16 @@ public class Projectile extends Actor{
 	private Sprite sprite;
 	private BalisticMoveModifier moveModifier;
 
-	public static LinkedList<Projectile> projectilepool = new LinkedList<Projectile>();
+	public static ProjectilePool projectilepool = new ProjectilePool();
 	
 	static void Launch(Unit inst, Unit targ, int dmg, int type)
 	{
-		if(projectilepool.size()==0)
-		{
-			new Projectile(inst, targ, dmg, type);
-		}
-		else
-		{
-			try{
-				projectilepool.getFirst().Init(inst, targ, dmg, type);
-				projectilepool.removeFirst();
-			}
-			catch(Error e)
-			{
-				e.printStackTrace();
-			}
-		}
+		projectilepool.obtain().Init(inst, targ, dmg, type);
 	}
 	
-	Projectile(Unit inst, Unit targ, int dmg, int type)
+	Projectile()
 	{
 		sprite = new Sprite();
-    	Init(inst, targ, dmg, type);
 		BaseGame.gameStage.addActor(this);
 	}
 	
@@ -170,6 +154,6 @@ public class Projectile extends Actor{
 		Target.TakeDamage(Damage);
 		this.setVisible(false);
 		sprite.setPosition(HitX,HitY);
-    	projectilepool.add(this);
+    	projectilepool.free(this);
     }
 }
