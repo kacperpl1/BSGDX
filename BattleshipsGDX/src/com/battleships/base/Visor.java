@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -13,16 +12,14 @@ public class Visor {
 	Unit Owner;
 	Sprite visionArea;
 	private Fixture SensorFixture;
-	static LinkedList<Visor> VisorList = new LinkedList<Visor>();
-	public static TextureRegion VisorTextureRegion;
-	
+	static LinkedList<Visor> VisorList = new LinkedList<Visor>();	
 	
 	public Visor(Unit o)
 	{
 		Owner = o;
 		if(Owner.team == BaseGame.LocalPlayerTeam)
 		{
-			visionArea = new Sprite(VisorTextureRegion);
+			visionArea = new Sprite(Resources.VisorTextureRegion);
 			if(Owner instanceof Cruiser)
 				visionArea.setScale(0.75f);
 				

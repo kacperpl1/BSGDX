@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -26,9 +25,6 @@ public class Unit extends Actor {
 	Body CollisionBody;
 	
 	Vector2 DesiredVelocity = new Vector2(0,0);
-
-	public static TextureRegion[] BaseTextureRegion;
-	public static TextureRegion[] ColorTextureRegion;
 	
 	Weapon gun;
 	Visor visor;
@@ -41,14 +37,14 @@ public class Unit extends Actor {
 		team = Team;
 				
 		baseSprite = new Sprite();
-		baseSprite.setRegion(BaseTextureRegion[0]);
+		baseSprite.setRegion(Resources.BaseTextureRegion[0]);
 		
 		baseSprite.setSize(64, 64);
 		baseSprite.setOrigin(baseSprite.getWidth()/2, baseSprite.getHeight()/2);
 		baseSprite.setPosition(-baseSprite.getWidth()/2, -baseSprite.getHeight()/2);
 		
 		colorSprite = new Sprite();
-		colorSprite.setRegion(ColorTextureRegion[0]);
+		colorSprite.setRegion(Resources.ColorTextureRegion[0]);
 		
 		colorSprite.setSize(64, 64);
 		colorSprite.setOrigin(colorSprite.getWidth()/2, colorSprite.getHeight()/2);
@@ -90,7 +86,6 @@ public class Unit extends Actor {
 		if(team != BaseGame.LocalPlayerTeam && VisibleEnemiesCount<=0)
 			return;
 		
-		this.setZIndex(1);
 		float widthScaled = baseSprite.getWidth()*baseSprite.getScaleX();
 		
         batch.draw(baseSprite, getX()-widthScaled/2,getY()-widthScaled/2,widthScaled,widthScaled);
@@ -158,16 +153,16 @@ public class Unit extends Actor {
     		{
     			Angle = 35 - Angle;
     			Angle *= 0.833333f;
-    			baseSprite.setRegion(BaseTextureRegion[Angle]);
-    			colorSprite.setRegion(ColorTextureRegion[Angle]);
+    			baseSprite.setRegion(Resources.BaseTextureRegion[Angle]);
+    			colorSprite.setRegion(Resources.ColorTextureRegion[Angle]);
     			baseSprite.flip(true, false);
     			colorSprite.flip(true, false);
     		}
     		else
     		{
     			Angle *= 0.833333f;
-    			baseSprite.setRegion(BaseTextureRegion[Angle]);
-    			colorSprite.setRegion(ColorTextureRegion[Angle]);
+    			baseSprite.setRegion(Resources.BaseTextureRegion[Angle]);
+    			colorSprite.setRegion(Resources.ColorTextureRegion[Angle]);
     			baseSprite.flip(false, false);
     			colorSprite.flip(false, false);
     		}

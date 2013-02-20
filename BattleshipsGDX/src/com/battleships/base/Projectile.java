@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
@@ -22,7 +21,6 @@ public class Projectile extends Actor{
 	float LaunchY;
 	float TravelTime;
 	private Sprite sprite;
-	public static TextureRegion[] ProjectileTextureRegion;
 	private BalisticMoveModifier moveModifier;
 
 	public static LinkedList<Projectile> projectilepool = new LinkedList<Projectile>();
@@ -51,7 +49,6 @@ public class Projectile extends Actor{
 		sprite = new Sprite();
     	Init(inst, targ, dmg, type);
 		BaseGame.gameStage.addActor(this);
-		this.setZIndex(10);
 	}
 	
 	private class BalisticMoveModifier{
@@ -120,7 +117,7 @@ public class Projectile extends Actor{
 	
 	void Init(Unit inst, Unit targ, int dmg, int type)
 	{   
-		sprite.setRegion(ProjectileTextureRegion[type]);
+		sprite.setRegion(Resources.ProjectileTextureRegion[type]);
 		this.setVisible(true); 	
 		this.toFront();
 		Instigator = inst;

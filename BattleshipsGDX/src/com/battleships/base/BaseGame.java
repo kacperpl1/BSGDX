@@ -1,5 +1,6 @@
 package com.battleships.base;
 
+import java.util.Comparator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -39,12 +40,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 public class BaseGame implements ApplicationListener {
-	private Texture texture;
 	private Stage hudStage;
 	static Stage gameStage;
 	private Touchpad touchpad;
-	private Texture touchpadBase;
-	private Texture touchpadKnob;
 	private Unit PlayerShip;
 	private GameLoopUpdateHandler GLUH;
 	private Box2DDebugRenderer debugRenderer;
@@ -73,10 +71,13 @@ public class BaseGame implements ApplicationListener {
 	private int h;
 	private GL20 gl;
 	private boolean camToggle;
+	private Actor Map;
 	static String LocalPlayerTeam;
 	
 	@Override
 	public void create() {	
+		
+		Resources.init();
 		
 		w = 480*Gdx.graphics.getWidth()/Gdx.graphics.getHeight();// Gdx.graphics.getWidth();
 		h = 480;// Gdx.graphics.getHeight();
@@ -115,26 +116,22 @@ public class BaseGame implements ApplicationListener {
 		gameStage = new Stage(w,h,true);
 		Gdx.input.setInputProcessor(hudStage);
 		
-		texture = new Texture(Gdx.files.internal("data/TilemapLow.png"));
-		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
-		Actor Map = new Actor(){
-			Texture region = texture;
+		Map = new Actor(){
+			Texture region = Resources.mapTexture;
 	        public void draw (SpriteBatch batch, float parentAlpha) {
 	                batch.draw(region, -1024,-1024,2048,2048);
 	        }
 		};
 		gameStage.addActor(Map);
-		
-		texture = new Texture(Gdx.files.internal("data/minimap.png"));
-		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		
 
-		final float minimapSize = Gdx.graphics.getWidth()*0.25f;
-		Actor miniMap = new Actor(){
-			Texture region = texture;
+		final float minimapSize = Gdx.graphics.getWidth()*0.23f;
+		final Actor miniMap = new Actor(){
+			Texture region = Resources.miniMapTexture;
 	        public void draw (SpriteBatch batch, float parentAlpha) {
-	                batch.draw(region,0,0,minimapSize,minimapSize);
+        		batch.setColor(1, 1, 1, 0.5f);
+	            batch.draw(region,getX(),getY(),minimapSize,minimapSize);
+	            batch.setColor(1, 1, 1, 1);
 	        }
 		};
 		camToggle = true;
@@ -163,61 +160,12 @@ public class BaseGame implements ApplicationListener {
 	        	gameStage.getCamera().update();
 	        }
 		});
-		miniMap.setBounds(0, 0, minimapSize, minimapSize);
+		miniMap.setBounds(Gdx.graphics.getWidth()*0.76f, Gdx.graphics.getHeight()-Gdx.graphics.getWidth()*0.24f, minimapSize, minimapSize);
 		hudStage.addActor(miniMap);
 		
-		texture = new Texture(Gdx.files.internal("data/base.png"));
-		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		TextureRegion[][] tmp = TextureRegion.split(texture, texture.getWidth()/4,texture.getHeight()/4);                                // #10
-		Unit.BaseTextureRegion = new TextureRegion[16];
-		int index = 0;
-        for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 4; j++) {
-                        Unit.BaseTextureRegion[index++] = tmp[i][j];
-                }
-        }
-
-		texture = new Texture(Gdx.files.internal("data/color.png"));
-		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		tmp = TextureRegion.split(texture, texture.getWidth()/4,texture.getHeight()/4);                                // #10
-		Unit.ColorTextureRegion = new TextureRegion[16];
-		index = 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-            	Unit.ColorTextureRegion[index++] = tmp[i][j];
-            }
-        }
-      
-        texture = new Texture(Gdx.files.internal("data/projectiles.png"));
-		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		tmp = TextureRegion.split(texture, texture.getWidth()/4,texture.getHeight()/4);                                // #10
-		Projectile.ProjectileTextureRegion = new TextureRegion[16];
-		index = 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-            	Projectile.ProjectileTextureRegion[index++] = tmp[i][j];
-            }
-        }
-        
-        texture = new Texture(Gdx.files.internal("data/Towers.png"));
-		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		tmp = TextureRegion.split(texture, texture.getWidth()/2,texture.getHeight());                                // #10
-		Tower.TowerTextureRegion = new TextureRegion[2];
-		Tower.TowerTextureRegion[0]=tmp[0][0];
-		Tower.TowerTextureRegion[1]=tmp[0][1];
-        
-        texture = new Texture(Gdx.files.internal("data/vision.png")); 
-		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-        Visor.VisorTextureRegion = new TextureRegion(texture, 512,512);
-		
-		
-		touchpadBase = new Texture(Gdx.files.internal("data/onscreen_control_base.png"));
-		touchpadBase.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		touchpadKnob = new Texture(Gdx.files.internal("data/onscreen_control_knob.png"));
-		touchpadKnob.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		TouchpadStyle style = new TouchpadStyle();
-		style.background = new SpriteDrawable(new Sprite(touchpadBase));
-		style.knob = new SpriteDrawable(new Sprite(touchpadKnob));
+		style.background = new SpriteDrawable(new Sprite(Resources.touchpadBase));
+		style.knob = new SpriteDrawable(new Sprite(Resources.touchpadKnob));
 		float knobsize = Gdx.graphics.getWidth()*0.25f;
 		style.knob.setMinWidth(Gdx.graphics.getWidth()*0.25f/2);
 		style.knob.setMinHeight(Gdx.graphics.getWidth()*0.25f/2);
@@ -321,10 +269,31 @@ public class BaseGame implements ApplicationListener {
 
 	@Override
 	public void dispose() {
-		texture.dispose();
 		hudStage.dispose();
 		gameStage.dispose();
 		physicsWorld.dispose();
+	}
+	
+	class ActorPositionComparator implements Comparator<Actor>{
+		 
+	    public int compare(Actor emp1, Actor emp2){ 
+	    	if(emp1 instanceof Projectile && emp2 instanceof Projectile)
+	    		return 0;
+	    		
+	    	if(emp1 instanceof Projectile)
+	    		return 1;
+
+	    	if(emp2 instanceof Projectile)
+	    		return -1;
+	    	
+	        if(emp1.getY() < emp2.getY())
+	        	return 1;
+	        else if(emp1.getY() > emp2.getY())
+	        	return -1;
+	        else
+	        	return 0;
+	    }
+	 
 	}
 
 	@Override
@@ -338,6 +307,9 @@ public class BaseGame implements ApplicationListener {
 		
 		PlayerShip.setDesiredVelocity(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
 		physicsWorld.step(delta, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);  
+		
+		gameStage.getRoot().getChildren().sort(new ActorPositionComparator());
+		Map.toBack();
 
 		if(camToggle)
 		gameStage.getCamera().position.set(
