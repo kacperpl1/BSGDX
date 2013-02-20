@@ -14,7 +14,6 @@ public class Projectile extends Actor{
 	Unit Target;
 	float DistToTarget;
 	int Damage;
-	int Radius;
 	float HitX;
 	float HitY;
 	float LaunchX;
@@ -128,16 +127,35 @@ public class Projectile extends Actor{
 		LaunchY = Instigator.getY();;
 		sprite.setPosition(Instigator.getX(), Instigator.getY());
 		DistToTarget = new Vector2(HitX - sprite.getX(),HitY - sprite.getY()).len();
-		TravelTime = DistToTarget / 200;
+		TravelTime = DistToTarget / PlayerWeapon.Speed[type];
 		
 		Damage = dmg;
-		Radius = 32;
-		moveModifier = new BalisticMoveModifier(TravelTime, 
-				LaunchX - sprite.getWidth()/2, LaunchY, 
-				(3*LaunchX+HitX)/4 - sprite.getWidth()/2, (3*LaunchY+HitY)/4 + 64*TravelTime, 
-				(LaunchX+3*HitX)/4 - sprite.getWidth()/2, (LaunchY+3*HitY)/4 + 64*TravelTime, 
-				HitX - sprite.getWidth()/2, HitY,64);
-    	
+		
+		if(type<4 || type>=6 && type<12)
+		{
+			moveModifier = new BalisticMoveModifier(TravelTime, 
+					LaunchX - sprite.getWidth()/2, LaunchY, 
+					(3*LaunchX+HitX)/4 - sprite.getWidth()/2, (3*LaunchY+HitY)/4 + 64*TravelTime, 
+					(LaunchX+3*HitX)/4 - sprite.getWidth()/2, (LaunchY+3*HitY)/4 + 64*TravelTime, 
+					HitX - sprite.getWidth()/2, HitY,64);
+		}
+		else if(type>=6 && type<12){
+			moveModifier = new BalisticMoveModifier(TravelTime, 
+					LaunchX - sprite.getWidth()/2, LaunchY, 
+					(3*LaunchX+HitX)/4 - sprite.getWidth()/2, (3*LaunchY+HitY)/4 + 64*TravelTime, 
+					(LaunchX+3*HitX)/4 - sprite.getWidth()/2, (LaunchY+3*HitY)/4 + 64*TravelTime, 
+					HitX - sprite.getWidth()/2, HitY,16);
+		}
+		else
+		{
+			moveModifier = new BalisticMoveModifier(TravelTime, 
+					LaunchX - sprite.getWidth()/2, LaunchY, 
+					(3*LaunchX+HitX)/4 - sprite.getWidth()/2, (3*LaunchY+HitY)/4, 
+					(LaunchX+3*HitX)/4 - sprite.getWidth()/2, (LaunchY+3*HitY)/4, 
+					HitX - sprite.getWidth()/2, HitY,0);
+		}
+		
+		
     	BaseGame.executorService.schedule(new Callable<Projectile>() {
     		  @Override
     		  public Projectile call() {

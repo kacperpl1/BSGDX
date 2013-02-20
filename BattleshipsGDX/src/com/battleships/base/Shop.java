@@ -82,7 +82,6 @@ public class Shop {
 					{
 						PlayerWeapon newweapon = new PlayerWeapon(owner, selected_item);
 						inventory.add(newweapon);
-						System.out.println("Weapon bought!");
 					}
 	        		
 				}
@@ -140,8 +139,7 @@ public class Shop {
 				{
 	        		inventory.get(selected_inventory_item).Destroy();
 					inventory.remove(selected_inventory_item);
-					System.out.println("Weapon sold!");
-
+					
 		        	itemX=shop_grid.getX()+(selected_item%4)*tileWidth;
 		        	itemY=shop_grid.getY()+shop_grid.getHeight()*0.75f-(selected_item/4)*tileWidth;
 				}
