@@ -32,7 +32,7 @@ public class Cruiser extends Unit {
     {
     	if(Health<=0)
     	{
-    		visor.checkDestroy();
+    		BaseGame.hudStage.getRoot().removeActor(icon);
         	this.getParent().removeActor(this);
         	int fixtures = CollisionBody.getFixtureList().size();
     		for(int i=0; i<fixtures; i++)

@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -72,6 +71,7 @@ public class BaseGame implements ApplicationListener {
 	private GL20 gl;
 	private boolean camToggle;
 	private Actor Map;
+	static Actor miniMap;
 	static String LocalPlayerTeam;
 	
 	@Override
@@ -125,7 +125,7 @@ public class BaseGame implements ApplicationListener {
 		};
 		gameStage.addActor(Map);
 
-		final Actor miniMap = new Actor(){
+		miniMap = new Actor(){
 			Texture region = Resources.miniMapTexture;
 	        public void draw (SpriteBatch batch, float parentAlpha) {
         		batch.setColor(1, 1, 1, 0.5f);

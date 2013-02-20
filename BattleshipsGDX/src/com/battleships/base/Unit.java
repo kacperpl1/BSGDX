@@ -30,6 +30,7 @@ public class Unit extends Actor {
 	Visor visor;
 	protected int VisibleEnemiesCount = 0;
 	protected LinkedList<Unit> VisibleEnemies = new LinkedList<Unit>(); //used by allies
+	Actor icon;
 	static BodyPool bodyPool = new BodyPool();
 	
 	Unit(String Team, float InitialX, float InitialY)
@@ -59,6 +60,21 @@ public class Unit extends Actor {
 		visor = new Visor(this);
 		
 		BaseGame.gameStage.addActor(this);
+		
+		icon = new Actor(){
+			float scale = BaseGame.miniMap.getWidth()/2048;
+	        public void draw (SpriteBatch batch, float parentAlpha) {
+	    		if(team != BaseGame.LocalPlayerTeam && VisibleEnemiesCount<=0 && !(Unit.this instanceof Tower))
+	    			return;
+	    		
+        		batch.setColor(colorSprite.getColor());
+	            batch.draw(Resources.iconTexture,
+	            		BaseGame.miniMap.getX() + BaseGame.miniMap.getWidth()/2 + Unit.this.getX()*scale -2,
+	            		BaseGame.miniMap.getY() + BaseGame.miniMap.getHeight()/2 + Unit.this.getY()*scale -2,4,4);
+	            batch.setColor(Color.WHITE);
+	        }
+		};
+		BaseGame.hudStage.addActor(icon);
 	}
 	
 	void createBody(float initialX, float initialY)
@@ -100,6 +116,7 @@ public class Unit extends Actor {
 	{
     	if(Health<=0)
     	{
+    		BaseGame.hudStage.getRoot().removeActor(icon);
         	this.getParent().removeActor(this);
         	int fixtures = CollisionBody.getFixtureList().size();
     		for(int i=0; i<fixtures; i++)

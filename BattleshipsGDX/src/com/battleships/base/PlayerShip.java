@@ -31,6 +31,7 @@ public class PlayerShip extends Unit {
 	{
     	if(Health<=0)
     	{
+    		icon.setVisible(false);
         	CollisionBody.setLinearVelocity(0, 0);
     		visor.visionArea.setScale(0);
         	this.getParent().removeActor(this);
@@ -44,6 +45,7 @@ public class PlayerShip extends Unit {
         	BaseGame.executorService.schedule(new Callable<Projectile>() {
       		  @Override
       		  public Projectile call() {
+          		icon.setVisible(true);
       			BaseGame.gameStage.addActor(PlayerShip.this);
         		visor.visionArea.setScale(1);
       			Health = MaxHealth;

@@ -12,6 +12,7 @@ public class Resources {
 	static Texture touchpadKnob;
 	static Texture mapTexture;
 	static Texture miniMapTexture;
+	static Texture iconTexture;
 	static Texture shopToggleTexture;
 	static Texture shopGridTexture;
 	static Texture inventoryGridTexture;
@@ -32,6 +33,9 @@ public class Resources {
 
 		miniMapTexture = new Texture(Gdx.files.internal("data/minimap.png"));
 		miniMapTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+		iconTexture = new Texture(Gdx.files.internal("data/icon.png"));
+		iconTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
 		shopToggleTexture = new Texture(Gdx.files.internal("data/shop_toggle.png"));
 		shopToggleTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
