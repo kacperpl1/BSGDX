@@ -92,6 +92,8 @@ public class Unit extends Actor {
         batch.setColor(colorSprite.getColor());
         batch.draw(colorSprite, getX()-widthScaled/2,getY()-widthScaled/2,widthScaled,widthScaled);
         batch.setColor(Color.WHITE);
+        batch.draw(Resources.HealthbarTextureRegion[(int)Math.min(((float)Health/(float)MaxHealth)*10,9)], 
+        		getX()-widthScaled/4,getY()+widthScaled/4,widthScaled/2,widthScaled/20);
 	}
 	
 	void onUpdate(float delta)

@@ -23,6 +23,9 @@ public class Tower extends Unit {
 		this.setPosition(CollisionBody.getPosition().x,CollisionBody.getPosition().y);
 		this.setZIndex(2);
         batch.draw(baseSprite, getX()-16,getY()-64,64,128);
+        batch.draw(Resources.HealthbarTextureRegion[(int)Math.min(((float)Health/(float)MaxHealth)*10,9)], 
+        		getX()-16,getY()+32,32,4);
+        
 		onUpdate(BaseGame.delta);
 	}
 }

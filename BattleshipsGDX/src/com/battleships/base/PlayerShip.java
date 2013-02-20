@@ -52,6 +52,9 @@ public class PlayerShip extends Unit {
       		}, 5, TimeUnit.SECONDS);
         	return;
     	}
-		gun.onUpdate(delta);
+		for(Weapon current : Inventory)
+    	{
+    		current.onUpdate(delta);
+    	}
 	}
 }

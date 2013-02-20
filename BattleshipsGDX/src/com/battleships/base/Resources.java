@@ -12,8 +12,14 @@ public class Resources {
 	static Texture touchpadKnob;
 	static Texture mapTexture;
 	static Texture miniMapTexture;
+	static Texture shopToggleTexture;
+	static Texture shopGridTexture;
+	static Texture inventoryGridTexture;
+	static TextureRegion[] ItemTextureRegion;
+	
 	static TextureRegion[] BaseTextureRegion;
 	static TextureRegion[] ColorTextureRegion;
+	static TextureRegion[] HealthbarTextureRegion;
 	static TextureRegion[] ProjectileTextureRegion;
 	static TextureRegion[] TowerTextureRegion;
 	static TextureRegion VisorTextureRegion;
@@ -27,11 +33,31 @@ public class Resources {
 		miniMapTexture = new Texture(Gdx.files.internal("data/minimap.png"));
 		miniMapTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		
-		Texture texture = new Texture(Gdx.files.internal("data/base.png"));
+		shopToggleTexture = new Texture(Gdx.files.internal("data/shop_toggle.png"));
+		shopToggleTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+		shopGridTexture = new Texture(Gdx.files.internal("data/weapons.png"));
+		shopGridTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+		inventoryGridTexture = new Texture(Gdx.files.internal("data/inventory.png"));
+		inventoryGridTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		
+		Texture texture = new Texture(Gdx.files.internal("data/weapons.png"));
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		TextureRegion[][] tmp = TextureRegion.split(texture, texture.getWidth()/4,texture.getHeight()/4);                                // #10
-		BaseTextureRegion = new TextureRegion[16];
+		ItemTextureRegion = new TextureRegion[16];
 		int index = 0;
+        for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                	ItemTextureRegion[index++] = tmp[i][j];
+                }
+        }
+		
+		texture = new Texture(Gdx.files.internal("data/base.png"));
+		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		tmp = TextureRegion.split(texture, texture.getWidth()/4,texture.getHeight()/4);                                // #10
+		BaseTextureRegion = new TextureRegion[16];
+		index = 0;
         for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 4; j++) {
                         BaseTextureRegion[index++] = tmp[i][j];
@@ -48,7 +74,17 @@ public class Resources {
             	ColorTextureRegion[index++] = tmp[i][j];
             }
         }
-      
+     
+
+		texture = new Texture(Gdx.files.internal("data/HealthBar.png"));
+		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		tmp = TextureRegion.split(texture, texture.getWidth(),texture.getHeight()/10);                                // #10
+		HealthbarTextureRegion = new TextureRegion[10];
+		index = 0;
+        for (int i = 0; i < 10; i++) {
+        	HealthbarTextureRegion[index++] = tmp[i][0];
+        }        
+        
         texture = new Texture(Gdx.files.internal("data/projectiles.png"));
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		tmp = TextureRegion.split(texture, texture.getWidth()/4,texture.getHeight()/4);                                // #10

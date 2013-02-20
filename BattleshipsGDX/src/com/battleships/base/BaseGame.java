@@ -40,10 +40,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 public class BaseGame implements ApplicationListener {
-	private Stage hudStage;
+	static Stage hudStage;
 	static Stage gameStage;
 	private Touchpad touchpad;
-	private Unit PlayerShip;
+	private PlayerShip PlayerShip;
 	private GameLoopUpdateHandler GLUH;
 	private Box2DDebugRenderer debugRenderer;
 	private FPSLogger fpsLogger;
@@ -67,8 +67,8 @@ public class BaseGame implements ApplicationListener {
     private float m_fboScaler = 0.1f;
     private FrameBuffer m_fbo = null;
     private TextureRegion m_fboRegion = null;
-	private int w;
-	private int h;
+	static int w;
+	static int h;
 	private GL20 gl;
 	private boolean camToggle;
 	private Actor Map;
@@ -112,7 +112,7 @@ public class BaseGame implements ApplicationListener {
 		
         fpsLogger = new FPSLogger();
         
-		hudStage = new Stage(w, h, true);
+		hudStage = new Stage(w,h,true);
 		gameStage = new Stage(w,h,true);
 		Gdx.input.setInputProcessor(hudStage);
 		
@@ -125,12 +125,11 @@ public class BaseGame implements ApplicationListener {
 		};
 		gameStage.addActor(Map);
 
-		final float minimapSize = Gdx.graphics.getWidth()*0.23f;
 		final Actor miniMap = new Actor(){
 			Texture region = Resources.miniMapTexture;
 	        public void draw (SpriteBatch batch, float parentAlpha) {
         		batch.setColor(1, 1, 1, 0.5f);
-	            batch.draw(region,getX(),getY(),minimapSize,minimapSize);
+	            batch.draw(region,getX(),getY(),getWidth(),getHeight());
 	            batch.setColor(1, 1, 1, 1);
 	        }
 		};
@@ -155,26 +154,27 @@ public class BaseGame implements ApplicationListener {
 	        void setCamPos(float x, float y)
 	        {
 	        	gameStage.getCamera().position.set(
-				Math.max(Math.min((x-minimapSize/2)*(2048/minimapSize), 1024-w/2),-1024+w/2), 
-				Math.max(Math.min((y-minimapSize/2)*(2048/minimapSize), 1024-h/2),-1024+h/2), 0);
+				Math.max(Math.min((x-miniMap.getWidth()/2)*(2048/miniMap.getWidth()), 1024-w/2),-1024+w/2), 
+				Math.max(Math.min((y-miniMap.getHeight()/2)*(2048/miniMap.getHeight()), 1024-h/2),-1024+h/2), 0);
 	        	gameStage.getCamera().update();
 	        }
 		});
-		miniMap.setBounds(Gdx.graphics.getWidth()*0.76f, Gdx.graphics.getHeight()-Gdx.graphics.getWidth()*0.24f, minimapSize, minimapSize);
+		miniMap.setBounds(w*0.76f, h-w*0.24f, w*0.23f, w*0.23f);
 		hudStage.addActor(miniMap);
 		
 		TouchpadStyle style = new TouchpadStyle();
 		style.background = new SpriteDrawable(new Sprite(Resources.touchpadBase));
 		style.knob = new SpriteDrawable(new Sprite(Resources.touchpadKnob));
-		float knobsize = Gdx.graphics.getWidth()*0.25f;
-		style.knob.setMinWidth(Gdx.graphics.getWidth()*0.25f/2);
-		style.knob.setMinHeight(Gdx.graphics.getWidth()*0.25f/2);
+		float knobsize = w*0.25f;
+		style.knob.setMinWidth(w*0.25f/2);
+		style.knob.setMinHeight(w*0.25f/2);
 		touchpad = new Touchpad(1, style);
-		touchpad.setBounds(Gdx.graphics.getWidth()-knobsize,0, knobsize, knobsize);
+		touchpad.setBounds(w-knobsize,0, knobsize, knobsize);
 		hudStage.addActor(touchpad);
 		
 		LocalPlayerTeam = "blue";
 		PlayerShip = new PlayerShip("blue", 0f,-768f, Color.CYAN);
+		new Shop(PlayerShip);
 		
 		new PlayerShip("red", 0f,768f, Color.ORANGE);
 		
@@ -338,7 +338,7 @@ public class BaseGame implements ApplicationListener {
 
 	@Override
 	public void resize(int width, int height) {
-		hudStage.setViewport(width, height, true);
+		//hudStage.setViewport(width, height, true);
 	}
 
 	@Override
