@@ -57,8 +57,6 @@ public class Unit extends Actor {
 			colorSprite.setColor(Color.BLUE);
 
 		createBody(InitialX,InitialY);
-		visor = new Visor(this);
-		
 		BaseGame.gameStage.addActor(this);
 		
 		icon = new Actor(){

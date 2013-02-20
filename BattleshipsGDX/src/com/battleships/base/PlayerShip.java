@@ -22,9 +22,7 @@ public class PlayerShip extends Unit {
     	MaxHealth = 2500;
     	Health = MaxHealth;
 		colorSprite.setColor(PlayerColor);
-    	createBody(InitialX, InitialY);
     	visor = new Visor(this);
-		gun = new PlayerWeapon(this,8);
     }
 	
 	void onUpdate(float delta)

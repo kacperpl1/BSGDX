@@ -52,28 +52,28 @@ public class Shop {
         		batch.setColor(1, 1, 1, 0.5f);
 	            batch.draw(Resources.shopGridTexture,getX(),getY(),getWidth(),getHeight());
 	            batch.setColor(1, 1, 1, 1);
-	            batch.draw(Resources.ItemTextureRegion[selected_item],getX()+itemX,
-	            		getY()+getHeight()*0.75f+itemY,
-	            		getWidth()/4,getWidth()/4);
+	            batch.draw(Resources.ItemTextureRegion[selected_item],itemX,itemY,tileWidth,tileWidth);
 	        }
 		};
 		
 		shop_grid.addListener(new InputListener() {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 	        	selected_item = ((int)(x)/tileWidth)%4 +(3-(((int)(y)/tileWidth)%4))*4;
-	        	itemX=(selected_item%4)*tileWidth;
-	        	itemY= -(selected_item/4)*tileWidth;
+	        	itemX=shop_grid.getX()+(selected_item%4)*tileWidth;
+	        	itemY=shop_grid.getY()+shop_grid.getHeight()*0.75f-(selected_item/4)*tileWidth;
+	        	shop_grid.toFront();
 	                return true;
 	        }
 	        
 	        public void touchDragged (InputEvent event, float x, float y, int pointer) {
-	        	itemX=x-tileWidth/2;
-	        	itemY=y-shop_grid.getHeight()+tileWidth/2;
+	        	itemX=shop_grid.getX()+x-tileWidth/2;
+	        	itemY=shop_grid.getY()+shop_grid.getHeight()*0.75f + y-shop_grid.getHeight()+tileWidth/2;
 	    	}
 	        
 	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-	        	itemX=(selected_item%4)*tileWidth;
-	        	itemY= -(selected_item/4)*tileWidth;
+	        	itemX=shop_grid.getX()+(selected_item%4)*tileWidth;
+	        	itemY=shop_grid.getY()+shop_grid.getHeight()*0.75f -(selected_item/4)*tileWidth;
+	        	shop_grid.toBack();
 
 	        	if((shop_grid.getX()+x) > inventory_grid.getX() && (shop_grid.getX()+x)< inventory_grid.getX() + inventory_grid.getWidth()
 						&& (shop_grid.getY()+y) < (inventory_grid.getY()+tileWidth) && (shop_grid.getY()+y) > inventory_grid.getY())
@@ -93,15 +93,60 @@ public class Shop {
 				tileWidth*4, tileWidth*4);
     	shop_grid.setVisible(shop_toggle);
     	
+    	itemX=shop_grid.getX();
+    	itemY=shop_grid.getY()+shop_grid.getHeight()*0.75f;
+    	
 		inventory_grid = new Actor(){
         public void draw (SpriteBatch batch, float parentAlpha) {
-    		batch.setColor(1, 1, 1, 0.5f);
+    		batch.setColor(1, 1, 1, 0.75f);
             batch.draw(Resources.inventoryGridTexture, getX(),getY(),getWidth(),getHeight());
+            int index = 0;
+            for(PlayerWeapon current : inventory)
+            {
+            	batch.draw(Resources.ItemTextureRegion[current.weapon_id], getX()+index*tileWidth,getY(),tileWidth,tileWidth);
+            	index++;
+            }            
             batch.setColor(1, 1, 1, 1);
         }
 	};
 		inventory_grid.setVisible(shop_toggle);
 		inventory_grid.setBounds(shop_grid.getX()-shop_grid.getWidth()/4,tileWidth,tileWidth*6,tileWidth);
+		
+		inventory_grid.addListener(new InputListener() {
+	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+	        	if(inventory.size()==0)
+	        		return false;
+	        	
+	        	selected_inventory_item = (int)(x)/tileWidth;
+	        	selected_item = inventory.get(selected_inventory_item).weapon_id;
+	        	itemX=inventory_grid.getX()+selected_inventory_item*tileWidth;
+	        	itemY=inventory_grid.getY();
+	        	shop_grid.toFront();
+	                return true;
+	        }
+	        
+	        public void touchDragged (InputEvent event, float x, float y, int pointer) {
+	        	itemX=inventory_grid.getX()+x-tileWidth/2;
+	        	itemY=inventory_grid.getY()+y-tileWidth/2;
+	    	}
+	        
+	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+	        	itemX=inventory_grid.getX()+selected_inventory_item*tileWidth;
+	        	itemY=inventory_grid.getY();
+	        	shop_grid.toBack();
+
+	        	if((inventory_grid.getX()+x) > shop_grid.getX() && (inventory_grid.getX()+x)< shop_grid.getX() + shop_grid.getWidth()
+						&& (inventory_grid.getY()+y) < (shop_grid.getY() + shop_grid.getHeight()) && (inventory_grid.getY()+y) > shop_grid.getY())
+				{
+	        		inventory.get(selected_inventory_item).Destroy();
+					inventory.remove(selected_inventory_item);
+					System.out.println("Weapon sold!");
+
+		        	itemX=shop_grid.getX()+(selected_item%4)*tileWidth;
+		        	itemY=shop_grid.getY()+shop_grid.getHeight()*0.75f-(selected_item/4)*tileWidth;
+				}
+	        }
+		});
     	
 		BaseGame.hudStage.addActor(shop_grid);	
 		BaseGame.hudStage.addActor(inventory_grid);
