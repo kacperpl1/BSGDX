@@ -49,7 +49,7 @@ public class Weapon {
 	void createBody()
 	{
 		CircleShape dynamicCircle = new CircleShape();  
-        dynamicCircle.setRadius(Range);  
+        dynamicCircle.setRadius(Range*BaseGame.WORLD_TO_BOX);  
         FixtureDef fixtureDef = new FixtureDef();  
         fixtureDef.shape = dynamicCircle;  
         fixtureDef.density = 1.0f;  

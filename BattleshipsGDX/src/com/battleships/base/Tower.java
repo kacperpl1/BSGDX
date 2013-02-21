@@ -20,7 +20,7 @@ public class Tower extends Unit {
 	}
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
-		this.setPosition(CollisionBody.getPosition().x,CollisionBody.getPosition().y);
+		this.setPosition(CollisionBody.getPosition().x*BaseGame.BOX_WORLD_TO,CollisionBody.getPosition().y*BaseGame.BOX_WORLD_TO);
 		this.setZIndex(2);
         batch.draw(baseSprite, getX()-16,getY()-64,64,128);
         batch.draw(Resources.HealthbarTextureRegion[(int)Math.min(((float)Health/(float)MaxHealth)*10,9)], 

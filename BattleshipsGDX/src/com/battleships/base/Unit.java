@@ -78,10 +78,10 @@ public class Unit extends Actor {
 	void createBody(float initialX, float initialY)
 	{ 
 		CollisionBody = bodyPool.obtain();
-		CollisionBody.setTransform(initialX,initialY, 0);
+		CollisionBody.setTransform(initialX*BaseGame.WORLD_TO_BOX,initialY*BaseGame.WORLD_TO_BOX, 0);
 		
 		CircleShape dynamicCircle = new CircleShape();  
-        dynamicCircle.setRadius(16f);  
+        dynamicCircle.setRadius(16f*BaseGame.WORLD_TO_BOX);  
         FixtureDef fixtureDef = new FixtureDef();  
         fixtureDef.shape = dynamicCircle;  
         fixtureDef.density = 1.0f;  
@@ -95,7 +95,7 @@ public class Unit extends Actor {
 		onUpdate(BaseGame.delta);
 		updateVelocity();
 		
-		this.setPosition(CollisionBody.getPosition().x,CollisionBody.getPosition().y);
+		this.setPosition(CollisionBody.getPosition().x*BaseGame.BOX_WORLD_TO,CollisionBody.getPosition().y*BaseGame.BOX_WORLD_TO);
 		
 		if(team != BaseGame.LocalPlayerTeam && VisibleEnemiesCount<=0)
 			return;
@@ -152,7 +152,7 @@ public class Unit extends Actor {
     	float velocity = DesiredVelocity.len();
     	if(velocity > 0)
     	{
-    		CollisionBody.setLinearVelocity(DesiredVelocity.x*moveSpeed/velocity, DesiredVelocity.y*moveSpeed/velocity);
+    		CollisionBody.setLinearVelocity(DesiredVelocity.x*moveSpeed/velocity*BaseGame.WORLD_TO_BOX, DesiredVelocity.y*moveSpeed/velocity*BaseGame.WORLD_TO_BOX);
         	setVisualRotation(DesiredVelocity.x, DesiredVelocity.y);
     	}
     	else

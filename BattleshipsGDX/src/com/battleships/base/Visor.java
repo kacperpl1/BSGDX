@@ -31,7 +31,7 @@ public class Visor {
 	void createVisor()
 	{
 		CircleShape dynamicCircle = new CircleShape();  
-        dynamicCircle.setRadius(256*visionArea.getScaleX()*0.9f);  
+        dynamicCircle.setRadius(256*visionArea.getScaleX()*0.9f*BaseGame.WORLD_TO_BOX);  
         FixtureDef fixtureDef = new FixtureDef();  
         fixtureDef.shape = dynamicCircle;  
         fixtureDef.density = 1.0f;  
@@ -53,8 +53,8 @@ public class Visor {
 	}
 	public void draw(SpriteBatch batch) {
 		if(Owner.Health>0)
-			batch.draw(visionArea, -BaseGame.camera.position.x+Owner.CollisionBody.getPosition().x-256*visionArea.getScaleX(),
-				-BaseGame.camera.position.y+Owner.CollisionBody.getPosition().y-768*visionArea.getScaleX(), 
+			batch.draw(visionArea, -BaseGame.camera.position.x+Owner.CollisionBody.getPosition().x*BaseGame.BOX_WORLD_TO-256*visionArea.getScaleX(),
+				-BaseGame.camera.position.y+Owner.CollisionBody.getPosition().y*BaseGame.BOX_WORLD_TO-768*visionArea.getScaleX(), 
 				1024*visionArea.getScaleX(), 1024*visionArea.getScaleX());
 	}
 }

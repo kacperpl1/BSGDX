@@ -18,7 +18,7 @@ public class PlayerShip extends Unit {
 	PlayerShip(String Team, float InitialX, float InitialY, Color PlayerColor)
     {
 		super(Team, InitialX, InitialY);
-    	moveSpeed = 500;
+    	moveSpeed = 150;
     	MaxHealth = 2500;
     	Health = MaxHealth;
 		colorSprite.setColor(PlayerColor);
@@ -31,7 +31,7 @@ public class PlayerShip extends Unit {
     	{
     		icon.setVisible(false);
         	CollisionBody.setLinearVelocity(0, 0);
-    		visor.visionArea.setScale(0);
+    		Visor.VisorList.remove(visor);
         	this.getParent().removeActor(this);
         	if(team.equals(BaseGame.LocalPlayerTeam))
     		{
@@ -40,13 +40,22 @@ public class PlayerShip extends Unit {
     				current.VisibleEnemiesCount--;
     			}
     		}  
-        	BaseGame.executorService.schedule(new Callable<Projectile>() {
+        	BaseGame.executorService.schedule(new Callable<Unit>() {
       		  @Override
-      		  public Projectile call() {
+      		  public Unit call() {
           		icon.setVisible(true);
       			BaseGame.gameStage.addActor(PlayerShip.this);
-        		visor.visionArea.setScale(1);
+      			Visor.VisorList.add(visor);
       			Health = MaxHealth;
+
+            	if(team == "red")
+            	{
+            		CollisionBody.setTransform(0, 768*BaseGame.WORLD_TO_BOX, 0);
+            	}
+            	else
+            	{
+            		CollisionBody.setTransform(0, -768*BaseGame.WORLD_TO_BOX, 0);
+            	}
       		    return null;
       		  }
       		}, 5, TimeUnit.SECONDS);

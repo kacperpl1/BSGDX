@@ -21,7 +21,7 @@ public class Cruiser extends Unit {
     	float velocity = DesiredVelocity.len();
     	if(velocity > 1)
     	{
-    		CollisionBody.setLinearVelocity(DesiredVelocity.x, DesiredVelocity.y);
+    		CollisionBody.setLinearVelocity(DesiredVelocity.x*BaseGame.WORLD_TO_BOX, DesiredVelocity.y*BaseGame.WORLD_TO_BOX);
         	setVisualRotation(DesiredVelocity.x, DesiredVelocity.y);
     	}
     	else

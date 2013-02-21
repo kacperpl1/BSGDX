@@ -49,10 +49,10 @@ public class BaseGame implements ApplicationListener {
 	
 	static World physicsWorld; 
 	static final float BOX_STEP=1/60f;  
-    static final int BOX_VELOCITY_ITERATIONS=1;  
-    static final int BOX_POSITION_ITERATIONS=1;  
-    static final float WORLD_TO_BOX=1;  
-    static final float BOX_WORLD_TO=1; 
+    static final int BOX_VELOCITY_ITERATIONS=6;  
+    static final int BOX_POSITION_ITERATIONS=2;  
+    static final float WORLD_TO_BOX=0.01f;  
+    static final float BOX_WORLD_TO=100.0f; 
     
     long frameTime = System.nanoTime();
     long lastFrameTime = System.nanoTime();
@@ -100,7 +100,9 @@ public class BaseGame implements ApplicationListener {
 			
 			
 			PolygonShape staticRectangle = new PolygonShape();
-			staticRectangle.setAsBox(current.width/2, current.height/2,new Vector2(current.x-1024 +current.width/2,-current.y+1024 -current.height/2), 0);
+			staticRectangle.setAsBox(current.width/2*BaseGame.WORLD_TO_BOX, current.height/2*BaseGame.WORLD_TO_BOX,
+					new Vector2((current.x-1024 +current.width/2)*BaseGame.WORLD_TO_BOX,
+							(-current.y+1024 -current.height/2)*BaseGame.WORLD_TO_BOX), 0);
 	        FixtureDef fixtureDef = new FixtureDef();  
 	        fixtureDef.shape = staticRectangle;  
 	        fixtureDef.density = 1.0f;  
@@ -331,7 +333,7 @@ public class BaseGame implements ApplicationListener {
 		hudStage.draw();
 		
         fpsLogger.log();
-
+        
         //debugRenderer.render(physicsWorld, gameStage.getCamera().combined); 
 	}
 
