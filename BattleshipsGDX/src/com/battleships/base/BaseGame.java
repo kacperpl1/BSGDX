@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.g2d.tiled.TiledObject;
 import com.badlogic.gdx.graphics.g2d.tiled.TiledObjectGroup;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -53,6 +54,7 @@ public class BaseGame implements ApplicationListener {
     static final int BOX_POSITION_ITERATIONS=2;  
     static final float WORLD_TO_BOX=0.01f;  
     static final float BOX_WORLD_TO=100.0f; 
+    static boolean debug_mode=false;
     
     long frameTime = System.nanoTime();
     long lastFrameTime = System.nanoTime();
@@ -328,13 +330,18 @@ public class BaseGame implements ApplicationListener {
 		gameStage.draw();		
 
 		renderFow(); 
+
+		if(debug_mode)
+		{
+			Matrix4 debugMatrix = gameStage.getCamera().combined.cpy();
+			debugMatrix.scale(BOX_WORLD_TO, BOX_WORLD_TO, 1);
+	        debugRenderer.render(physicsWorld, debugMatrix); 
+		}
 		
 		hudStage.act(Gdx.graphics.getDeltaTime());
 		hudStage.draw();
-		
-        //fpsLogger.log();
-        
-        //debugRenderer.render(physicsWorld, gameStage.getCamera().combined); 
+
+        fpsLogger.log();        
 	}
 
 	@Override

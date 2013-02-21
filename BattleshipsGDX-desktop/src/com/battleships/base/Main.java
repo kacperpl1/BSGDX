@@ -11,6 +11,9 @@ public class Main {
 		cfg.width = 1280;
 		cfg.height = 800;
 		
+		if(args.length>0 && args[0].equals("debug"))
+			BaseGame.debug_mode=true;
+		
 		new LwjglApplication(new BaseGame(), cfg);
 	}
 }
