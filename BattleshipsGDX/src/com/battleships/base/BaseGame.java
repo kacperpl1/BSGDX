@@ -61,7 +61,6 @@ public class BaseGame implements ApplicationListener {
 	private SpriteBatch batch;
 	private ShaderProgram shader;
 	static OrthographicCamera camera;
-    static float delta;
     
     public static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     
@@ -302,14 +301,10 @@ public class BaseGame implements ApplicationListener {
 	@Override
 	public void render() {	
 		
-		frameTime = System.nanoTime();
-	    delta = (frameTime - lastFrameTime) / 1000000000.0f;
-	    lastFrameTime = System.nanoTime();
-	    
-		GLUH.onUpdate(delta);
+		GLUH.onUpdate(Gdx.graphics.getDeltaTime());
 		
 		PlayerShip.setDesiredVelocity(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
-		physicsWorld.step(delta, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);  
+		physicsWorld.step(Gdx.graphics.getDeltaTime(), BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);  
 		
 		gameStage.getRoot().getChildren().sort(new ActorPositionComparator());
 		Map.toBack();

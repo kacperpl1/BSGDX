@@ -3,6 +3,7 @@ package com.battleships.base;
 
 import java.util.LinkedList;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -92,7 +93,7 @@ public class Unit extends Actor {
 	}   
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
-		onUpdate(BaseGame.delta);
+		onUpdate(Gdx.graphics.getDeltaTime());
 		updateVelocity();
 		
 		this.setPosition(CollisionBody.getPosition().x*BaseGame.BOX_WORLD_TO,CollisionBody.getPosition().y*BaseGame.BOX_WORLD_TO);

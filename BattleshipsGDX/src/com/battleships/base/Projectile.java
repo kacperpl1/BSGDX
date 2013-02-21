@@ -3,6 +3,7 @@ package com.battleships.base;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -95,7 +96,7 @@ public class Projectile extends Actor{
 	}
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
-		moveModifier.onManagedUpdate(BaseGame.delta);
+		moveModifier.onManagedUpdate(Gdx.graphics.getDeltaTime());
         batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, this.getRotation());
 	}
 	
@@ -145,7 +146,7 @@ public class Projectile extends Actor{
     		  @Override
     		  public Projectile call() {
     			  explode();
-    		    return null;
+    		    return Projectile.this;
     		  }
     		}, (long)(TravelTime * 1000), TimeUnit.MILLISECONDS);
 	}

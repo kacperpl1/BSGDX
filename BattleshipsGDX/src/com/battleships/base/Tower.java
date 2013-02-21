@@ -1,5 +1,6 @@
 package com.battleships.base;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
@@ -26,6 +27,6 @@ public class Tower extends Unit {
         batch.draw(Resources.HealthbarTextureRegion[(int)Math.min(((float)Health/(float)MaxHealth)*10,9)], 
         		getX()-16,getY()+32,32,4);
         
-		onUpdate(BaseGame.delta);
+		onUpdate(Gdx.graphics.getDeltaTime());
 	}
 }
