@@ -332,7 +332,7 @@ public class BaseGame implements ApplicationListener {
 		hudStage.act(Gdx.graphics.getDeltaTime());
 		hudStage.draw();
 		
-        fpsLogger.log();
+        //fpsLogger.log();
         
         //debugRenderer.render(physicsWorld, gameStage.getCamera().combined); 
 	}

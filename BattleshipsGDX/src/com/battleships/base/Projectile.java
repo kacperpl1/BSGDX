@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
@@ -107,8 +108,8 @@ public class Projectile extends Actor{
 		Target = targ;
 		HitX = Target.getX();
 		HitY = Target.getY();
-		LaunchX = Instigator.getX();
-		LaunchY = Instigator.getY();;
+		LaunchX = Instigator.getX() + MathUtils.random(-8, 8);
+		LaunchY = Instigator.getY();
 		sprite.setPosition(Instigator.getX(), Instigator.getY());
 		DistToTarget = new Vector2(HitX - sprite.getX(),HitY - sprite.getY()).len();
 		TravelTime = DistToTarget / PlayerWeapon.Speed[type];
