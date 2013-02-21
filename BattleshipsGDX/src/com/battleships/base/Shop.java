@@ -34,7 +34,7 @@ public class Shop {
 	            batch.setColor(1, 1, 1, 1);
 	        }
 		};
-		shop_toggle_button.setBounds(0, BaseGame.h*0.45f, tileWidth, tileWidth);
+		shop_toggle_button.setBounds(0, BaseGame.h*0.45f+BaseGame.centerOffsetY, tileWidth, tileWidth);
 
 		shop_toggle_button.addListener(new InputListener() {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -61,7 +61,6 @@ public class Shop {
 	        	selected_item = ((int)(x)/tileWidth)%4 +(3-(((int)(y)/tileWidth)%4))*4;
 	        	itemX=shop_grid.getX()+(selected_item%4)*tileWidth;
 	        	itemY=shop_grid.getY()+shop_grid.getHeight()*0.75f-(selected_item/4)*tileWidth;
-	        	shop_grid.toFront();
 	                return true;
 	        }
 	        
@@ -73,7 +72,6 @@ public class Shop {
 	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 	        	itemX=shop_grid.getX()+(selected_item%4)*tileWidth;
 	        	itemY=shop_grid.getY()+shop_grid.getHeight()*0.75f -(selected_item/4)*tileWidth;
-	        	shop_grid.toBack();
 
 	        	if((shop_grid.getX()+x) > inventory_grid.getX() && (shop_grid.getX()+x)< inventory_grid.getX() + inventory_grid.getWidth()
 						&& (shop_grid.getY()+y) < (inventory_grid.getY()+tileWidth) && (shop_grid.getY()+y) > inventory_grid.getY())
@@ -88,7 +86,7 @@ public class Shop {
 	        }
 		});
 		
-		shop_grid.setBounds(BaseGame.w/2-tileWidth*2, BaseGame.h/2-tileWidth*2, 
+		shop_grid.setBounds(BaseGame.w/2-tileWidth*2, BaseGame.h/2-tileWidth*2+BaseGame.centerOffsetY, 
 				tileWidth*4, tileWidth*4);
     	shop_grid.setVisible(shop_toggle);
     	
@@ -109,7 +107,7 @@ public class Shop {
         }
 	};
 		inventory_grid.setVisible(shop_toggle);
-		inventory_grid.setBounds(shop_grid.getX()-shop_grid.getWidth()/4,tileWidth,tileWidth*6,tileWidth);
+		inventory_grid.setBounds(shop_grid.getX()-shop_grid.getWidth()/4,tileWidth+BaseGame.centerOffsetY,tileWidth*6,tileWidth);
 		
 		inventory_grid.addListener(new InputListener() {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -120,7 +118,6 @@ public class Shop {
 	        	selected_item = inventory.get(selected_inventory_item).weapon_id;
 	        	itemX=inventory_grid.getX()+selected_inventory_item*tileWidth;
 	        	itemY=inventory_grid.getY();
-	        	shop_grid.toFront();
 	                return true;
 	        }
 	        
@@ -132,7 +129,6 @@ public class Shop {
 	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 	        	itemX=inventory_grid.getX()+selected_inventory_item*tileWidth;
 	        	itemY=inventory_grid.getY();
-	        	shop_grid.toBack();
 
 	        	if((inventory_grid.getX()+x) > shop_grid.getX() && (inventory_grid.getX()+x)< shop_grid.getX() + shop_grid.getWidth()
 						&& (inventory_grid.getY()+y) < (shop_grid.getY() + shop_grid.getHeight()) && (inventory_grid.getY()+y) > shop_grid.getY())
@@ -148,5 +144,8 @@ public class Shop {
     	
 		BaseGame.hudStage.addActor(shop_grid);	
 		BaseGame.hudStage.addActor(inventory_grid);
+
+		inventory_grid.toFront();
+    	shop_grid.toFront();
 	}
 }

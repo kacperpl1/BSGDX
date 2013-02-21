@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.g2d.tiled.TiledObject;
 import com.badlogic.gdx.graphics.g2d.tiled.TiledObjectGroup;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -69,10 +70,12 @@ public class BaseGame implements ApplicationListener {
     private TextureRegion m_fboRegion = null;
 	static int w;
 	static int h;
+	static int centerOffsetY = 0;
 	private GL20 gl;
 	private boolean camToggle;
 	private Actor Map;
 	private ActorPositionComparator ActorComparator;
+	private Actor moveArea;
 	static Actor miniMap;
 	static String LocalPlayerTeam;
 	
@@ -81,8 +84,16 @@ public class BaseGame implements ApplicationListener {
 		
 		Resources.init();
 		
-		w = 480*Gdx.graphics.getWidth()/Gdx.graphics.getHeight();// Gdx.graphics.getWidth();
-		h = 480;// Gdx.graphics.getHeight();
+		if(Gdx.graphics.getWidth() > Gdx.graphics.getHeight())
+		{
+			w = 480*Gdx.graphics.getWidth()/Gdx.graphics.getHeight();
+			h = 480;
+		}
+		else
+		{
+			w = 480;
+			h = 480*Gdx.graphics.getHeight()/Gdx.graphics.getWidth();
+		}
 		
 		gl = Gdx.graphics.getGL20();
 	    gl.glEnable(GL20.GL_TEXTURE_2D);
@@ -164,15 +175,45 @@ public class BaseGame implements ApplicationListener {
 	        	gameStage.getCamera().update();
 	        }
 		});
-		miniMap.setBounds(w*0.76f, h-w*0.24f, w*0.23f, w*0.23f);
+		if(w>h)
+			miniMap.setBounds(w*0.76f, h-w*0.24f, w*0.23f, w*0.23f);
+		else
+			miniMap.setBounds(w*0.05f, w*0.05f, w*0.4f, w*0.4f);
+		
+		miniMap.toFront();
 		hudStage.addActor(miniMap);
+		
+		/*moveArea = new Actor();
+		moveArea.setTouchable(Touchable.enabled);
+		moveArea.addListener(new InputListener() {
+	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+	        	PlayerShip.setDesiredVelocity(x-w/2,y-h/2);
+	                return true;
+	        }
+	        public void touchDragged (InputEvent event, float x, float y, int pointer) {
+	        	PlayerShip.setDesiredVelocity(x-w/2,y-h/2);
+	    	}
+	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+	        	PlayerShip.setDesiredVelocity(0,0);
+	        }
+		});
+		moveArea.setBounds(0,0,w,h);
+		moveArea.toBack();
+		hudStage.addActor(moveArea);*/
 		
 		TouchpadStyle style = new TouchpadStyle();
 		style.background = new SpriteDrawable(new Sprite(Resources.touchpadBase));
 		style.knob = new SpriteDrawable(new Sprite(Resources.touchpadKnob));
+		
 		float knobsize = w*0.25f;
-		style.knob.setMinWidth(w*0.25f/2);
-		style.knob.setMinHeight(w*0.25f/2);
+		if(w<h)
+		{
+			knobsize = w*0.5f;
+			centerOffsetY = (int)(w*0.25f);
+		}
+		
+		style.knob.setMinWidth(knobsize/2);
+		style.knob.setMinHeight(knobsize/2);
 		touchpad = new Touchpad(1, style);
 		touchpad.setBounds(w-knobsize,0, knobsize, knobsize);
 		hudStage.addActor(touchpad);
@@ -314,8 +355,8 @@ public class BaseGame implements ApplicationListener {
 
 		if(camToggle)
 		gameStage.getCamera().position.set(
-				Math.max(Math.min(PlayerShip.getX(), 1024-w/2),-1024+w/2), 
-				Math.max(Math.min(PlayerShip.getY(), 1024-h/2),-1024+h/2), 0);
+				MathUtils.clamp(PlayerShip.getX(), -1024+w/2, 1024-w/2), 
+				MathUtils.clamp(PlayerShip.getY()-centerOffsetY, -1024-h/2, 1024+h/2), 0);
 		gameStage.getCamera().update();
 		
 
