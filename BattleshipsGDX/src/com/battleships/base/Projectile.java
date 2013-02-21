@@ -67,7 +67,7 @@ public class Projectile extends Actor{
 			this.timer += pSecondsElapsed;
 			final float percentageDone = this.timer/this.Duration;
 			
-			if(percentageDone >=1)
+			if(percentageDone >=0.95)
 			{
   			  explode();
 			  return;
