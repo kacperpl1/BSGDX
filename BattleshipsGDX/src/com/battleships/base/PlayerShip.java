@@ -31,21 +31,22 @@ public class PlayerShip extends Unit {
     	{
     		icon.setVisible(false);
         	CollisionBody.setLinearVelocity(0, 0);
-    		Visor.VisorList.remove(visor);
         	this.getParent().removeActor(this);
         	if(team.equals(BaseGame.LocalPlayerTeam))
     		{
+        		Visor.VisorList.remove(visor);
     			for(Unit current : VisibleEnemies)
     			{
     				current.VisibleEnemiesCount--;
     			}
     		}  
-        	BaseGame.executorService.schedule(new Callable<Unit>() {
+        	BaseGame.executorService.schedule(new Callable<PlayerShip>() {
       		  @Override
-      		  public Unit call() {
+      		  public PlayerShip call() {
           		icon.setVisible(true);
       			BaseGame.gameStage.addActor(PlayerShip.this);
-      			Visor.VisorList.add(visor);
+      			if(team == BaseGame.LocalPlayerTeam)
+      				Visor.VisorList.add(visor);
       			Health = MaxHealth;
 
             	if(team == "red")
@@ -56,7 +57,7 @@ public class PlayerShip extends Unit {
             	{
             		CollisionBody.setTransform(0, -768*BaseGame.WORLD_TO_BOX, 0);
             	}
-      		    return null;
+      		    return PlayerShip.this;
       		  }
       		}, 5, TimeUnit.SECONDS);
         	return;
