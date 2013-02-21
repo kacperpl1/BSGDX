@@ -72,6 +72,7 @@ public class BaseGame implements ApplicationListener {
 	private GL20 gl;
 	private boolean camToggle;
 	private Actor Map;
+	private ActorPositionComparator ActorComparator;
 	static Actor miniMap;
 	static String LocalPlayerTeam;
 	
@@ -89,6 +90,8 @@ public class BaseGame implements ApplicationListener {
 	    gl.glClearColor(0f,0f,0f,1f);
 		
 		physicsWorld = new World(new Vector2(0, 0), true); 
+		
+		ActorComparator = new ActorPositionComparator();
 
 		BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.StaticBody; 
@@ -306,7 +309,7 @@ public class BaseGame implements ApplicationListener {
 		PlayerShip.setDesiredVelocity(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
 		physicsWorld.step(Gdx.graphics.getDeltaTime(), BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);  
 		
-		gameStage.getRoot().getChildren().sort(new ActorPositionComparator());
+		gameStage.getRoot().getChildren().sort(ActorComparator);
 		Map.toBack();
 
 		if(camToggle)

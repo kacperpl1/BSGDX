@@ -1,8 +1,5 @@
 package com.battleships.base;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -33,6 +30,7 @@ public class Projectile extends Actor{
 	Projectile()
 	{
 		sprite = new Sprite();
+		moveModifier = new BalisticMoveModifier();
 		BaseGame.gameStage.addActor(this);
 	}
 	
@@ -49,8 +47,8 @@ public class Projectile extends Actor{
 		private float mY4;
 		private float yOffset;
 		private float timer;
-
-		public BalisticMoveModifier(final float pDuration, final float pX1, final float pY1, final float pX2, final float pY2, final float pX3, final float pY3, final float pX4, final float pY4, final float yOff) {
+		
+		public void Init(final float pDuration, final float pX1, final float pY1, final float pX2, final float pY2, final float pX3, final float pY3, final float pX4, final float pY4, final float yOff) {
 			this.yOffset = yOff;
 			this.Duration = pDuration;
 			this.timer = 0;
@@ -68,6 +66,12 @@ public class Projectile extends Actor{
 		protected void onManagedUpdate(final float pSecondsElapsed) {
 			this.timer += pSecondsElapsed;
 			final float percentageDone = this.timer/this.Duration;
+			
+			if(percentageDone >=1)
+			{
+  			  explode();
+			  return;
+			}
 
 			this.mX3 = (LaunchX+3*Target.getX())/4;
 			this.mY3 = (LaunchY+3*Target.getY())/4 + yOffset*TravelTime;
@@ -119,14 +123,14 @@ public class Projectile extends Actor{
 		
 		if(type<4 || type>=6 && type<12)
 		{
-			moveModifier = new BalisticMoveModifier(TravelTime, 
+			moveModifier.Init(TravelTime, 
 					LaunchX - sprite.getWidth()/2, LaunchY, 
 					(3*LaunchX+HitX)/4 - sprite.getWidth()/2, (3*LaunchY+HitY)/4 + 64*TravelTime, 
 					(LaunchX+3*HitX)/4 - sprite.getWidth()/2, (LaunchY+3*HitY)/4 + 64*TravelTime, 
 					HitX - sprite.getWidth()/2, HitY,64);
 		}
 		else if(type>=6 && type<12){
-			moveModifier = new BalisticMoveModifier(TravelTime, 
+			moveModifier.Init(TravelTime, 
 					LaunchX - sprite.getWidth()/2, LaunchY, 
 					(3*LaunchX+HitX)/4 - sprite.getWidth()/2, (3*LaunchY+HitY)/4 + 64*TravelTime, 
 					(LaunchX+3*HitX)/4 - sprite.getWidth()/2, (LaunchY+3*HitY)/4 + 64*TravelTime, 
@@ -134,21 +138,12 @@ public class Projectile extends Actor{
 		}
 		else
 		{
-			moveModifier = new BalisticMoveModifier(TravelTime, 
+			moveModifier.Init(TravelTime, 
 					LaunchX - sprite.getWidth()/2, LaunchY, 
 					(3*LaunchX+HitX)/4 - sprite.getWidth()/2, (3*LaunchY+HitY)/4, 
 					(LaunchX+3*HitX)/4 - sprite.getWidth()/2, (LaunchY+3*HitY)/4, 
 					HitX - sprite.getWidth()/2, HitY,0);
 		}
-		
-		
-    	BaseGame.executorService.schedule(new Callable<Projectile>() {
-    		  @Override
-    		  public Projectile call() {
-    			  explode();
-    		    return Projectile.this;
-    		  }
-    		}, (long)(TravelTime * 1000), TimeUnit.MILLISECONDS);
 	}
 	
     void explode()
