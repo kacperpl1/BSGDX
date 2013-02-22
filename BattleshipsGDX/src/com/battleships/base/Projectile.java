@@ -31,7 +31,7 @@ public class Projectile extends Actor{
 	{
 		sprite = new Sprite();
 		moveModifier = new BalisticMoveModifier();
-		BaseGame.gameStage.addActor(this);
+		GameScreen.gameStage.addActor(this);
 	}
 	
 	private class BalisticMoveModifier{

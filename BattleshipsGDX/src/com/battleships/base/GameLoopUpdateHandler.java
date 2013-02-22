@@ -11,7 +11,7 @@ public class GameLoopUpdateHandler{
 	public GameLoopUpdateHandler()
 	{
 		WaveDelay = 30;
-		WaveCounter = WaveDelay;
+		WaveCounter = 0;
 	}
 	
 	public void SpawnWave()

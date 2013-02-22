@@ -49,7 +49,7 @@ public class Weapon {
 	void createBody()
 	{
 		CircleShape dynamicCircle = new CircleShape();  
-        dynamicCircle.setRadius(Range*BaseGame.WORLD_TO_BOX);  
+        dynamicCircle.setRadius(Range*GameScreen.WORLD_TO_BOX);  
         FixtureDef fixtureDef = new FixtureDef();  
         fixtureDef.shape = dynamicCircle;  
         fixtureDef.density = 1.0f;  
@@ -116,7 +116,7 @@ public class Weapon {
                 {
                 	Visor current = ((Visor)x1.getUserData());
                 	Unit target = ((Unit)(x2.getUserData()));
-                	if(!(target instanceof Tower) && !target.team.equals(BaseGame.LocalPlayerTeam))
+                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam))
                 	{
                 		current.Owner.VisibleEnemies.add(target);
                 		target.VisibleEnemiesCount++;
@@ -126,7 +126,7 @@ public class Weapon {
                 {
                 	Visor current = ((Visor)x2.getUserData());
                 	Unit target = ((Unit)(x1.getUserData()));
-                	if(!(target instanceof Tower) && !target.team.equals(BaseGame.LocalPlayerTeam))
+                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam))
                 	{
                 		current.Owner.VisibleEnemies.add(target);
                 		target.VisibleEnemiesCount++;
@@ -154,7 +154,7 @@ public class Weapon {
                 {
                 	Visor current = ((Visor)x1.getUserData());
                 	Unit target = ((Unit)(x2.getUserData()));
-                	if(!(target instanceof Tower) && !target.team.equals(BaseGame.LocalPlayerTeam))
+                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam))
                 	{
                 		current.Owner.VisibleEnemies.remove(target);
                 		target.VisibleEnemiesCount--;
@@ -168,7 +168,7 @@ public class Weapon {
                 {
                 	Visor current = ((Visor)x2.getUserData());
                 	Unit target = ((Unit)(x1.getUserData()));
-                	if(!(target instanceof Tower) && !target.team.equals(BaseGame.LocalPlayerTeam))
+                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam))
                 	{
                 		current.Owner.VisibleEnemies.remove(target);
                 		target.VisibleEnemiesCount--;
@@ -192,6 +192,6 @@ public class Weapon {
                    
             }
         };
-        BaseGame.physicsWorld.setContactListener(contactListener);
+        GameScreen.physicsWorld.setContactListener(contactListener);
     } 
 }

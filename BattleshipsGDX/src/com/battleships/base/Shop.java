@@ -19,7 +19,7 @@ public class Shop {
 	LinkedList<PlayerWeapon> inventory;
 	private Actor shop_toggle_button;
 	private Actor shop_grid;
-	private int tileWidth = BaseGame.h/10;
+	private int tileWidth = GameScreen.h/10;
 	private Actor inventory_grid;
 	
 	Shop(PlayerShip own)
@@ -34,7 +34,7 @@ public class Shop {
 	            batch.setColor(1, 1, 1, 1);
 	        }
 		};
-		shop_toggle_button.setBounds(0, BaseGame.h*0.45f+BaseGame.centerOffsetY, tileWidth, tileWidth);
+		shop_toggle_button.setBounds(0, GameScreen.h*0.45f+GameScreen.centerOffsetY, tileWidth, tileWidth);
 
 		shop_toggle_button.addListener(new InputListener() {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -44,7 +44,7 @@ public class Shop {
 	                return true;
 	        }
 		});
-		BaseGame.hudStage.addActor(shop_toggle_button);
+		GameScreen.hudStage.addActor(shop_toggle_button);
 		
 		shop_grid = new Actor(){
 			
@@ -86,7 +86,7 @@ public class Shop {
 	        }
 		});
 		
-		shop_grid.setBounds(BaseGame.w/2-tileWidth*2, BaseGame.h/2-tileWidth*2+BaseGame.centerOffsetY, 
+		shop_grid.setBounds(GameScreen.w/2-tileWidth*2, GameScreen.h/2-tileWidth*2+GameScreen.centerOffsetY, 
 				tileWidth*4, tileWidth*4);
     	shop_grid.setVisible(shop_toggle);
     	
@@ -107,7 +107,7 @@ public class Shop {
         }
 	};
 		inventory_grid.setVisible(shop_toggle);
-		inventory_grid.setBounds(shop_grid.getX()-shop_grid.getWidth()/4,tileWidth+BaseGame.centerOffsetY,tileWidth*6,tileWidth);
+		inventory_grid.setBounds(shop_grid.getX()-shop_grid.getWidth()/4,tileWidth+GameScreen.centerOffsetY,tileWidth*6,tileWidth);
 		
 		inventory_grid.addListener(new InputListener() {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -142,8 +142,8 @@ public class Shop {
 	        }
 		});
     	
-		BaseGame.hudStage.addActor(shop_grid);	
-		BaseGame.hudStage.addActor(inventory_grid);
+		GameScreen.hudStage.addActor(shop_grid);	
+		GameScreen.hudStage.addActor(inventory_grid);
 
 		inventory_grid.toFront();
     	shop_grid.toFront();

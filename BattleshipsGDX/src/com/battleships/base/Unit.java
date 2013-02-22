@@ -59,32 +59,32 @@ public class Unit extends Actor {
 			colorSprite.setColor(Color.BLUE);
 
 		createBody(InitialX,InitialY);
-		BaseGame.gameStage.addActor(this);
+		GameScreen.gameStage.addActor(this);
 		
 		icon = new Actor(){
-			float scale = BaseGame.miniMap.getWidth()/2048;
+			float scale = GameScreen.miniMap.getWidth()/2048;
 	        public void draw (SpriteBatch batch, float parentAlpha) {
-	    		if(team != BaseGame.LocalPlayerTeam && VisibleEnemiesCount<=0 && !(Unit.this instanceof Tower))
+	    		if(team != GameScreen.LocalPlayerTeam && VisibleEnemiesCount<=0 && !(Unit.this instanceof Tower))
 	    			return;
 	    		
         		batch.setColor(colorSprite.getColor());
 	            batch.draw(Resources.iconTexture,
-	            		BaseGame.miniMap.getX() + BaseGame.miniMap.getWidth()/2 + Unit.this.getX()*scale -2,
-	            		BaseGame.miniMap.getY() + BaseGame.miniMap.getHeight()/2 + Unit.this.getY()*scale -2,4,4);
+	            		GameScreen.miniMap.getX() + GameScreen.miniMap.getWidth()/2 + Unit.this.getX()*scale -2,
+	            		GameScreen.miniMap.getY() + GameScreen.miniMap.getHeight()/2 + Unit.this.getY()*scale -2,4,4);
 	            batch.setColor(Color.WHITE);
 	        }
 		};
-		BaseGame.hudStage.addActor(icon);
+		GameScreen.hudStage.addActor(icon);
 	}
 	
 	void createBody(float initialX, float initialY)
 	{ 
 		CollisionBody = bodyPool.obtain();
     	CollisionBody.setType(BodyType.DynamicBody);
-		CollisionBody.setTransform(initialX*BaseGame.WORLD_TO_BOX,initialY*BaseGame.WORLD_TO_BOX, 0);
+		CollisionBody.setTransform(initialX*GameScreen.WORLD_TO_BOX,initialY*GameScreen.WORLD_TO_BOX, 0);
 		
 		CircleShape dynamicCircle = new CircleShape();  
-        dynamicCircle.setRadius(16f*BaseGame.WORLD_TO_BOX);  
+        dynamicCircle.setRadius(16f*GameScreen.WORLD_TO_BOX);  
         FixtureDef fixtureDef = new FixtureDef();  
         fixtureDef.shape = dynamicCircle;  
         fixtureDef.density = 1.0f;  
@@ -98,9 +98,9 @@ public class Unit extends Actor {
 		onUpdate(Gdx.graphics.getDeltaTime());
 		updateVelocity();
 		
-		this.setPosition(CollisionBody.getPosition().x*BaseGame.BOX_WORLD_TO,CollisionBody.getPosition().y*BaseGame.BOX_WORLD_TO);
+		this.setPosition(CollisionBody.getPosition().x*GameScreen.BOX_WORLD_TO,CollisionBody.getPosition().y*GameScreen.BOX_WORLD_TO);
 		
-		if(team != BaseGame.LocalPlayerTeam && VisibleEnemiesCount<=0)
+		if(team != GameScreen.LocalPlayerTeam && VisibleEnemiesCount<=0)
 			return;
 		
 		float widthScaled = baseSprite.getWidth()*baseSprite.getScaleX();
@@ -117,7 +117,7 @@ public class Unit extends Actor {
 	{
     	if(Health<=0)
     	{
-    		BaseGame.hudStage.getRoot().removeActor(icon);
+    		GameScreen.hudStage.getRoot().removeActor(icon);
         	this.getParent().removeActor(this);
         	int fixtures = CollisionBody.getFixtureList().size();
     		for(int i=0; i<fixtures; i++)
@@ -125,7 +125,7 @@ public class Unit extends Actor {
     			CollisionBody.destroyFixture(CollisionBody.getFixtureList().get(0));
     		}
     		bodyPool.free(CollisionBody);
-        	if(team.equals(BaseGame.LocalPlayerTeam))
+        	if(team.equals(GameScreen.LocalPlayerTeam))
     		{
     			for(Unit current : VisibleEnemies)
     			{
@@ -155,7 +155,7 @@ public class Unit extends Actor {
     	float velocity = DesiredVelocity.len();
     	if(velocity > 0)
     	{
-    		CollisionBody.setLinearVelocity(DesiredVelocity.x*moveSpeed/velocity*BaseGame.WORLD_TO_BOX, DesiredVelocity.y*moveSpeed/velocity*BaseGame.WORLD_TO_BOX);
+    		CollisionBody.setLinearVelocity(DesiredVelocity.x*moveSpeed/velocity*GameScreen.WORLD_TO_BOX, DesiredVelocity.y*moveSpeed/velocity*GameScreen.WORLD_TO_BOX);
         	setVisualRotation(DesiredVelocity.x, DesiredVelocity.y);
     	}
     	else

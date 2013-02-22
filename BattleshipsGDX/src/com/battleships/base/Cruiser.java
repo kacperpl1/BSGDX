@@ -21,7 +21,7 @@ public class Cruiser extends Unit {
     	float velocity = DesiredVelocity.len();
     	if(velocity > 1)
     	{
-    		CollisionBody.setLinearVelocity(DesiredVelocity.x*BaseGame.WORLD_TO_BOX, DesiredVelocity.y*BaseGame.WORLD_TO_BOX);
+    		CollisionBody.setLinearVelocity(DesiredVelocity.x*GameScreen.WORLD_TO_BOX, DesiredVelocity.y*GameScreen.WORLD_TO_BOX);
         	setVisualRotation(DesiredVelocity.x, DesiredVelocity.y);
     	}
     	else
@@ -32,7 +32,7 @@ public class Cruiser extends Unit {
     {
     	if(Health<=0)
     	{
-    		BaseGame.hudStage.getRoot().removeActor(icon);
+    		GameScreen.hudStage.getRoot().removeActor(icon);
         	this.getParent().removeActor(this);
         	int fixtures = CollisionBody.getFixtureList().size();
     		for(int i=0; i<fixtures; i++)
@@ -41,7 +41,7 @@ public class Cruiser extends Unit {
     		}
     		CollisionBody.setUserData(null);
     		bodyPool.free(CollisionBody);
-        	if(team.equals(BaseGame.LocalPlayerTeam))
+        	if(team.equals(GameScreen.LocalPlayerTeam))
     		{
     			for(Unit current : VisibleEnemies)
     			{

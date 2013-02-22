@@ -12,7 +12,7 @@ public class BodyPool extends Pool<Body>{
 	protected Body newObject() {
 		BodyDef bodyDef = new BodyDef();  
         bodyDef.type = BodyType.DynamicBody;
-		return BaseGame.physicsWorld.createBody(bodyDef);
+		return GameScreen.physicsWorld.createBody(bodyDef);
 	}
 
 }

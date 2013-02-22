@@ -32,7 +32,7 @@ public class PlayerShip extends Unit {
     		icon.setVisible(false);
         	CollisionBody.setLinearVelocity(0, 0);
         	this.getParent().removeActor(this);
-        	if(team.equals(BaseGame.LocalPlayerTeam))
+        	if(team.equals(GameScreen.LocalPlayerTeam))
     		{
         		Visor.VisorList.remove(visor);
     			for(Unit current : VisibleEnemies)
@@ -40,22 +40,22 @@ public class PlayerShip extends Unit {
     				current.VisibleEnemiesCount--;
     			}
     		}  
-        	BaseGame.executorService.schedule(new Callable<PlayerShip>() {
+        	GameScreen.executorService.schedule(new Callable<PlayerShip>() {
       		  @Override
       		  public PlayerShip call() {
           		icon.setVisible(true);
-      			BaseGame.gameStage.addActor(PlayerShip.this);
-      			if(team == BaseGame.LocalPlayerTeam)
+      			GameScreen.gameStage.addActor(PlayerShip.this);
+      			if(team == GameScreen.LocalPlayerTeam)
       				Visor.VisorList.add(visor);
       			Health = MaxHealth;
 
             	if(team == "red")
             	{
-            		CollisionBody.setTransform(0, 768*BaseGame.WORLD_TO_BOX, 0);
+            		CollisionBody.setTransform(0, 768*GameScreen.WORLD_TO_BOX, 0);
             	}
             	else
             	{
-            		CollisionBody.setTransform(0, -768*BaseGame.WORLD_TO_BOX, 0);
+            		CollisionBody.setTransform(0, -768*GameScreen.WORLD_TO_BOX, 0);
             	}
       		    return PlayerShip.this;
       		  }
