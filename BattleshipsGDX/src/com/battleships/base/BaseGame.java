@@ -8,9 +8,9 @@ public class BaseGame extends Game {
 	@Override
 	public void create() {
 		instance = this;
-		// TODO Auto-generated method stub
-		this.setScreen(new SplashScreen());
 		Resources.init();
+		// TODO Auto-generated method stub
+		this.setScreen(new MenuScreen());
 	}
 
 }

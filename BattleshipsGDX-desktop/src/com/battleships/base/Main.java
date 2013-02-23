@@ -8,11 +8,11 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "BattleshipsGDX";
 		cfg.useGL20 = true;
-		cfg.width = 1280;
-		cfg.height = 800;
+		cfg.width = 1366;
+		cfg.height = 768;
 		
 		if(args.length>0 && args[0].equals("debug"))
-			BaseGame.debug_mode=true;
+			GameScreen.debug_mode=true;
 		
 		new LwjglApplication(new BaseGame(), cfg);
 	}

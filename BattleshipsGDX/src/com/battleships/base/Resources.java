@@ -4,10 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class Resources {
 	
+	static Skin skin;
 	
+	static Texture splashTexture;
 	static Texture touchpadBase;
 	static Texture touchpadKnob;
 	static Texture mapTexture;
@@ -27,6 +30,10 @@ public class Resources {
 
 	static void init()
 	{
+		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+
+        splashTexture = new Texture( "data/splash.png" );
+        splashTexture.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 
 		mapTexture = new Texture(Gdx.files.internal("data/TilemapLow.png"));
 		mapTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
