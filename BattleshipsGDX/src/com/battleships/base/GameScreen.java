@@ -50,7 +50,7 @@ public class GameScreen implements Screen {
 	private FPSLogger fpsLogger;
 	
 	static World physicsWorld; 
-	static final float BOX_STEP=1f/5f;
+	static final float BOX_STEP=1f/10f;
 	static float box_accu=0;
     static final int BOX_VELOCITY_ITERATIONS=6;  
     static final int BOX_POSITION_ITERATIONS=2;  
