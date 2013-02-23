@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -33,6 +34,7 @@ public class Unit extends Actor {
 	protected int VisibleEnemiesCount = 0;
 	protected LinkedList<Unit> VisibleEnemies = new LinkedList<Unit>(); //used by allies
 	Actor icon;
+	private Vector2 CurrentPosition;
 	static BodyPool bodyPool = new BodyPool();
 	
 	Unit(String Team, float InitialX, float InitialY)
@@ -92,13 +94,21 @@ public class Unit extends Actor {
         fixtureDef.restitution = 0.0f;
         CollisionBody.createFixture(fixtureDef);  
         CollisionBody.getFixtureList().get(0).setUserData(this);
-	}   
+        
+        CurrentPosition = new Vector2(0,0);
+        this.setPosition(initialX, initialY);
+	}  
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
 		onUpdate(Gdx.graphics.getDeltaTime());
 		updateVelocity();
 		
-		this.setPosition(CollisionBody.getPosition().x*GameScreen.BOX_WORLD_TO,CollisionBody.getPosition().y*GameScreen.BOX_WORLD_TO);
+		CurrentPosition.x = this.getX()*GameScreen.WORLD_TO_BOX;
+		CurrentPosition.y = this.getY()*GameScreen.WORLD_TO_BOX;
+		
+		CurrentPosition.lerp(CollisionBody.getPosition(),
+				MathUtils.clamp(Gdx.graphics.getDeltaTime()/(GameScreen.BOX_STEP-GameScreen.box_accu+Gdx.graphics.getDeltaTime()),0,1));
+		this.setPosition(CurrentPosition.x*GameScreen.BOX_WORLD_TO, CurrentPosition.y*GameScreen.BOX_WORLD_TO);
 		
 		if(team != GameScreen.LocalPlayerTeam && VisibleEnemiesCount<=0)
 			return;

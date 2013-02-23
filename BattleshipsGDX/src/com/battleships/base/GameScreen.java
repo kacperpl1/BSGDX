@@ -50,7 +50,8 @@ public class GameScreen implements Screen {
 	private FPSLogger fpsLogger;
 	
 	static World physicsWorld; 
-	static final float BOX_STEP=1/60f;  
+	static final float BOX_STEP=1f/5f;
+	static float box_accu=0;
     static final int BOX_VELOCITY_ITERATIONS=6;  
     static final int BOX_POSITION_ITERATIONS=2;  
     static final float WORLD_TO_BOX=0.01f;  
@@ -327,7 +328,13 @@ public class GameScreen implements Screen {
 		GLUH.onUpdate(delta);
 		
 		PlayerShip.setDesiredVelocity(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
-		physicsWorld.step(Gdx.graphics.getDeltaTime(), BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);  
+		
+		box_accu+=delta;
+		if(box_accu>BOX_STEP)
+		{
+			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
+			box_accu-=BOX_STEP;
+		}
 		
 		gameStage.getRoot().getChildren().sort(ActorComparator);
 		Map.toBack();
