@@ -8,11 +8,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -48,7 +48,6 @@ public class GameScreen implements Screen {
 	private PlayerShip localPlayerShip;
 	private GameLoopUpdateHandler GLUH;
 	private Box2DDebugRenderer debugRenderer;
-	private FPSLogger fpsLogger;
 	
 	static World physicsWorld; 
 	static final float BOX_STEP=1f/10f;
@@ -78,6 +77,7 @@ public class GameScreen implements Screen {
 	private Actor Map;
 	private ActorPositionComparator ActorComparator;
 	private Vector2 localPlayerDirection;
+	private BitmapFont font;
 	static Actor miniMap;
 	static String LocalPlayerTeam;
 
@@ -99,6 +99,9 @@ public class GameScreen implements Screen {
 	    gl.glEnable(GL20.GL_TEXTURE_2D);
 	    gl.glActiveTexture(GL20.GL_TEXTURE0);
 	    gl.glClearColor(0f,0f,0f,1f);
+	    
+	    font = new BitmapFont();
+	    font.scale(w/Gdx.graphics.getWidth());
 		
 		physicsWorld = new World(new Vector2(0, 0), true); 
 		
@@ -126,8 +129,6 @@ public class GameScreen implements Screen {
 	        WorldCollisionBody.createFixture(fixtureDef);  
 	    }
 		
-        fpsLogger = new FPSLogger();
-        
 		hudStage = new Stage(w,h,true);
 		gameStage = new Stage(w,h,true);
 		Gdx.input.setInputProcessor(hudStage);
@@ -177,8 +178,6 @@ public class GameScreen implements Screen {
 		});
 		if(w>h)
 			miniMap.setBounds(w*0.76f, h-w*0.24f, w*0.23f, w*0.23f);
-		else
-			miniMap.setBounds(w*0.05f, w*0.05f, w*0.4f, w*0.4f);
 		
 		miniMap.toFront();
 		hudStage.addActor(miniMap);
@@ -197,7 +196,10 @@ public class GameScreen implements Screen {
 		style.knob.setMinWidth(knobsize/2);
 		style.knob.setMinHeight(knobsize/2);
 		touchpad = new Touchpad(1, style);
-		touchpad.setBounds(w-knobsize,0, knobsize, knobsize);
+		if(w>h)
+			touchpad.setBounds(w-knobsize,0, knobsize, knobsize);
+		else
+			touchpad.setBounds(knobsize/2,0, knobsize, knobsize);
 		hudStage.addActor(touchpad);
 		
 		LocalPlayerTeam = "blue";
@@ -333,10 +335,10 @@ public class GameScreen implements Screen {
 		localPlayerDirection.x = touchpad.getKnobPercentX();
 		localPlayerDirection.y = touchpad.getKnobPercentY();
 		
-		if( Gdx.input.isKeyPressed( Input.Keys.UP ) ) localPlayerDirection.y = 1;
-		else if( Gdx.input.isKeyPressed( Input.Keys.DOWN ) ) localPlayerDirection.y = -1;
-		if( Gdx.input.isKeyPressed( Input.Keys.LEFT ) ) localPlayerDirection.x = -1;
-		else if( Gdx.input.isKeyPressed( Input.Keys.RIGHT ) ) localPlayerDirection.x = 1;
+		if( Gdx.input.isKeyPressed( Input.Keys.UP ) || Gdx.input.isKeyPressed( Input.Keys.W ) ) localPlayerDirection.y = 1;
+		else if( Gdx.input.isKeyPressed( Input.Keys.DOWN ) || Gdx.input.isKeyPressed( Input.Keys.S ) ) localPlayerDirection.y = -1;
+		if( Gdx.input.isKeyPressed( Input.Keys.LEFT ) || Gdx.input.isKeyPressed( Input.Keys.A ) ) localPlayerDirection.x = -1;
+		else if( Gdx.input.isKeyPressed( Input.Keys.RIGHT ) || Gdx.input.isKeyPressed( Input.Keys.D ) ) localPlayerDirection.x = 1;
 
 		
 		localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
@@ -377,8 +379,11 @@ public class GameScreen implements Screen {
 		
 		hudStage.act(Gdx.graphics.getDeltaTime());
 		hudStage.draw();
-
-        fpsLogger.log();        
+		
+		batch.begin();  
+		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), -w/2, h/2f); 
+		batch.end();
+    
 	}
 
 	@Override

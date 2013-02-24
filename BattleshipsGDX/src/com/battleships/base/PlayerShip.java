@@ -24,6 +24,7 @@ public class PlayerShip extends Unit {
     	Health = MaxHealth;
 		colorSprite.setColor(PlayerColor);
     	visor = new Visor(this);
+    	setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
     }
 	
 	void setVelocity()
