@@ -168,8 +168,8 @@ public class GameScreen implements Screen {
 	        void setCamPos(float x, float y)
 	        {
 	        	gameStage.getCamera().position.set(
-				Math.max(Math.min((x-miniMap.getWidth()/2)*(2048/miniMap.getWidth()), 1024-w/2),-1024+w/2), 
-				Math.max(Math.min((y-miniMap.getHeight()/2)*(2048/miniMap.getHeight()), 1024-h/2),-1024+h/2), 0);
+				MathUtils.clamp((x-miniMap.getWidth()/2)*(2048/miniMap.getWidth()),-1024+w/2, 1024-w/2), 
+				MathUtils.clamp((y-miniMap.getHeight()/2)*(2048/miniMap.getHeight()),-1024+h/2, 1024-h/2), 0);
 	        	gameStage.getCamera().update();
 	        }
 		});

@@ -7,12 +7,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class Unit extends Actor {
@@ -106,8 +105,7 @@ public class Unit extends Actor {
 		CurrentPosition.x = this.getX()*GameScreen.WORLD_TO_BOX;
 		CurrentPosition.y = this.getY()*GameScreen.WORLD_TO_BOX;
 		
-		CurrentPosition.lerp(CollisionBody.getPosition(),
-				MathUtils.clamp(Gdx.graphics.getDeltaTime()/(GameScreen.BOX_STEP-GameScreen.box_accu+Gdx.graphics.getDeltaTime()),0,1));
+		CurrentPosition.lerp(CollisionBody.getPosition(),Gdx.graphics.getDeltaTime()/(GameScreen.BOX_STEP-GameScreen.box_accu+Gdx.graphics.getDeltaTime()));
 		this.setPosition(CurrentPosition.x*GameScreen.BOX_WORLD_TO, CurrentPosition.y*GameScreen.BOX_WORLD_TO);
 		
 		if(team != GameScreen.LocalPlayerTeam && VisibleEnemiesCount<=0)
