@@ -4,13 +4,14 @@ import java.util.LinkedList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class PlayerShip extends Unit {
 	
-	int rotationRate = 360; //degrees per second
-	Vector2 DesiredVelocity = new Vector2(0,0);
+	float rotationRate = 360; //degrees per second
 	Vector2 CurrentVelocity = new Vector2(0,0);
 	
 	public LinkedList<PlayerWeapon> Inventory = new LinkedList<PlayerWeapon>();
@@ -23,6 +24,57 @@ public class PlayerShip extends Unit {
     	Health = MaxHealth;
 		colorSprite.setColor(PlayerColor);
     	visor = new Visor(this);
+    }
+	
+	void setVelocity()
+    {
+    	float velocity = CurrentVelocity.len();
+    	CollisionBody.setLinearVelocity(CurrentVelocity.x*moveSpeed/velocity*GameScreen.WORLD_TO_BOX, CurrentVelocity.y*moveSpeed/velocity*GameScreen.WORLD_TO_BOX);
+        setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
+    }
+	
+	void updateVelocity()
+    {
+
+    	if(DesiredVelocity.len()<=0)
+    	{
+    		CollisionBody.setLinearVelocity(0, 0);
+    		return;
+    	}
+    		
+    	
+    	float CurrentAngle = (float) Math.toDegrees(MathUtils.atan2(CurrentVelocity.x, CurrentVelocity.y));
+		float DesiredAngle = (float) Math.toDegrees(MathUtils.atan2(DesiredVelocity.x, DesiredVelocity.y));
+		float DeltaAngle = (float) (DesiredAngle-CurrentAngle);
+		if(Math.abs(DeltaAngle) < rotationRate *  Gdx.graphics.getDeltaTime())
+		{
+	        CurrentVelocity.set(DesiredVelocity);
+		}
+		else
+		{
+    		if(Math.abs(DeltaAngle)>180)
+    		{
+    			if(DeltaAngle >0)
+    			{
+    				DeltaAngle -= 360;
+    			}
+    			else
+    			{
+    				DeltaAngle += 360;    				
+    			}
+    		}
+			float TempAngle;
+			if(DeltaAngle>0)
+			{
+				TempAngle = CurrentAngle + (rotationRate * Gdx.graphics.getDeltaTime());
+			}
+			else
+			{
+				TempAngle = CurrentAngle - (rotationRate * Gdx.graphics.getDeltaTime());
+			}
+	        CurrentVelocity.set((float)Math.sin(Math.toRadians(TempAngle)), (float)Math.cos(Math.toRadians(TempAngle)));
+		}
+		setVelocity();
     }
 	
 	void onUpdate(float delta)

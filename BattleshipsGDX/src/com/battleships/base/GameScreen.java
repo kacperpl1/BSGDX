@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
@@ -44,7 +45,7 @@ public class GameScreen implements Screen {
 	static Stage hudStage;
 	static Stage gameStage;
 	private Touchpad touchpad;
-	private PlayerShip PlayerShip;
+	private PlayerShip localPlayerShip;
 	private GameLoopUpdateHandler GLUH;
 	private Box2DDebugRenderer debugRenderer;
 	private FPSLogger fpsLogger;
@@ -76,6 +77,7 @@ public class GameScreen implements Screen {
 	private boolean camToggle;
 	private Actor Map;
 	private ActorPositionComparator ActorComparator;
+	private Vector2 localPlayerDirection;
 	static Actor miniMap;
 	static String LocalPlayerTeam;
 
@@ -199,8 +201,9 @@ public class GameScreen implements Screen {
 		hudStage.addActor(touchpad);
 		
 		LocalPlayerTeam = "blue";
-		PlayerShip = new PlayerShip("blue", 0f,-768f, Color.CYAN);
-		new Shop(PlayerShip);
+		localPlayerShip = new PlayerShip("blue", 0f,-768f, Color.CYAN);
+		localPlayerDirection = new Vector2();
+		new Shop(localPlayerShip);
 		
 		new PlayerShip("red", 0f,768f, Color.ORANGE);
 		
@@ -327,7 +330,16 @@ public class GameScreen implements Screen {
 		
 		GLUH.onUpdate(delta);
 		
-		PlayerShip.setDesiredVelocity(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
+		localPlayerDirection.x = touchpad.getKnobPercentX();
+		localPlayerDirection.y = touchpad.getKnobPercentY();
+		
+		if( Gdx.input.isKeyPressed( Input.Keys.UP ) ) localPlayerDirection.y = 1;
+		else if( Gdx.input.isKeyPressed( Input.Keys.DOWN ) ) localPlayerDirection.y = -1;
+		if( Gdx.input.isKeyPressed( Input.Keys.LEFT ) ) localPlayerDirection.x = -1;
+		else if( Gdx.input.isKeyPressed( Input.Keys.RIGHT ) ) localPlayerDirection.x = 1;
+
+		
+		localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
 		
 		box_accu+=delta;
 		if(box_accu>BOX_STEP)
@@ -341,8 +353,8 @@ public class GameScreen implements Screen {
 
 		if(camToggle)
 		gameStage.getCamera().position.set(
-				MathUtils.clamp(PlayerShip.getX(), -1024+w/2, 1024-w/2), 
-				MathUtils.clamp(PlayerShip.getY()-centerOffsetY, -1024-h/2, 1024+h/2), 0);
+				MathUtils.clamp(localPlayerShip.getX(), -1024+w/2, 1024-w/2), 
+				MathUtils.clamp(localPlayerShip.getY()-centerOffsetY, -1024-h/2, 1024+h/2), 0);
 		gameStage.getCamera().update();
 		
 

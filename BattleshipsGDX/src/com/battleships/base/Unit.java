@@ -179,7 +179,7 @@ public class Unit extends Actor {
     		Angle = Angle/10;
     		if(Angle >17)
     		{
-    			Angle = 35 - Angle;
+    			Angle = 36 - Angle;
     			Angle *= 0.833333f;
     			baseSprite.setRegion(Resources.BaseTextureRegion[Angle]);
     			colorSprite.setRegion(Resources.ColorTextureRegion[Angle]);
