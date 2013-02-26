@@ -2,6 +2,8 @@ package com.battleships.network;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -17,6 +19,7 @@ public class BSClient implements Runnable	{
    	private PlayerList playerList = new PlayerList();
    	private GameList gameList = new GameList();
    	private PlayerList gameLobbyPlayerList = new PlayerList();
+   	private BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>();
 	
 	private Client client;
 	private String playerName;
@@ -53,18 +56,16 @@ public class BSClient implements Runnable	{
 								playerList.translateServerString(reply.text);
 								playerList.checkKick();
 								
-								String list = "";
+								String list = "0 ";
 								for(int i = 0; i< playerList.size(); i++){
 									list += playerList.getPlayer(i).getName() + " ";
 								}
 								
-//								Message messageToParent = new Message();
-//								Bundle messageData = new Bundle();
-//								messageToParent.what = 0;
-//								messageData.putString("playerlist", list);
-//								messageToParent.setData(messageData);
-//								
-//								mainLobbyHandler.sendMessage(messageToParent);
+								try {
+									msgQueue.put(list);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
 								break;
 							}
 							// Translate message about game list in main lobby
@@ -263,5 +264,8 @@ public class BSClient implements Runnable	{
 	}
 	public Player getPlayer(){
 		return playerList.getByName(playerName);
+	}
+	public BlockingQueue<String> getQueue(){
+		return this.msgQueue;
 	}
 }

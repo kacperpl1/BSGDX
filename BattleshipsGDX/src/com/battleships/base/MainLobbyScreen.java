@@ -1,24 +1,29 @@
 package com.battleships.base;
 
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+import java.util.concurrent.BlockingQueue;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.battleships.network.BSClient;
 
 public class MainLobbyScreen implements Screen {
 	private Stage stage;
 	private SpriteBatch batch;
-	private BitmapFont font;
 	private int w = Gdx.graphics.getWidth();
 	private int h = Gdx.graphics.getHeight();
+	private Table playerListTable = new Table(Resources.skin);
 	
 	private Label playerListLabel;
+	private ArrayList<String> playerList = new ArrayList<String>();
+	private ArrayList<String> gameList = new ArrayList<String>();
+	BlockingQueue<String> msgQueue;
 	
 	private BSClient lobbyClient;
 	
@@ -30,8 +35,39 @@ public class MainLobbyScreen implements Screen {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
+		msgQueue = lobbyClient.getQueue();
 		playerListLabel = new Label("Player List:", Resources.skin);
+		
+		new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        String message = msgQueue.take();
+                        System.out.println(message);
+                        handleMessage(message);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, "Messanger").start();
+	}
+	
+	public void handleMessage(String message){
+		StringTokenizer part = new StringTokenizer(message);
+		switch(Integer.valueOf(part.nextToken())) {
+			case 0 : {
+				System.out.println("yay");
+				playerListTable.clear();
+				while(part.hasMoreTokens()){
+					playerListTable.add(new Label(part.nextToken(), Resources.skin));
+					playerListTable.row();
+				}
+				break;
+			}
+			default : break;
+		}
 	}
 	
 	@Override
@@ -49,12 +85,12 @@ public class MainLobbyScreen implements Screen {
 	public void resize(int width, int height) {
 		
 		// creates the table actor
-        Table table = new Table(Resources.skin);
+        //Table table = new Table(Resources.skin);
         // 100% width and 100% height on the table (fills the stage)
-        table.setFillParent(true);
+		playerListTable.setFillParent(true);
         // add the table to the stage
-        stage.addActor(table);
-        table.add(playerListLabel);
+        stage.addActor(playerListTable);
+        playerListTable.add(playerListLabel);
 	}
 
 	@Override
