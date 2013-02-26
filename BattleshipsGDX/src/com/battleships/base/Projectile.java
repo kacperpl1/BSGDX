@@ -150,7 +150,6 @@ public class Projectile extends Actor{
     {
 		Target.TakeDamage(Damage);
 		this.setVisible(false);
-		sprite.setPosition(HitX,HitY);
     	projectilepool.free(this);
     }
 }
