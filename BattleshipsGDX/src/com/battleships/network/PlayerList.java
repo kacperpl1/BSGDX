@@ -20,10 +20,12 @@ public class PlayerList {
 	        kickAll();
 	        
 	        while(part.hasMoreTokens()) {
-	        	String piece = part.nextToken();
+	        	String id = part.nextToken();
+	        	String name = part.nextToken();
+	        	getPlayer(id, name);
 	        	// THIS HAS TO BE CHANGED!
-	        	if(!piece.equals("Empty"))
-	        		getByName(piece);
+	        	//if(!piece.equals("Empty"))
+	        		//getByName(piece);
 	        }
 		}
 	}
@@ -38,6 +40,17 @@ public class PlayerList {
 				list.remove(i);
 			}
 		}
+	}
+	public Player getPlayer(String id, String name){
+		for(Player player : list) {
+			if(player.getId().equals(id)){
+				player.setOnline();
+				return player;
+			}
+		}
+		Player player = new Player(id, name);
+		list.add(player);
+		return player;
 	}
 	public Player getByName(String n) {
 		for(int i = 0; i < list.size(); i++) {
@@ -63,20 +76,20 @@ public class PlayerList {
 class Player{
 	private UUID id;
 	private String name;
-	private boolean online;
-	private boolean ready;
-	private boolean host;
-	private String gameName;
-	private int slotNumber;
+	private boolean online = true;
+	private boolean ready = false;
+	private boolean host = false;
+	private String gameName = "";
+	private int slotNumber = -1;
 	
 	public Player(String name){
 		this.id = UUID.randomUUID();
 		this.name = name;
-		this.online = true;
-		this.ready = false;
-		this.host = false;
-		this.gameName = "";
-		this.slotNumber = -1;
+	}
+	
+	public Player(String id, String name) {
+		this.id = UUID.fromString(id);
+		this.name = name;
 	}
 	
 	public String getName(){

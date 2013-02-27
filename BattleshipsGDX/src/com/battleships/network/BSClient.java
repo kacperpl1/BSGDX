@@ -22,7 +22,7 @@ public class BSClient implements Runnable	{
    	private BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>();
 	
 	private Client client;
-	private String playerName;
+	private Player clientPlayer;
 	
 	private BSClient(){}
 	
@@ -31,7 +31,7 @@ public class BSClient implements Runnable	{
 	}
 	
 	public void init (String playerName){
-		this.playerName = playerName;
+		this.clientPlayer = new Player(playerName);
 	}
 	
 	private void init()	{
@@ -51,7 +51,7 @@ public class BSClient implements Runnable	{
 						
 						switch(Integer.valueOf(part.nextToken())){
 							// Translate message about player list in main lobby
-							// and send it to parent activity
+							// and send it to lobby screen
 							case 0 : {
 								playerList.translateServerString(reply.text);
 								playerList.checkKick();
@@ -60,7 +60,6 @@ public class BSClient implements Runnable	{
 								for(int i = 0; i< playerList.size(); i++){
 									list += playerList.getPlayer(i).getName() + " ";
 								}
-								
 								try {
 									msgQueue.put(list);
 								} catch (InterruptedException e) {
@@ -150,50 +149,52 @@ public class BSClient implements Runnable	{
 		
 		// Main loop
 		while(gameFlag)	{
-			sendPacket();
+			keepAlive();
 			playerList.checkKick();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}		
 	}
-	public String getMessage() {
-		String message = "0 " + playerName + " ";
-		return message;
-	}
+
 	// Send keep alive packet to server
-	public void sendPacket() {
-		try	{	
+	public void keepAlive(){
+		try{
 			ResponseMessage req = new ResponseMessage();
-			req.text = getMessage();
+			req.text = "0 " + this.clientPlayer.getId() + " " + this.clientPlayer.getName() + " ";
 			client.sendUDP(req);
-		}
-		catch (Exception e)	{
+		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Failed to Send");
+			System.out.println("Failed to send keep alive packet.");
 		}
 	}
 	// Send create game packet to server
 	public void createGame(String gameName){
 		try{
 			ResponseMessage req = new ResponseMessage();
-			req.text = "1 " + gameName + " " + this.playerName;
+			req.text = "1 " + gameName + " " + this.clientPlayer.getName();
 			client.sendUDP(req);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to create a game");
 		}
-		playerList.getByName(this.playerName).joinGame(gameName);
-		playerList.getByName(this.playerName).setHost(true);
+		playerList.getByName(this.clientPlayer.getName()).joinGame(gameName);
+		playerList.getByName(this.clientPlayer.getName()).setHost(true);
 	}
 	// Send join game packet to server
 	public void joinGame(String gameName){
 		try{
 			ResponseMessage req = new ResponseMessage();
-			req.text = "3 " + gameName + " " + this.playerName;
+			req.text = "3 " + gameName + " " + this.clientPlayer.getName();
 			client.sendUDP(req);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to join game");
 		}
-		playerList.getByName(this.playerName).joinGame(gameName);
+		playerList.getByName(this.clientPlayer.getName()).joinGame(gameName);
 	}
 	// Send take slot packet to server
 	public void takeSlot(String message){
@@ -202,7 +203,7 @@ public class BSClient implements Runnable	{
 		String gameName = part.nextToken();
 		try{
 			ResponseMessage req = new ResponseMessage();
-			req.text = "2 " + gameName + " " + this.playerName + " " + slotNumber;
+			req.text = "2 " + gameName + " " + this.clientPlayer.getName() + " " + slotNumber;
 			client.sendUDP(req);
 		}catch(Exception e){
 			e.printStackTrace();
@@ -213,14 +214,14 @@ public class BSClient implements Runnable	{
 	public void leaveGame(String gameName){
 		try{
 			ResponseMessage req = new ResponseMessage();
-			req.text = "4 " + gameName + " " + this.playerName;
+			req.text = "4 " + gameName + " " + this.clientPlayer.getName();
 			client.sendUDP(req);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to leave game");
 		}
-		playerList.getByName(this.playerName).leaveGame();
-		playerList.getByName(this.playerName).setHost(false);
+		playerList.getByName(this.clientPlayer.getName()).leaveGame();
+		playerList.getByName(this.clientPlayer.getName()).setHost(false);
 	}
 	// check if all players are ready
 	// if true, start game
@@ -263,7 +264,7 @@ public class BSClient implements Runnable	{
 		client.close();
 	}
 	public Player getPlayer(){
-		return playerList.getByName(playerName);
+		return this.clientPlayer;
 	}
 	public BlockingQueue<String> getQueue(){
 		return this.msgQueue;

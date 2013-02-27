@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.battleships.network.BSClient;
 
 public class MainLobbyScreen implements Screen {
@@ -18,6 +19,7 @@ public class MainLobbyScreen implements Screen {
 	private SpriteBatch batch;
 	private int w = Gdx.graphics.getWidth();
 	private int h = Gdx.graphics.getHeight();
+	private Table leftTable = new Table(Resources.skin);
 	private Table playerListTable = new Table(Resources.skin);
 	
 	private Label playerListLabel;
@@ -44,7 +46,6 @@ public class MainLobbyScreen implements Screen {
                 while (true) {
                     try {
                         String message = msgQueue.take();
-                        System.out.println(message);
                         handleMessage(message);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -58,11 +59,13 @@ public class MainLobbyScreen implements Screen {
 		StringTokenizer part = new StringTokenizer(message);
 		switch(Integer.valueOf(part.nextToken())) {
 			case 0 : {
-				System.out.println("yay");
 				playerListTable.clear();
+				playerListTable.row();
+				playerListTable.row();
 				while(part.hasMoreTokens()){
-					playerListTable.add(new Label(part.nextToken(), Resources.skin));
+					playerListTable.add(new Label(part.nextToken(), Resources.skin)).spaceTop(10);
 					playerListTable.row();
+					leftTable.validate();
 				}
 				break;
 			}
@@ -87,10 +90,16 @@ public class MainLobbyScreen implements Screen {
 		// creates the table actor
         //Table table = new Table(Resources.skin);
         // 100% width and 100% height on the table (fills the stage)
-		playerListTable.setFillParent(true);
+		leftTable.setFillParent(true);
+		leftTable.align(Align.top);
+		//playerListTable.setFillParent(true);
         // add the table to the stage
-        stage.addActor(playerListTable);
-        playerListTable.add(playerListLabel);
+		stage.addActor(leftTable);
+		leftTable.add(playerListLabel);
+		playerListTable.setFillParent(true);
+		leftTable.addActor(playerListTable);
+        //stage.addActor(playerListTable);
+        //playerListTable.add(playerListLabel);
 	}
 
 	@Override
