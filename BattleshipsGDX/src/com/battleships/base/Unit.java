@@ -118,10 +118,10 @@ public class Unit extends Actor {
         batch.draw(colorSprite, getX()-widthScaled/2,getY()-widthScaled/2,widthScaled,widthScaled);
         batch.setColor(Color.WHITE);
         batch.draw(Resources.HealthbarTextureRegion[0], 
-        		getX()-widthScaled/4,getY()+widthScaled/4,widthScaled/2,widthScaled/20);
+        		getX()-widthScaled/4,getY()+widthScaled/4,widthScaled/2,4);
 
         batch.draw(Resources.HealthbarTextureRegion[1], 
-        		getX()-widthScaled/4+1,getY()+widthScaled/4,widthScaled/2*((float)Health/(float)MaxHealth),widthScaled/20);
+        		getX()-widthScaled/4+1,getY()+widthScaled/4,widthScaled/2*((float)Health/(float)MaxHealth),4);
 	}
 	
 	void onUpdate(float delta)
