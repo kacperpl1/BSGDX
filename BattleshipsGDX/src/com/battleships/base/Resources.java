@@ -89,10 +89,10 @@ public class Resources {
 
 		texture = new Texture(Gdx.files.internal("data/HealthBar.png"));
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		tmp = TextureRegion.split(texture, texture.getWidth(),texture.getHeight()/10);                                // #10
-		HealthbarTextureRegion = new TextureRegion[10];
+		tmp = TextureRegion.split(texture, texture.getWidth(),texture.getHeight()/2);                                // #10
+		HealthbarTextureRegion = new TextureRegion[2];
 		index = 0;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 2; i++) {
         	HealthbarTextureRegion[index++] = tmp[i][0];
         }        
         
