@@ -16,6 +16,11 @@ public class MenuScreen implements Screen {
 	private SpriteBatch batch;
 	private int w = Gdx.graphics.getWidth();
 	private int h = Gdx.graphics.getHeight();
+	private Screen menuScreen;
+	
+	public MenuScreen(){
+		this.menuScreen = this;
+	}
 	
 	@Override
 	public void render(float delta) {
@@ -54,7 +59,7 @@ public class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event,float x,float y )
             {
-            	BaseGame.instance.setScreen( new MainLobbyScreen() );
+            	BaseGame.instance.setScreen( new MainLobbyScreen(menuScreen) );
             }
         } );
 

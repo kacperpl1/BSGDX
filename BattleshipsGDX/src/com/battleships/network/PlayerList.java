@@ -23,9 +23,6 @@ public class PlayerList {
 	        	String id = part.nextToken();
 	        	String name = part.nextToken();
 	        	getPlayer(id, name);
-	        	// THIS HAS TO BE CHANGED!
-	        	//if(!piece.equals("Empty"))
-	        		//getByName(piece);
 	        }
 		}
 	}
@@ -62,6 +59,14 @@ public class PlayerList {
 		list.add(new Player(n));
 		return list.get(list.size()-1);
 	}
+	public Player getById(String id) {
+		for(Player player : list) {
+			if(player.getId().equals(id)) {
+				return player;
+			}
+		}
+		return null;
+	}
 	public Player getPlayer(int index) {
 		return list.get(index);
 	}
@@ -70,74 +75,5 @@ public class PlayerList {
 	}
 	public void reset(){
 		PlayerList.msg = "";
-	}
-}
-
-class Player{
-	private UUID id;
-	private String name;
-	private boolean online = true;
-	private boolean ready = false;
-	private boolean host = false;
-	private String gameName = "";
-	private int slotNumber = -1;
-	
-	public Player(String name){
-		this.id = UUID.randomUUID();
-		this.name = name;
-	}
-	
-	public Player(String id, String name) {
-		this.id = UUID.fromString(id);
-		this.name = name;
-	}
-	
-	public String getName(){
-		return name;
-	}
-	public boolean isOnline(){
-		return online;
-	}
-	public boolean isOffline(){
-		return !online;
-	}
-	public void setOnline(){
-		online = true;
-	}
-	public void setOffline(){
-		online = false;
-	}
-	public boolean isReady(){
-		return ready;
-	}
-	public void setReady(boolean ready){
-		this.ready = ready;
-	}
-	public boolean isHost(){
-		return host;
-	}
-	public void setHost(boolean host){
-		this.host = host;
-	}
-	public String getId(){
-		return String.valueOf(this.id);
-	}
-	public void joinGame(String gameName){
-		this.gameName = gameName;
-	}
-	public void leaveGame(){
-		this.gameName = "";
-	}
-	public String getGame(){
-		return this.gameName;
-	}
-	public void takeSlot(int s){
-		this.slotNumber = s;
-	}
-	public void freeSlot(){
-		this.slotNumber = -1;
-	}
-	public int getSlotNumber(){
-		return this.slotNumber;
 	}
 }

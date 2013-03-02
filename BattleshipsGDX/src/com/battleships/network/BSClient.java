@@ -19,7 +19,8 @@ public class BSClient implements Runnable	{
    	private PlayerList playerList = new PlayerList();
    	private GameList gameList = new GameList();
    	private PlayerList gameLobbyPlayerList = new PlayerList();
-   	private BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>();
+   	private BlockingQueue<String> mainLobbyMsgQueue = new LinkedBlockingQueue<String>();
+   	private BlockingQueue<String> gameLobbyMsgQueue = new LinkedBlockingQueue<String>();
 	
 	private Client client;
 	private Player clientPlayer;
@@ -61,7 +62,7 @@ public class BSClient implements Runnable	{
 									list += playerList.getPlayer(i).getName() + " ";
 								}
 								try {
-									msgQueue.put(list);
+									mainLobbyMsgQueue.put(list);
 								} catch (InterruptedException e) {
 									e.printStackTrace();
 								}
@@ -72,41 +73,60 @@ public class BSClient implements Runnable	{
 							case 1 : {
 								gameList.translateServerString(reply.text);
 								
-								String list = "";
+								String list = "1 ";
 								for(int i = 0; i < gameList.size(); i++){
-									list += gameList.getGame(i).getName() + " ";
+									list += gameList.getGame(i).getName() + " " + gameList.getGame(i).getId() + " ";
 								}
 								
-//								Message messageToParent = new Message();
-//								Bundle messageData = new Bundle();
-//								messageToParent.what = 1;
-//								messageData.putString("gamelist", list);
-//								messageToParent.setData(messageData);
-//								
-//								mainLobbyHandler.sendMessage(messageToParent);
+								try {
+									mainLobbyMsgQueue.put(list);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
 								break;
 							}
 							// Translate message about player taking slot
 							// in game and send it to parent activity
 							case 2 : {
-								gameLobbyPlayerList.translateServerString(reply.text);
-								String list = "";
+								//gameLobbyPlayerList.translateServerString(reply.text);
+								String list = "0 ";
 //								for(int i = 0; i< gameLobbyPlayerList.size(); i++){
 //									list += gameLobbyPlayerList.getPlayer(i).getName() + " ";
 //								}
 								int i = 0;
 								while(part.hasMoreTokens()){
+									part.nextToken();
 									list += part.nextToken() + " ";
 								}
-								
-//								Message messageToParent = new Message();
-//								Bundle messageData = new Bundle();
-//								messageToParent.what = 2;
-//								messageData.putString("gameLobbyPlayerList", list);
-//								messageToParent.setData(messageData);
-//								
-//								gameLobbyHandler.sendMessage(messageToParent);
+								try {
+									gameLobbyMsgQueue.put(list);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+
 								break;
+							}
+							// Translate message about players joining or 
+							// leaving game lobby
+							case 3 : {
+								gameList.getGameById(clientPlayer.getGameId()).translateServerString(reply.text);
+								
+								break;
+							}
+							// Translate message about player getting
+							// ready/unready
+							case 5 : {
+								String uId = part.nextToken();
+								boolean ready = Boolean.valueOf(part.nextToken());
+								gameList.getGameById(clientPlayer.getGameId()).getPlayer(uId).setReady(ready);
+								if(gameList.getGameById(clientPlayer.getGameId()).allReady()){
+									try {
+										gameLobbyMsgQueue.put("1");
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
+									gameList.getGameById(clientPlayer.getGameId()).start();
+								}
 							}
 							default : break;
 						}
@@ -123,29 +143,6 @@ public class BSClient implements Runnable	{
 	}
 	public void run() {
 		init();
-		
-		// Start thread that listens for messages from
-		// other activities
-		Thread listen = new Thread(){
-			public void run(){
-//				Looper.prepare();
-//				clientHandler = new Handler() {
-//					public void handleMessage(Message msg) {
-//						switch(msg.what){
-//							case 1 : createGame(msg.obj.toString()); break;
-//							case 2 : takeSlot(msg.obj.toString()); break;
-//							case 3 : joinGame(msg.obj.toString()); break;
-//							case 4 : leaveGame(msg.obj.toString()); break;
-//							case 5 : readyUp(msg.obj.toString()); break;
-//							default : break;
-//						}
-//						
-//					}
-//				};
-//				Looper.loop();
-			}
-		};
-		listen.start();
 		
 		// Main loop
 		while(gameFlag)	{
@@ -173,37 +170,39 @@ public class BSClient implements Runnable	{
 	}
 	// Send create game packet to server
 	public void createGame(String gameName){
+		Game game = new Game(gameName);
+		game.addPlayer(clientPlayer);
+		gameList.addGame(game);
+		this.clientPlayer.joinGame(game.getId());
 		try{
 			ResponseMessage req = new ResponseMessage();
-			req.text = "1 " + gameName + " " + this.clientPlayer.getName();
+			req.text = "1 " + game.getId() + " " + game.getName() + " " + this.clientPlayer.getId();
 			client.sendUDP(req);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to create a game");
 		}
-		playerList.getByName(this.clientPlayer.getName()).joinGame(gameName);
-		playerList.getByName(this.clientPlayer.getName()).setHost(true);
+		this.clientPlayer.setHost(true);
 	}
 	// Send join game packet to server
-	public void joinGame(String gameName){
+	public void joinGame(String gameId){
+		this.clientPlayer.joinGame(gameId);
+		gameList.getGameById(gameId).addPlayer(clientPlayer);
 		try{
 			ResponseMessage req = new ResponseMessage();
-			req.text = "3 " + gameName + " " + this.clientPlayer.getName();
+			req.text = "3 " + gameId + " " + this.clientPlayer.getId();
 			client.sendUDP(req);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to join game");
 		}
-		playerList.getByName(this.clientPlayer.getName()).joinGame(gameName);
 	}
 	// Send take slot packet to server
-	public void takeSlot(String message){
-		StringTokenizer part = new StringTokenizer(message);
-		String slotNumber = part.nextToken();
-		String gameName = part.nextToken();
+	public void takeSlot(int slotNumber){
 		try{
 			ResponseMessage req = new ResponseMessage();
-			req.text = "2 " + gameName + " " + this.clientPlayer.getName() + " " + slotNumber;
+			req.text = "2 " + this.clientPlayer.getGameId() + " " + this.clientPlayer.getId() + " " + slotNumber;
+			clientPlayer.takeSlot(slotNumber);
 			client.sendUDP(req);
 		}catch(Exception e){
 			e.printStackTrace();
@@ -211,32 +210,31 @@ public class BSClient implements Runnable	{
 		}
 	}
 	// Send leave game packet to server
-	public void leaveGame(String gameName){
+	public void leaveGame(){
 		try{
 			ResponseMessage req = new ResponseMessage();
-			req.text = "4 " + gameName + " " + this.clientPlayer.getName();
+			req.text = "4 " + this.clientPlayer.getGameId() + " " + this.clientPlayer.getId();
 			client.sendUDP(req);
+			gameList.getGameById(this.clientPlayer.getGameId()).removePlayer(this.clientPlayer);
+			this.clientPlayer.leaveGame();
+			this.clientPlayer.setHost(false);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to leave game");
 		}
-		playerList.getByName(this.clientPlayer.getName()).leaveGame();
-		playerList.getByName(this.clientPlayer.getName()).setHost(false);
 	}
 	// check if all players are ready
 	// if true, start game
-	public void readyUp(String gameName){
-		
-//		if(gameList.getByName(gameName).allReady()){
-//			Message messageToParent = new Message();
-//			Bundle messageData = new Bundle();
-//			messageToParent.what = 5;
-//			messageData.putString("start", "start");
-//			messageToParent.setData(messageData);
-//			
-//			gameLobbyHandler.sendMessage(messageToParent);
-//			gameList.getByName(gameName).start();
-//		}
+	public void readyUp(String gameId){
+		clientPlayer.setReady(!clientPlayer.isReady());
+		try{
+			ResponseMessage req = new ResponseMessage();
+			req.text = "5 " + this.clientPlayer.getGameId() + " " + this.clientPlayer.getId() + " " + this.clientPlayer.isReady();
+			client.sendUDP(req);
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Failed to ready/unready");
+		}
 	}
 	public void start()	{
 		gameFlag=true;
@@ -261,12 +259,16 @@ public class BSClient implements Runnable	{
 		this.gameFlag = false;
 		gameList.reset();
 		playerList.reset();
+		clientPlayer.isOffline();
 		client.close();
 	}
 	public Player getPlayer(){
 		return this.clientPlayer;
 	}
-	public BlockingQueue<String> getQueue(){
-		return this.msgQueue;
+	public BlockingQueue<String> getMainLobbyQueue(){
+		return this.mainLobbyMsgQueue;
+	}
+	public BlockingQueue<String> getGameLobbyQueue(){
+		return this.gameLobbyMsgQueue;
 	}
 }
