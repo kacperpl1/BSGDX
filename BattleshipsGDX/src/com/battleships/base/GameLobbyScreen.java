@@ -18,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.battleships.network.BSClient;
 
 public class GameLobbyScreen implements Screen {
-	private final Screen parentScreen;
 	
 	private Stage stage;
 	private SpriteBatch batch;
@@ -33,8 +32,6 @@ public class GameLobbyScreen implements Screen {
 	
 	private Label team1Label = new Label("Team 1:", Resources.skin);
 	private Label team2Label = new Label("Team 2:", Resources.skin);
-	private ArrayList<String> team1PlayerList = new ArrayList<String>();
-	private ArrayList<String> team2PlayerList = new ArrayList<String>();
 	BlockingQueue<String> msgQueue;
 	private String gameId = "";
 	private String gameName = "";
@@ -45,11 +42,17 @@ public class GameLobbyScreen implements Screen {
 	private boolean gameFlag = false;
 	
 	public GameLobbyScreen(final Screen parentScreen, final String gameId, final String gameName) {
-		this.parentScreen = parentScreen;
 		this.gameId = gameId;
 		this.gameName = gameName;
 		lobbyClient = BSClient.getInstance();
 		msgQueue = lobbyClient.getGameLobbyQueue();
+		
+		System.out.println("game :" + this.gameName + " (" + this.gameId + ")" );
+		
+		// Initialize graphics, buttons, set layout
+		
+		batch = new SpriteBatch();
+		stage = new Stage();
 		
 		disconnectButton.addListener(new ClickListener() {
             @Override
@@ -70,9 +73,6 @@ public class GameLobbyScreen implements Screen {
             }
         } );
 		
-		batch = new SpriteBatch();
-		stage = new Stage();
-		
 		setLayout();
 		
 		team1Table.add(team1Label);
@@ -88,6 +88,7 @@ public class GameLobbyScreen implements Screen {
 		stage.addActor(team1Table);
 		stage.addActor(team2Table);
 		
+		// Start thread listening for messages from BSClient
 		this.messenger = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -108,6 +109,7 @@ public class GameLobbyScreen implements Screen {
 	public void handleMessage(String message){
 		StringTokenizer part = new StringTokenizer(message);
 		switch(Integer.valueOf(part.nextToken())) {
+			// Message containing list of players in game
 			case 0 : {
 				team1PlayerListTable.clear();
 				team2PlayerListTable.clear();
@@ -144,6 +146,7 @@ public class GameLobbyScreen implements Screen {
 				}
 				break;
 			}
+			// Message saying that all players are ready to start
 			case 1 : {
 				System.out.println("game should have started;p");
 				gameFlag = true;

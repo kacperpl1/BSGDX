@@ -1,6 +1,5 @@
 package com.battleships.base;
 
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.concurrent.BlockingQueue;
 
@@ -19,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.battleships.network.BSClient;
 
 public class MainLobbyScreen implements Screen {
-	private final Screen parentScreen;
 	private Screen mainLobbyScreen;
 	
 	private Stage stage;
@@ -35,9 +33,7 @@ public class MainLobbyScreen implements Screen {
 	
 	private Label playerListLabel = new Label("Player List:", Resources.skin);
 	private Label gameListLabel = new Label("Game List:", Resources.skin);
-	private ArrayList<String> playerList = new ArrayList<String>();
-	private ArrayList<String> gameList = new ArrayList<String>();
-	BlockingQueue<String> msgQueue;
+	private BlockingQueue<String> msgQueue;
 	private String gameName = "";
 	
 	private BSClient lobbyClient;
@@ -45,6 +41,7 @@ public class MainLobbyScreen implements Screen {
 	private Thread messenger;
 	
 	public MainLobbyScreen(final Screen parentScreen){
+		// Get instance of BSClient and start it
 		lobbyClient = BSClient.getInstance();
 	    lobbyClient.init("Battleship");
 		try{
@@ -55,7 +52,11 @@ public class MainLobbyScreen implements Screen {
 		msgQueue = lobbyClient.getMainLobbyQueue();
 		
 		this.mainLobbyScreen = this;
-		this.parentScreen = parentScreen;
+		
+		// Initialize graphics, buttons, set layout
+		batch = new SpriteBatch();
+		stage = new Stage();
+		Gdx.input.setInputProcessor( stage );
 		
 		disconnectButton.addListener(new ClickListener(){
             @Override
@@ -95,10 +96,6 @@ public class MainLobbyScreen implements Screen {
             }
         } );
 		
-		batch = new SpriteBatch();
-		stage = new Stage();
-		Gdx.input.setInputProcessor( stage );
-		
 		setLayout();
 		
 		leftTable.add(playerListLabel);
@@ -114,6 +111,7 @@ public class MainLobbyScreen implements Screen {
 		stage.addActor(leftTable);
 		stage.addActor(rightTable);
 		
+		// Start thread listening for messages from BSClient
 		this.messenger = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -133,6 +131,7 @@ public class MainLobbyScreen implements Screen {
 	public void handleMessage(String message){
 		StringTokenizer part = new StringTokenizer(message);
 		switch(Integer.valueOf(part.nextToken())) {
+			// Message containing list of players
 			case 0 : {
 				playerListTable.clear();
 				while(part.hasMoreTokens()){
@@ -143,6 +142,7 @@ public class MainLobbyScreen implements Screen {
 				}
 				break;
 			}
+			// Message containing list of games
 			case 1 : {
 				gameListTable.clear();
 				while(part.hasMoreTokens()){

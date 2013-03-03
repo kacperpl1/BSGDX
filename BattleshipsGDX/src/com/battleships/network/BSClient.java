@@ -18,7 +18,6 @@ public class BSClient implements Runnable	{
 	private volatile boolean gameFlag = true;
    	private PlayerList playerList = new PlayerList();
    	private GameList gameList = new GameList();
-   	private PlayerList gameLobbyPlayerList = new PlayerList();
    	private BlockingQueue<String> mainLobbyMsgQueue = new LinkedBlockingQueue<String>();
    	private BlockingQueue<String> gameLobbyMsgQueue = new LinkedBlockingQueue<String>();
 	
@@ -88,12 +87,7 @@ public class BSClient implements Runnable	{
 							// Translate message about player taking slot
 							// in game and send it to parent activity
 							case 2 : {
-								//gameLobbyPlayerList.translateServerString(reply.text);
 								String list = "0 ";
-//								for(int i = 0; i< gameLobbyPlayerList.size(); i++){
-//									list += gameLobbyPlayerList.getPlayer(i).getName() + " ";
-//								}
-								int i = 0;
 								while(part.hasMoreTokens()){
 									part.nextToken();
 									list += part.nextToken() + " ";
@@ -151,14 +145,13 @@ public class BSClient implements Runnable	{
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}		
 	}
 
 	// Send keep alive packet to server
-	public void keepAlive(){
+	public void keepAlive() {
 		try{
 			ResponseMessage req = new ResponseMessage();
 			req.text = "0 " + this.clientPlayer.getId() + " " + this.clientPlayer.getName() + " ";
@@ -169,7 +162,7 @@ public class BSClient implements Runnable	{
 		}
 	}
 	// Send create game packet to server
-	public void createGame(String gameName){
+	public void createGame(String gameName) {
 		Game game = new Game(gameName);
 		game.addPlayer(clientPlayer);
 		gameList.addGame(game);
@@ -185,7 +178,7 @@ public class BSClient implements Runnable	{
 		this.clientPlayer.setHost(true);
 	}
 	// Send join game packet to server
-	public void joinGame(String gameId){
+	public void joinGame(String gameId) {
 		this.clientPlayer.joinGame(gameId);
 		gameList.getGameById(gameId).addPlayer(clientPlayer);
 		try{
@@ -198,7 +191,7 @@ public class BSClient implements Runnable	{
 		}
 	}
 	// Send take slot packet to server
-	public void takeSlot(int slotNumber){
+	public void takeSlot(int slotNumber) {
 		try{
 			ResponseMessage req = new ResponseMessage();
 			req.text = "2 " + this.clientPlayer.getGameId() + " " + this.clientPlayer.getId() + " " + slotNumber;
@@ -210,7 +203,7 @@ public class BSClient implements Runnable	{
 		}
 	}
 	// Send leave game packet to server
-	public void leaveGame(){
+	public void leaveGame() {
 		try{
 			ResponseMessage req = new ResponseMessage();
 			req.text = "4 " + this.clientPlayer.getGameId() + " " + this.clientPlayer.getId();
@@ -225,7 +218,7 @@ public class BSClient implements Runnable	{
 	}
 	// check if all players are ready
 	// if true, start game
-	public void readyUp(String gameId){
+	public void readyUp(String gameId) {
 		clientPlayer.setReady(!clientPlayer.isReady());
 		try{
 			ResponseMessage req = new ResponseMessage();
@@ -235,6 +228,22 @@ public class BSClient implements Runnable	{
 			e.printStackTrace();
 			System.out.println("Failed to ready/unready");
 		}
+	}
+	public Player getPlayer() {
+		return this.clientPlayer;
+	}
+	public BlockingQueue<String> getMainLobbyQueue() {
+		return this.mainLobbyMsgQueue;
+	}
+	public BlockingQueue<String> getGameLobbyQueue() {
+		return this.gameLobbyMsgQueue;
+	}
+	public void stopGame() {
+		this.gameFlag = false;
+		gameList.reset();
+		playerList.reset();
+		clientPlayer.isOffline();
+		client.close();
 	}
 	public void start()	{
 		gameFlag=true;
@@ -254,21 +263,5 @@ public class BSClient implements Runnable	{
 			th = null;
 		}
 		gameFlag=false;
-	}
-	public void stopGame(){
-		this.gameFlag = false;
-		gameList.reset();
-		playerList.reset();
-		clientPlayer.isOffline();
-		client.close();
-	}
-	public Player getPlayer(){
-		return this.clientPlayer;
-	}
-	public BlockingQueue<String> getMainLobbyQueue(){
-		return this.mainLobbyMsgQueue;
-	}
-	public BlockingQueue<String> getGameLobbyQueue(){
-		return this.gameLobbyMsgQueue;
 	}
 }

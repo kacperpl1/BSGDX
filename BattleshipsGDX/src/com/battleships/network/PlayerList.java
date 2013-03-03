@@ -2,15 +2,15 @@ package com.battleships.network;
 
 import java.util.LinkedList;
 import java.util.StringTokenizer;
-import java.util.UUID;
 
 public class PlayerList {
 	
-	LinkedList<Player> list = new LinkedList<Player>();
+	private LinkedList<Player> list = new LinkedList<Player>();
 	private static String msg = "";
 	
 	public PlayerList() {
 	}
+	
 	public void translateServerString(String received) {
 		if(!(msg.equals(received))){
 			msg = received;
@@ -48,16 +48,6 @@ public class PlayerList {
 		Player player = new Player(id, name);
 		list.add(player);
 		return player;
-	}
-	public Player getByName(String n) {
-		for(int i = 0; i < list.size(); i++) {
-			if(list.get(i).getName().equals(n)) {
-				list.get(i).setOnline();
-				return list.get(i);
-			}
-		}
-		list.add(new Player(n));
-		return list.get(list.size()-1);
 	}
 	public Player getById(String id) {
 		for(Player player : list) {
