@@ -9,12 +9,18 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.battleships.network.BSClient;
 
 public class MenuScreen implements Screen {
 	private Stage stage;
 	private SpriteBatch batch;
 	private int w = Gdx.graphics.getWidth();
 	private int h = Gdx.graphics.getHeight();
+	private Screen menuScreen;
+	
+	public MenuScreen(){
+		this.menuScreen = this;
+	}
 	
 	@Override
 	public void render(float delta) {
@@ -53,7 +59,7 @@ public class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event,float x,float y )
             {
-            	//BaseGame.instance.setScreen( game.getHallOfFameScreen() );
+            	BaseGame.instance.setScreen( new MainLobbyScreen(menuScreen) );
             }
         } );
 
