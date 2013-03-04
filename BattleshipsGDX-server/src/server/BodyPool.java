@@ -8,11 +8,18 @@ import com.badlogic.gdx.utils.Pool;
 
 public class BodyPool extends Pool<Body>{
 
+	GameThread ownerThread;
+	
+	public BodyPool(GameThread owner)
+	{
+		ownerThread = owner;
+	}
+	
 	@Override
 	protected Body newObject() {
 		BodyDef bodyDef = new BodyDef();  
         bodyDef.type = BodyType.DynamicBody;
-		return GameScreen.physicsWorld.createBody(bodyDef);
+		return ownerThread.physicsWorld.createBody(bodyDef);
 	}
 
 }

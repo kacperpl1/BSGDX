@@ -282,27 +282,3 @@ class Translator extends Thread {
 	}
 
 }
-
-class GameThread extends Thread{
-	private ServerGame game;
-	private volatile boolean running;
-	
-	public GameThread(ServerGame game){
-		this.game = game;
-		this.running = true;
-		this.setName(game.getName());
-	}
-	
-	public void run(){
-		System.out.println("game " + game.getName() + " started");
-		while(running){
-			
-		}
-		System.out.println("game " + game.getName() + " stopped");
-	}
-	
-	public void stopGame(){
-		this.running = false;
-	}
-	
-}
