@@ -6,6 +6,9 @@
 	<classpathentry kind="lib" path="lib/gdx-sources.jar"/>
 	<classpathentry kind="lib" path="lib/gdx.jar"/>
 	<classpathentry kind="lib" path="lib/kryonet-debug-2.18-all.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/BattleshipsGDX"/>
+	<classpathentry kind="lib" path="lib/gdx-backend-lwjgl-natives.jar"/>
+	<classpathentry kind="lib" path="lib/gdx-backend-lwjgl-sources.jar"/>
+	<classpathentry kind="lib" path="lib/gdx-backend-lwjgl.jar"/>
+	<classpathentry kind="lib" path="lib/gdx-natives.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

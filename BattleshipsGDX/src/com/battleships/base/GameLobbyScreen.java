@@ -148,9 +148,8 @@ public class GameLobbyScreen implements Screen {
 			}
 			// Message saying that all players are ready to start
 			case 1 : {
-				System.out.println("game should have started;p");
 				gameFlag = true;
-				
+				lobbyClient.startGame();
 				break;
 			}
 			default : {

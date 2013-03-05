@@ -277,6 +277,14 @@ class Translator extends Thread {
 				
 				break;
 			}
+			case "6" : {
+				String gId = part.nextToken();
+				ServerGame sGame = gameList.getById(gId);
+				GameThread gameThread = new GameThread(sGame);
+				gameThread.setName(gId);
+				this.gameThreadList.add(gameThread);
+				gameThread.start();
+			}
 			default : System.out.println("Unhandled message from client!"); break;
 		}
 	}

@@ -1,5 +1,8 @@
 package com.battleships.network;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import com.esotericsoftware.kryo.Kryo;
 
 
@@ -9,11 +12,22 @@ import com.esotericsoftware.kryo.Kryo;
  * @author ASH
  */
 public class Common {
-        
-    public static final String DEFAULT_IP="192.168.198.185";//192.168.198.185
+    
+    public static final String DEFAULT_IP = getIp(); //192.168.198.185
     
     public static final int DEFAULT_PORT_TCP=6456;
     public static final int DEFAULT_PORT_UDP=6466;
+    
+    private static String getIp() {
+    	InetAddress ip;
+  	  	try {
+	  		ip = InetAddress.getLocalHost();
+	  		return ip.getHostAddress();
+  	  	} catch (UnknownHostException e) {
+  	  		e.printStackTrace();
+  	  	}
+  	  	return "";
+    }
     
     /**
      * Registers all messages used in the game with JGN which optimizes them

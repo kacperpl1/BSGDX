@@ -216,8 +216,7 @@ public class BSClient implements Runnable	{
 			System.out.println("Failed to leave game");
 		}
 	}
-	// check if all players are ready
-	// if true, start game
+	// Send ready / unready packet to server
 	public void readyUp(String gameId) {
 		clientPlayer.setReady(!clientPlayer.isReady());
 		try{
@@ -227,6 +226,17 @@ public class BSClient implements Runnable	{
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to ready/unready");
+		}
+	}
+	// Send start game packet to server
+	public void startGame() {
+		try{
+			ResponseMessage req = new ResponseMessage();
+			req.text = "6 " + this.clientPlayer.getGameId();
+			client.sendUDP(req);
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Failed to start game");
 		}
 	}
 	public Player getPlayer() {
