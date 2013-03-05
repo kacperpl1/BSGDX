@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
 import shared.Common;
 import shared.ResponseMessage;
 
+import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -18,6 +19,7 @@ public class BSServer {
 	private static ServerThread server;
 	
     public static void main(String[] args) {
+    	GdxNativesLoader.load();
     	server = new ServerThread();
     }
 
