@@ -4,7 +4,7 @@ package server;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.graphics.g2d.tiled.TiledLoader;
 import com.badlogic.gdx.graphics.g2d.tiled.TiledMap;
 import com.badlogic.gdx.graphics.g2d.tiled.TiledObject;
@@ -51,7 +51,8 @@ class GameThread extends Thread{
         bodyDef.position.set(0,0);  
 		Body WorldCollisionBody = physicsWorld.createBody(bodyDef);
 		
-		TiledMap map = TiledLoader.createMap(Gdx.files.internal("data/BattleShipsCollision.tmx"));
+		LwjglFiles files = new LwjglFiles();
+		TiledMap map = TiledLoader.createMap(files.internal("data/BattleShipsCollision.tmx"));
 		TiledObjectGroup objectGroup = map.objectGroups.get(0);
 		for (TiledObject current : objectGroup.objects) {
 			
