@@ -1,13 +1,13 @@
 package server;
 
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.battleships.base.Weapon;
 
-public class Unit {
+public abstract class Unit {
 	
 	GameThread ownerThread;
 	BodyPool bodyPool;
@@ -47,21 +47,49 @@ public class Unit {
 	    CollisionBody.getFixtureList().get(0).setUserData(this);
 	} 	
 	
+	float getX()
+	{
+		return CollisionBody.getPosition().x*GameThread.WORLD_TO_BOX;
+	}
+	
+	float getY()
+	{
+		return CollisionBody.getPosition().y*GameThread.WORLD_TO_BOX;
+	}	
+	
+    void TakeDamage(int Damage, Unit Instigator)
+    {
+    	Health -= Damage;
+    }
+    
+    void Destroy()
+    {
+		// TODO Handle unit removal and gold from frag
+    	int fixtures = CollisionBody.getFixtureList().size();
+		for(int i=0; i<fixtures; i++)
+		{
+			CollisionBody.destroyFixture(CollisionBody.getFixtureList().get(0));
+		}
+		bodyPool.free(CollisionBody); 
+    }
+    
 	void onUpdate(float delta)
 	{
-		updateVelocity();
-    	if(Health<=0)
+    	if(Health <=0)
     	{
-        	int fixtures = CollisionBody.getFixtureList().size();
-    		for(int i=0; i<fixtures; i++)
-    		{
-    			CollisionBody.destroyFixture(CollisionBody.getFixtureList().get(0));
-    		}
-    		bodyPool.free(CollisionBody);   	
-        	return;
+    		Health = 0;
+    		Destroy();
+    		return;
     	}
-		//gun.onUpdate(delta);
+		updateVelocity();
+		gun.onUpdate(delta);
 	}
+	
+    void setDesiredVelocity(float X, float Y)
+    {
+    	DesiredVelocity.x = X;
+    	DesiredVelocity.y = Y;
+    }
 	
     void updateVelocity()
     {

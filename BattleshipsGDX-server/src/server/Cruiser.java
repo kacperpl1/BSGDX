@@ -1,18 +1,15 @@
-package com.battleships.base;
-
+package server;
 
 public class Cruiser extends Unit {
 	
 	private String lane;
 	
-	Cruiser(String Team, float InitialX, float InitialY, String Lane)
+	Cruiser(String Team, float InitialX, float InitialY, String Lane, GameThread owner)
     {
-		super(Team, InitialX, InitialY);
+		super(Team, InitialX, InitialY, owner);
 		lane = Lane;
-    	baseSprite.setScale(0.75f);
     	MaxHealth = 500;
     	Health = MaxHealth;
-    	visor = new Visor(this);
     	gun = new Weapon(this,0);
     }	
 	
@@ -21,8 +18,7 @@ public class Cruiser extends Unit {
     	float velocity = DesiredVelocity.len();
     	if(velocity > 1)
     	{
-    		CollisionBody.setLinearVelocity(DesiredVelocity.x*GameScreen.WORLD_TO_BOX, DesiredVelocity.y*GameScreen.WORLD_TO_BOX);
-        	setVisualRotation(DesiredVelocity.x, DesiredVelocity.y);
+    		CollisionBody.setLinearVelocity(DesiredVelocity.x*GameThread.WORLD_TO_BOX, DesiredVelocity.y*GameThread.WORLD_TO_BOX);
     	}
     	else
     		CollisionBody.setLinearVelocity(0, 0);
@@ -32,9 +28,9 @@ public class Cruiser extends Unit {
     {
     	if(Health<=0)
     	{
-    		Health=0;
+    		Health = 0;
     		Destroy();
-    		return;
+        	return;
     	}
     	gun.onUpdate(delta);
     	

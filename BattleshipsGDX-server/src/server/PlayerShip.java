@@ -1,4 +1,4 @@
-package com.battleships.base;
+package server;
 
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
@@ -16,22 +16,18 @@ public class PlayerShip extends Unit {
 	
 	public LinkedList<PlayerWeapon> Inventory = new LinkedList<PlayerWeapon>();
 	
-	PlayerShip(String Team, float InitialX, float InitialY, Color PlayerColor)
+	PlayerShip(String Team, float InitialX, float InitialY, GameThread owner, Color PlayerColor)
     {
-		super(Team, InitialX, InitialY);
+		super(Team, InitialX, InitialY, owner);
     	moveSpeed = 150;
     	MaxHealth = 2500;
     	Health = MaxHealth;
-		colorSprite.setColor(PlayerColor);
-    	visor = new Visor(this);
-    	setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
     }
 	
 	void setVelocity()
     {
     	float velocity = CurrentVelocity.len();
-    	CollisionBody.setLinearVelocity(CurrentVelocity.x*moveSpeed/velocity*GameScreen.WORLD_TO_BOX, CurrentVelocity.y*moveSpeed/velocity*GameScreen.WORLD_TO_BOX);
-        setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
+    	CollisionBody.setLinearVelocity(CurrentVelocity.x*moveSpeed/velocity*GameThread.WORLD_TO_BOX, CurrentVelocity.y*moveSpeed/velocity*GameThread.WORLD_TO_BOX);
     }
 	
 	void updateVelocity()
@@ -80,33 +76,20 @@ public class PlayerShip extends Unit {
 	
 	void Destroy()
 	{
-		icon.setVisible(false);
+
     	CollisionBody.setLinearVelocity(0, 0);
-    	this.getParent().removeActor(this);
-    	if(team.equals(GameScreen.LocalPlayerTeam))
-		{
-    		Visor.VisorList.remove(visor);
-			for(Unit current : VisibleEnemies)
-			{
-				current.VisibleEnemiesCount--;
-			}
-		}  
-    	GameScreen.executorService.schedule(new Callable<PlayerShip>() {
+    	GameThread.executorService.schedule(new Callable<PlayerShip>() {
   		  @Override
   		  public PlayerShip call() {
-      		icon.setVisible(true);
-  			GameScreen.gameStage.addActor(PlayerShip.this);
-  			if(team == GameScreen.LocalPlayerTeam)
-  				Visor.VisorList.add(visor);
   			Health = MaxHealth;
 
         	if(team == "red")
         	{
-        		CollisionBody.setTransform(0, 768*GameScreen.WORLD_TO_BOX, 0);
+        		CollisionBody.setTransform(0, 768*GameThread.WORLD_TO_BOX, 0);
         	}
         	else
         	{
-        		CollisionBody.setTransform(0, -768*GameScreen.WORLD_TO_BOX, 0);
+        		CollisionBody.setTransform(0, -768*GameThread.WORLD_TO_BOX, 0);
         	}
   		    return PlayerShip.this;
   		  }
@@ -115,9 +98,9 @@ public class PlayerShip extends Unit {
 	
 	void onUpdate(float delta)
 	{
-    	if(Health<=0)
+    	if(Health <=0)
     	{
-    		Health=0;
+    		Health = 0;
     		Destroy();
     		return;
     	}

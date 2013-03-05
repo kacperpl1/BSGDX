@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public class Unit extends Actor {
+public abstract class Unit extends Actor {
 
 	String team;
 	public static String lastSpawnTeam;
@@ -128,31 +128,36 @@ public class Unit extends Actor {
 	{
     	if(Health<=0)
     	{
-    		GameScreen.hudStage.getRoot().removeActor(icon);
-        	this.getParent().removeActor(this);
-        	int fixtures = CollisionBody.getFixtureList().size();
-    		for(int i=0; i<fixtures; i++)
-    		{
-    			CollisionBody.destroyFixture(CollisionBody.getFixtureList().get(0));
-    		}
-    		bodyPool.free(CollisionBody);
-        	if(team.equals(GameScreen.LocalPlayerTeam))
-    		{
-    			for(Unit current : VisibleEnemies)
-    			{
-    				current.VisibleEnemiesCount--;
-    			}
-    		}        	
-        	return;
+    		Health=0;
+    		Destroy();
+    		return;
     	}
 		gun.onUpdate(delta);
+	}
+	
+	void Destroy()
+	{
+		GameScreen.hudStage.getRoot().removeActor(icon);
+    	this.getParent().removeActor(this);
+    	int fixtures = CollisionBody.getFixtureList().size();
+		for(int i=0; i<fixtures; i++)
+		{
+			CollisionBody.destroyFixture(CollisionBody.getFixtureList().get(0));
+		}
+		CollisionBody.setUserData(null);
+		bodyPool.free(CollisionBody);
+    	if(team.equals(GameScreen.LocalPlayerTeam))
+		{
+			for(Unit current : VisibleEnemies)
+			{
+				current.VisibleEnemiesCount--;
+			}
+		}
 	}
 	
     void TakeDamage(int Damage)
     {
     	Health -= Damage;
-    	if(Health <0)
-    		Health = 0;
     }
     
     void setDesiredVelocity(float X, float Y)
