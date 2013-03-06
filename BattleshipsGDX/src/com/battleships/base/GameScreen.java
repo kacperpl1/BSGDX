@@ -1,6 +1,8 @@
 package com.battleships.base;
 
 import java.util.Comparator;
+import java.util.Map.Entry;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -40,6 +42,9 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.battleships.network.BSClient;
+import com.battleships.network.UnitData;
+import com.battleships.network.UnitMap;
 
 public class GameScreen implements Screen {
 	static Stage hudStage;
@@ -80,7 +85,38 @@ public class GameScreen implements Screen {
 	private BitmapFont font;
 	static Actor miniMap;
 	static String LocalPlayerTeam;
-
+	
+	private BSClient lobbyClient;
+	private BlockingQueue<UnitMap> msgQueue;
+	private UnitMap unitMap = new UnitMap();
+	private Thread messenger;
+	
+	public GameScreen() {
+		lobbyClient = BSClient.getInstance();
+		msgQueue = lobbyClient.getMainGameQueue();
+		
+		this.messenger = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        UnitMap message = msgQueue.take();
+                        handleMessage(message);
+                    } catch (InterruptedException e) {
+                        //e.printStackTrace();
+                    }
+                }
+            }
+        }, "Messanger");
+		this.messenger.start();
+	}
+	
+	public void handleMessage(UnitMap message) {
+		for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
+			System.out.println(entry.getKey() + " " + entry.getValue().type.toString());
+		}
+	}
+	
 	@Override
 	public void show() {	
 		
@@ -210,13 +246,13 @@ public class GameScreen implements Screen {
 		new PlayerShip("red", 0f,768f, Color.ORANGE);
 		
 		objectGroup = map.objectGroups.get(1);
-		for (TiledObject current : objectGroup.objects) {
-			
-			if(current.y>1024)
-				new Tower("blue",current.x-1024+16,-current.y+1024);
-			else
-				new Tower("red",current.x-1024+16,-current.y+1024);
-	    }
+//		for (TiledObject current : objectGroup.objects) {
+//			
+//			if(current.y>1024)
+//				new Tower("blue",current.x-1024+16,-current.y+1024);
+//			else
+//				new Tower("red",current.x-1024+16,-current.y+1024);
+//	    }
 		
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera(w, h);

@@ -28,8 +28,9 @@ public abstract class Unit {
 		ownerThread = owner;
 		bodyPool = new BodyPool(ownerThread);
 		createBody(InitialX,InitialY);
+		
 	}
-
+	
 	void createBody(float initialX, float initialY)
 	{ 
 		CollisionBody = bodyPool.obtain();

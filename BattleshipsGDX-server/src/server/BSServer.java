@@ -283,9 +283,9 @@ class Translator extends Thread {
 				String gId = part.nextToken();
 				ServerGame sGame = gameList.getById(gId);
 				GameThread gameThread = new GameThread(sGame);
-				gameThread.setName(gId);
 				this.gameThreadList.add(gameThread);
 				gameThread.start();
+				break;
 			}
 			default : System.out.println("Unhandled message from client!"); break;
 		}

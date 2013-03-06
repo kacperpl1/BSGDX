@@ -35,5 +35,10 @@ public class Common {
     public static void registerMessages(Kryo kryo)
     {        
     	kryo.register(ResponseMessage.class);
+    	kryo.register(UnitMap.class);
+    	kryo.register(java.util.HashMap.class);
+    	kryo.register(UnitData.class);
+    	kryo.register(com.badlogic.gdx.math.Vector2.class);
+    	kryo.register(UnitData.Type.class);
     }
 }

@@ -1,8 +1,12 @@
 package server;
 
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
+import shared.UnitData;
+import shared.UnitMap;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
 import com.badlogic.gdx.graphics.g2d.tiled.TiledLoader;
@@ -37,10 +41,12 @@ class GameThread extends Thread{
     
 	static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 	
+	public UnitMap unitMap = new UnitMap();
+	
 	public GameThread(ServerGame game){
 		this.game = game;
 		this.running = true;
-		this.setName(game.getName());
+		this.setName(game.getId());
 		
 		physicsWorld = new World(new Vector2(0, 0), true);
 		contactListener = createContactListener();
@@ -70,12 +76,28 @@ class GameThread extends Thread{
 		
 		objectGroup = map.objectGroups.get(1);
 		for (TiledObject current : objectGroup.objects) {
-			
-			if(current.y>1024)
-				new Tower("blue",current.x-1024+16,-current.y+1024, this);
-			else
-				new Tower("red",current.x-1024+16,-current.y+1024, this);
+			if(current.y>1024) {
+				Tower tower = new Tower("blue",current.x-1024+16,-current.y+1024, this);
+				UnitData uData = new UnitData();
+				uData.position = tower.CollisionBody.getPosition();
+				uData.velocity = tower.CollisionBody.getLinearVelocity();
+				uData.health = tower.Health;
+				uData.type = UnitData.Type.TOWER;
+				unitMap.map.put(tower.hashCode(), uData);
+			}
+			else {
+				Tower tower = new Tower("red",current.x-1024+16,-current.y+1024, this);
+				UnitData uData = new UnitData();
+				uData.position = tower.CollisionBody.getPosition();
+				uData.velocity = tower.CollisionBody.getLinearVelocity();
+				uData.health = tower.Health;
+				uData.type = UnitData.Type.TOWER;
+				unitMap.map.put(tower.hashCode(), uData);
+			}
 	    }
+		for(int i = 0; i < game.getPlayerList().size(); i++) {
+			game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
+		}
 	}
 	
 	public void run(){
@@ -88,12 +110,13 @@ class GameThread extends Thread{
 				
 				while(physicsWorld.getBodies().hasNext())
 				{
-					if(((Unit)physicsWorld.getBodies().next().getUserData())!=null)
-						((Unit)physicsWorld.getBodies().next().getUserData()).onUpdate(100);	
+					Unit aux = (Unit) physicsWorld.getBodies().next().getUserData();
+					if(aux != null) {
+						aux.onUpdate(0.1f);
+					}
 				}
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -104,57 +127,56 @@ class GameThread extends Thread{
 		this.running = false;
 	}
 	
-	   private ContactListener createContactListener()
-	    {
-	        return new ContactListener()
-	        {
-	            @Override
-	            public void beginContact(Contact contact)
-	            {
-	                final Fixture x1 = contact.getFixtureA();
-	                final Fixture x2 = contact.getFixtureB();
-	                if(x2.getUserData() instanceof Unit && x1.getUserData() instanceof Weapon)
-	                {
-	                	if(!((Weapon)x1.getUserData()).Owner.team.equals(((Unit)(x2.getUserData())).team))
-	                		((Weapon)x1.getUserData()).Enemies.add(((Unit)(x2.getUserData())));
-	                }
-	                if(x1.getUserData() instanceof Unit && x2.getUserData() instanceof Weapon)
-	                {
-	                	if(!((Weapon)x2.getUserData()).Owner.team.equals(((Unit)(x1.getUserData())).team))
-	                		((Weapon)x2.getUserData()).Enemies.add(((Unit)(x1.getUserData())));
-	                }        
-	            }
-	 
-	            @Override
-	            public void endContact(Contact contact)
-	            {
-	                final Fixture x1 = contact.getFixtureA();
-	                final Fixture x2 = contact.getFixtureB();
+	private ContactListener createContactListener() {
+	     return new ContactListener()
+	     {
+	         @Override
+	         public void beginContact(Contact contact)
+	         {
+	             final Fixture x1 = contact.getFixtureA();
+	             final Fixture x2 = contact.getFixtureB();
+	             if(x2.getUserData() instanceof Unit && x1.getUserData() instanceof Weapon)
+	             {
+	             	if(!((Weapon)x1.getUserData()).Owner.team.equals(((Unit)(x2.getUserData())).team))
+	             		((Weapon)x1.getUserData()).Enemies.add(((Unit)(x2.getUserData())));
+	             }
+	             if(x1.getUserData() instanceof Unit && x2.getUserData() instanceof Weapon)
+	             {
+	             	if(!((Weapon)x2.getUserData()).Owner.team.equals(((Unit)(x1.getUserData())).team))
+	             		((Weapon)x2.getUserData()).Enemies.add(((Unit)(x1.getUserData())));
+	             }        
+	         }
+	
+	         @Override
+	         public void endContact(Contact contact)
+	         {
+	             final Fixture x1 = contact.getFixtureA();
+	             final Fixture x2 = contact.getFixtureB();
+	             
+	             if(x2.getUserData() instanceof Unit && x1.getUserData() instanceof Weapon)
+	             {
+	             	if(!((Weapon)x1.getUserData()).Owner.team.equals(((Unit)(x2.getUserData())).team))
+	             		((Weapon)x1.getUserData()).Enemies.remove(((Unit)(x2.getUserData())));
+	             }
+	             if(x1.getUserData() instanceof Unit && x2.getUserData() instanceof Weapon)
+	             {
+	             	if(!((Weapon)x2.getUserData()).Owner.team.equals(((Unit)(x1.getUserData())).team))
+	             		((Weapon)x2.getUserData()).Enemies.remove(((Unit)(x1.getUserData())));
+	             }  
+	         }  
+	
+	         @Override
+	         public void preSolve(Contact contact, Manifold oldManifold)
+	         {
 	                
-	                if(x2.getUserData() instanceof Unit && x1.getUserData() instanceof Weapon)
-	                {
-	                	if(!((Weapon)x1.getUserData()).Owner.team.equals(((Unit)(x2.getUserData())).team))
-	                		((Weapon)x1.getUserData()).Enemies.remove(((Unit)(x2.getUserData())));
-	                }
-	                if(x1.getUserData() instanceof Unit && x2.getUserData() instanceof Weapon)
-	                {
-	                	if(!((Weapon)x2.getUserData()).Owner.team.equals(((Unit)(x1.getUserData())).team))
-	                		((Weapon)x2.getUserData()).Enemies.remove(((Unit)(x1.getUserData())));
-	                }  
-	            }  
-	 
-	            @Override
-	            public void preSolve(Contact contact, Manifold oldManifold)
-	            {
-	                   
-	            }
-	 
-	            @Override
-	            public void postSolve(Contact contact, ContactImpulse impulse)
-	            {
-	                   
-	            }
-	        };
-	    } 
+	         }
+	
+	         @Override
+	         public void postSolve(Contact contact, ContactImpulse impulse)
+	         {
+	                
+	         }
+	     };
+	 } 
 	
 }

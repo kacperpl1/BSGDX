@@ -20,7 +20,8 @@ public class BSClient implements Runnable	{
    	private GameList gameList = new GameList();
    	private BlockingQueue<String> mainLobbyMsgQueue = new LinkedBlockingQueue<String>();
    	private BlockingQueue<String> gameLobbyMsgQueue = new LinkedBlockingQueue<String>();
-	
+   	private BlockingQueue<UnitMap> mainGameMsgQueue = new LinkedBlockingQueue<UnitMap>();
+   	
 	private Client client;
 	private Player clientPlayer;
 	
@@ -123,6 +124,15 @@ public class BSClient implements Runnable	{
 								}
 							}
 							default : break;
+						}
+					} else {
+						if(object instanceof UnitMap) {
+							System.out.println("got unitMap");
+							try {
+								mainGameMsgQueue.put((UnitMap)object);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}
@@ -247,6 +257,9 @@ public class BSClient implements Runnable	{
 	}
 	public BlockingQueue<String> getGameLobbyQueue() {
 		return this.gameLobbyMsgQueue;
+	}
+	public BlockingQueue<UnitMap> getMainGameQueue() {
+		return this.mainGameMsgQueue;
 	}
 	public void stopGame() {
 		this.gameFlag = false;
