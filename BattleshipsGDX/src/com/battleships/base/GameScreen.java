@@ -1,6 +1,8 @@
 package com.battleships.base;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
@@ -88,32 +90,20 @@ public class GameScreen implements Screen {
 	
 	private BSClient lobbyClient;
 	private BlockingQueue<UnitMap> msgQueue;
-	private UnitMap unitMap = new UnitMap();
-	private Thread messenger;
+	private Map<Integer, Unit> unitMap = new HashMap<Integer, Unit>();
 	
 	public GameScreen() {
 		lobbyClient = BSClient.getInstance();
 		msgQueue = lobbyClient.getMainGameQueue();
-		
-		this.messenger = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        UnitMap message = msgQueue.take();
-                        handleMessage(message);
-                    } catch (InterruptedException e) {
-                        //e.printStackTrace();
-                    }
-                }
-            }
-        }, "Messanger");
-		this.messenger.start();
 	}
 	
 	public void handleMessage(UnitMap message) {
 		for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
-			System.out.println(entry.getKey() + " " + entry.getValue().type.toString());
+			if(unitMap.containsKey(entry.getKey())) {
+				unitMap.get(entry.getKey()).updateUnitData(entry.getValue());
+			} else {
+				unitMap.put(entry.getKey(), Unit.createNewUnit(entry.getValue()));
+			}
 		}
 	}
 	
@@ -382,6 +372,14 @@ public class GameScreen implements Screen {
 		box_accu+=delta;
 		if(box_accu>BOX_STEP)
 		{
+			try {
+				if(!msgQueue.isEmpty()) {
+	                UnitMap message = msgQueue.take();
+	                handleMessage(message);
+				}
+            } catch (InterruptedException e) {
+                //e.printStackTrace();
+            }
 			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
 			box_accu-=BOX_STEP;
 		}

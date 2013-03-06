@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.battleships.network.UnitData;
 
 public abstract class Unit extends Actor {
 
@@ -76,6 +77,43 @@ public abstract class Unit extends Actor {
 	        }
 		};
 		GameScreen.hudStage.addActor(icon);
+	}
+	
+	public static Unit createNewUnit(UnitData data) {
+		String team = "";
+		if(data.position.y > 0) {
+			team = "red";
+		} else {
+			team = "blue";
+		}
+		System.out.println(data.position.x + " " + data.position.y);
+		Unit unit;
+		switch(data.type) {
+			case SHIP : {
+				unit = new PlayerShip(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO, Color.WHITE);
+				break;
+			}
+			case CREEP : {
+				unit = new Cruiser(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO, "MID");
+				break;
+			}
+			case TOWER : {
+				unit = new Tower(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO);
+				break;
+			}
+			default : {
+				unit = null;
+				break;
+			}
+		}
+		return unit;
+	}
+	
+	void updateUnitData(UnitData data)
+	{
+		CollisionBody.getPosition().set(data.position);
+		CollisionBody.setLinearVelocity(data.velocity);
+		Health = data.health;
 	}
 	
 	void createBody(float initialX, float initialY)
