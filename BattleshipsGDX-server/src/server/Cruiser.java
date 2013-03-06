@@ -1,5 +1,7 @@
 package server;
 
+import shared.UnitData;
+
 public class Cruiser extends Unit {
 	
 	private String lane;
@@ -11,6 +13,7 @@ public class Cruiser extends Unit {
     	MaxHealth = 500;
     	Health = MaxHealth;
     	gun = new Weapon(this,0);
+    	createUnitData(UnitData.Type.CREEP);
     }	
 	
 	void updateVelocity()

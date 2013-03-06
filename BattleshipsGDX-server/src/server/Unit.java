@@ -1,6 +1,8 @@
 package server;
 
 
+import shared.UnitData;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -29,6 +31,16 @@ public abstract class Unit {
 		bodyPool = new BodyPool(ownerThread);
 		createBody(InitialX,InitialY);
 		
+	}
+	
+	void createUnitData(UnitData.Type unitType)
+	{
+		UnitData uData = new UnitData();
+		uData.position = CollisionBody.getPosition();
+		uData.velocity = CollisionBody.getLinearVelocity();
+		uData.health = Health;
+		uData.type = UnitData.Type.TOWER;
+		ownerThread.unitMap.map.put(hashCode(), uData);		
 	}
 	
 	void createBody(float initialX, float initialY)

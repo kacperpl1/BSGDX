@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import shared.UnitData;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
@@ -22,6 +24,7 @@ public class PlayerShip extends Unit {
     	moveSpeed = 150;
     	MaxHealth = 2500;
     	Health = MaxHealth;
+    	createUnitData(UnitData.Type.SHIP);
     }
 	
 	void setVelocity()

@@ -1,11 +1,8 @@
 package server;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import shared.UnitData;
 import shared.UnitMap;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
@@ -77,22 +74,10 @@ class GameThread extends Thread{
 		objectGroup = map.objectGroups.get(1);
 		for (TiledObject current : objectGroup.objects) {
 			if(current.y>1024) {
-				Tower tower = new Tower("blue",current.x-1024+16,-current.y+1024, this);
-				UnitData uData = new UnitData();
-				uData.position = tower.CollisionBody.getPosition();
-				uData.velocity = tower.CollisionBody.getLinearVelocity();
-				uData.health = tower.Health;
-				uData.type = UnitData.Type.TOWER;
-				unitMap.map.put(tower.hashCode(), uData);
+				new Tower("blue",current.x-1024+16,-current.y+1024, this);
 			}
 			else {
-				Tower tower = new Tower("red",current.x-1024+16,-current.y+1024, this);
-				UnitData uData = new UnitData();
-				uData.position = tower.CollisionBody.getPosition();
-				uData.velocity = tower.CollisionBody.getLinearVelocity();
-				uData.health = tower.Health;
-				uData.type = UnitData.Type.TOWER;
-				unitMap.map.put(tower.hashCode(), uData);
+				new Tower("red",current.x-1024+16,-current.y+1024, this);
 			}
 	    }
 		for(int i = 0; i < game.getPlayerList().size(); i++) {
