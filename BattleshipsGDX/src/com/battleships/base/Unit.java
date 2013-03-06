@@ -93,7 +93,7 @@ public abstract class Unit extends Actor {
 				break;
 			}
 			case CREEP : {
-				unit = new Cruiser(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO, "MID");
+				unit = new Cruiser(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO);
 				break;
 			}
 			case TOWER : {
@@ -191,11 +191,6 @@ public abstract class Unit extends Actor {
 			}
 		}
 	}
-	
-    void TakeDamage(int Damage)
-    {
-    	//Health -= Damage;
-    }
     
     void setDesiredVelocity(float X, float Y)
     {

@@ -90,7 +90,7 @@ public class GameScreen implements Screen {
 	
 	private BSClient lobbyClient;
 	private BlockingQueue<UnitMap> msgQueue;
-	private Map<Integer, Unit> unitMap = new HashMap<Integer, Unit>();
+	static Map<Integer, Unit> unitMap = new HashMap<Integer, Unit>();
 	
 	public GameScreen() {
 		lobbyClient = BSClient.getInstance();

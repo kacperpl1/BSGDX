@@ -95,17 +95,21 @@ class GameThread extends Thread{
 				
 				GLUH.onUpdate(0.1f);
 				for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
-					Unit aux = (Unit) iter.next().getFixtureList().get(0).getUserData();
+					Unit aux = (Unit) iter.next().getUserData();
 					if(aux != null) {
 						aux.onUpdate(0.1f);
 						aux.updateUnitData();
-						if(aux.Health<=0)
-							iter.remove();
 					}
-				     
 				}
 				for(int i = 0; i < game.getPlayerList().size(); i++) {
 					game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
+				}
+				for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
+					Unit aux = (Unit) iter.next().getUserData();
+					if(aux != null && aux.Health<=0)
+					{
+							aux.Destroy();
+					}
 				}
 				Thread.sleep(100);
 			} catch (InterruptedException e) {

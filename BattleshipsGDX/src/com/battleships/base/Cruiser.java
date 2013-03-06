@@ -3,7 +3,7 @@ package com.battleships.base;
 
 public class Cruiser extends Unit {
 	
-	Cruiser(String Team, float InitialX, float InitialY, String Lane)
+	Cruiser(String Team, float InitialX, float InitialY)
     {
 		super(Team, InitialX, InitialY);
     	baseSprite.setScale(0.75f);
@@ -15,7 +15,8 @@ public class Cruiser extends Unit {
 	
 	void updateVelocity()
     {
-    	setVisualRotation(CollisionBody.getLinearVelocity().x, CollisionBody.getLinearVelocity().y);
+		if(CollisionBody.getLinearVelocity().len()>0)
+			setVisualRotation(CollisionBody.getLinearVelocity().x, CollisionBody.getLinearVelocity().y);
     }
 	
 	void onUpdate(float delta)

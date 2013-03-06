@@ -148,7 +148,6 @@ public class Projectile extends Actor{
 	
     void explode()
     {
-		Target.TakeDamage(Damage);
 		this.setVisible(false);
     	projectilepool.free(this);
     }

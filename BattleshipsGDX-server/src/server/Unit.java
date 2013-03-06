@@ -66,6 +66,7 @@ public abstract class Unit {
 	    fixtureDef.restitution = 0.0f;
 	    CollisionBody.createFixture(fixtureDef);  
 	    CollisionBody.getFixtureList().get(0).setUserData(this);
+	    CollisionBody.setUserData(this);
 	} 	
 	
 	float getX()
@@ -91,7 +92,9 @@ public abstract class Unit {
 		{
 			CollisionBody.destroyFixture(CollisionBody.getFixtureList().get(0));
 		}
+		CollisionBody.setUserData(null);
 		bodyPool.free(CollisionBody); 
+		ownerThread.unitMap.map.remove(hashCode());
     }
     
 	void onUpdate(float delta)
