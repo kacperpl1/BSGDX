@@ -101,12 +101,6 @@ public class PlayerShip extends Unit {
 	
 	void onUpdate(float delta)
 	{
-    	if(Health <=0)
-    	{
-    		Health = 0;
-    		Destroy();
-    		return;
-    	}
 		for(Weapon current : Inventory)
     	{
     		current.onUpdate(delta);

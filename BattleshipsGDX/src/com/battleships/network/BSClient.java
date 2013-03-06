@@ -127,7 +127,6 @@ public class BSClient implements Runnable	{
 						}
 					} else {
 						if(object instanceof UnitMap) {
-							System.out.println("got unitMap");
 							try {
 								mainGameMsgQueue.put((UnitMap)object);
 							} catch (InterruptedException e) {

@@ -12,7 +12,7 @@ public class GameLoopUpdateHandler{
 	{
 		ownerThread = owner;
 		WaveDelay = 30;
-		WaveCounter = 20;
+		WaveCounter = 29;
 	}
 	
 	public void SpawnWave()

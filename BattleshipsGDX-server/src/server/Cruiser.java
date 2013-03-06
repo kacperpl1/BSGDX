@@ -19,7 +19,7 @@ public class Cruiser extends Unit {
 	void updateVelocity()
     {
     	float velocity = DesiredVelocity.len();
-    	if(velocity > 1)
+    	if(velocity > 0)
     	{
     		CollisionBody.setLinearVelocity(DesiredVelocity.x*GameThread.WORLD_TO_BOX, DesiredVelocity.y*GameThread.WORLD_TO_BOX);
     	}
@@ -29,12 +29,7 @@ public class Cruiser extends Unit {
 	
 	void onUpdate(float delta)
     {
-    	if(Health<=0)
-    	{
-    		Health = 0;
-    		Destroy();
-        	return;
-    	}
+		updateVelocity();
     	gun.onUpdate(delta);
     	
     	if(gun.Enemies.size()>0)
@@ -89,6 +84,6 @@ public class Cruiser extends Unit {
 	    				setDesiredVelocity(-50,-50);
 	    		}
 	    	}
-    	}	
+    	}
     }
 }

@@ -94,11 +94,13 @@ class GameThread extends Thread{
 				// TODO Fixed step accumulator needed
 				
 				GLUH.onUpdate(0.1f);
-				
 				for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
-					Unit aux = (Unit) iter.next().getUserData();
+					Unit aux = (Unit) iter.next().getFixtureList().get(0).getUserData();
 					if(aux != null) {
 						aux.onUpdate(0.1f);
+						aux.updateUnitData();
+						if(aux.Health<=0)
+							iter.remove();
 					}
 				     
 				}

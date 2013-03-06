@@ -86,7 +86,6 @@ public abstract class Unit extends Actor {
 		} else {
 			team = "blue";
 		}
-		System.out.println(data.position.x + " " + data.position.y);
 		Unit unit;
 		switch(data.type) {
 			case SHIP : {
@@ -111,7 +110,7 @@ public abstract class Unit extends Actor {
 	
 	void updateUnitData(UnitData data)
 	{
-		CollisionBody.getPosition().set(data.position);
+		CollisionBody.setTransform(data.position, 0);
 		CollisionBody.setLinearVelocity(data.velocity);
 		Health = data.health;
 	}
@@ -195,7 +194,7 @@ public abstract class Unit extends Actor {
 	
     void TakeDamage(int Damage)
     {
-    	Health -= Damage;
+    	//Health -= Damage;
     }
     
     void setDesiredVelocity(float X, float Y)

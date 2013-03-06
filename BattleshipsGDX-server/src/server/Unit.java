@@ -40,7 +40,15 @@ public abstract class Unit {
 		uData.velocity = CollisionBody.getLinearVelocity();
 		uData.health = Health;
 		uData.type = unitType;
-		ownerThread.unitMap.map.put(hashCode(), uData);		
+		ownerThread.unitMap.map.put(hashCode(), uData);	
+	}
+	
+	void updateUnitData()
+	{
+		UnitData uData = ownerThread.unitMap.map.get(hashCode());
+		uData.position = CollisionBody.getPosition();
+		uData.velocity = CollisionBody.getLinearVelocity();
+		uData.health = Health;
 	}
 	
 	void createBody(float initialX, float initialY)
@@ -62,12 +70,12 @@ public abstract class Unit {
 	
 	float getX()
 	{
-		return CollisionBody.getPosition().x*GameThread.WORLD_TO_BOX;
+		return CollisionBody.getPosition().x*GameThread.BOX_WORLD_TO;
 	}
 	
 	float getY()
 	{
-		return CollisionBody.getPosition().y*GameThread.WORLD_TO_BOX;
+		return CollisionBody.getPosition().y*GameThread.BOX_WORLD_TO;
 	}	
 	
     void TakeDamage(int Damage, Unit Instigator)
@@ -88,12 +96,6 @@ public abstract class Unit {
     
 	void onUpdate(float delta)
 	{
-    	if(Health <=0)
-    	{
-    		Health = 0;
-    		Destroy();
-    		return;
-    	}
 		updateVelocity();
 		gun.onUpdate(delta);
 	}
