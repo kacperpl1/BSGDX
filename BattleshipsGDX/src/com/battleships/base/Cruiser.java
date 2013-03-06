@@ -18,14 +18,14 @@ public class Cruiser extends Unit {
 	
 	void updateVelocity()
     {
-    	float velocity = DesiredVelocity.len();
+    	/*float velocity = DesiredVelocity.len();
     	if(velocity > 1)
     	{
     		CollisionBody.setLinearVelocity(DesiredVelocity.x*GameScreen.WORLD_TO_BOX, DesiredVelocity.y*GameScreen.WORLD_TO_BOX);
         	setVisualRotation(DesiredVelocity.x, DesiredVelocity.y);
     	}
     	else
-    		CollisionBody.setLinearVelocity(0, 0);
+    		CollisionBody.setLinearVelocity(0, 0);*/
     }
 	
 	void onUpdate(float delta)
@@ -38,7 +38,7 @@ public class Cruiser extends Unit {
     	}
     	gun.onUpdate(delta);
     	
-    	if(gun.Enemies.size()>0)
+    	/*if(gun.Enemies.size()>0)
     	{
     		setDesiredVelocity(DesiredVelocity.x/2,DesiredVelocity.y/2);
     	}
@@ -90,6 +90,6 @@ public class Cruiser extends Unit {
 	    				setDesiredVelocity(-50,-50);
 	    		}
 	    	}
-    	}	
+    	}*/	
     }
 }

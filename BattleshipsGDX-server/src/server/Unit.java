@@ -39,7 +39,7 @@ public abstract class Unit {
 		uData.position = CollisionBody.getPosition();
 		uData.velocity = CollisionBody.getLinearVelocity();
 		uData.health = Health;
-		uData.type = UnitData.Type.TOWER;
+		uData.type = unitType;
 		ownerThread.unitMap.map.put(hashCode(), uData);		
 	}
 	

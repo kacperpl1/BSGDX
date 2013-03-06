@@ -1,5 +1,6 @@
 package server;
 
+import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -39,6 +40,7 @@ class GameThread extends Thread{
 	static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 	
 	public UnitMap unitMap = new UnitMap();
+	private server.GameLoopUpdateHandler GLUH;
 	
 	public GameThread(ServerGame game){
 		this.game = game;
@@ -48,6 +50,7 @@ class GameThread extends Thread{
 		physicsWorld = new World(new Vector2(0, 0), true);
 		contactListener = createContactListener();
 		physicsWorld.setContactListener(contactListener);
+		GLUH = new GameLoopUpdateHandler(this);
 		
 		BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.StaticBody; 
@@ -80,9 +83,6 @@ class GameThread extends Thread{
 				new Tower("red",current.x-1024+16,-current.y+1024, this);
 			}
 	    }
-		for(int i = 0; i < game.getPlayerList().size(); i++) {
-			game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
-		}
 	}
 	
 	public void run(){
@@ -93,12 +93,17 @@ class GameThread extends Thread{
 				
 				// TODO Fixed step accumulator needed
 				
-				while(physicsWorld.getBodies().hasNext())
-				{
-					Unit aux = (Unit) physicsWorld.getBodies().next().getUserData();
+				GLUH.onUpdate(0.1f);
+				
+				for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
+					Unit aux = (Unit) iter.next().getUserData();
 					if(aux != null) {
 						aux.onUpdate(0.1f);
 					}
+				     
+				}
+				for(int i = 0; i < game.getPlayerList().size(); i++) {
+					game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
 				}
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
