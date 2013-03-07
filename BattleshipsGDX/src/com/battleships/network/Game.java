@@ -49,6 +49,7 @@ public class Game {
 	public void translateServerString(String received) {
 	    StringTokenizer part = new StringTokenizer(received);
 	    part.nextToken();
+	    playerList.clear();
 	    while(part.hasMoreTokens()) {
 	    	String id = part.nextToken();
 	    	String name = part.nextToken();

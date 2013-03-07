@@ -17,7 +17,9 @@ public class ServerGameList{
 	
 	public ServerGame createGame(String id, String name) {
 		ServerGame game = new ServerGame(id, name);
-		gameList.add(game);
+		synchronized(gameList) {
+			gameList.add(game);
+		}
 		return game;
 	}
 	
@@ -61,11 +63,11 @@ public class ServerGameList{
 		return info;
 	}
 	
-	public void remove(String name){
+	public void remove(String id){
 		synchronized(gameList) {
-			for(int i = 0; i < gameList.size(); i++){
-				if(gameList.get(i).getName().equals(name)){
-					gameList.remove(i);
+			for(ServerGame game : gameList) {
+				if(game.getId().equals(id)) {
+					gameList.remove(game);
 					break;
 				}
 			}
@@ -97,14 +99,18 @@ class ServerGame {
 		return this.name;
 	}
 	public boolean addPlayer(ServerPlayer player){
-		if(playerList.size() < this.MAX_PLAYERS){
-			playerList.add(player);
-			return true;
+		synchronized(playerList) {
+			if(playerList.size() < this.MAX_PLAYERS){
+				playerList.add(player);
+				return true;
+			}
+			return false;
 		}
-		return false;
 	}
 	public void removePlayer(ServerPlayer player){
-		playerList.remove(player.getId());
+		synchronized(playerList) {
+			playerList.remove(player.getId());
+		}
 	}
 	
 	public ServerPlayerList getPlayerList(){

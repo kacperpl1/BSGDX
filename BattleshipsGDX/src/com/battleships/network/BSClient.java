@@ -217,7 +217,7 @@ public class BSClient implements Runnable	{
 			ResponseMessage req = new ResponseMessage();
 			req.text = "4 " + this.clientPlayer.getGameId() + " " + this.clientPlayer.getId();
 			client.sendUDP(req);
-			gameList.getGameById(this.clientPlayer.getGameId()).removePlayer(this.clientPlayer);
+			gameList.getGameById(this.clientPlayer.getGameId()).getPlayerList().clear();
 			this.clientPlayer.leaveGame();
 			this.clientPlayer.setHost(false);
 		}catch(Exception e){

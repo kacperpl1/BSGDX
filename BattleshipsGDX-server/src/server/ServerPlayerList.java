@@ -26,16 +26,29 @@ public class ServerPlayerList
 			}
 		}
 	}
-	public String toString() {
+	public String mainLobbyToString() {
 		String info = "";
 		synchronized(list) {
 			for(ServerPlayer player : list) {
-				info += player.getId() + " " + player.getName() + " ";
+				if(!player.isInGame()) {
+					info += player.getId() + " " + player.getName() + " ";
+				}
 			}
 		}
 		return info;
 	}
-	public String toString(int flag){
+	public String gameLobbyToString() {
+		String info = "";
+		synchronized(list) {
+			for(ServerPlayer player : list) {
+				if(player.isInGame()) {
+					info += player.getId() + " " + player.getName() + " ";
+				}
+			}
+		}
+		return info;
+	}
+	public String slotListToString() {
 		String info = "";
 		String[] strList = {"0 Empty", "0 Empty", "0 Empty", "0 Empty", "0 Empty", "0 Empty"};
 		synchronized(list) {
@@ -103,14 +116,16 @@ public class ServerPlayerList
 		}
 	}
 	public void remove(int index){
-		list.remove(index);
+		synchronized(list){
+			list.remove(index);
+		}
 	}
 }
 
 class ServerPlayer {
 	//name
+	private boolean inGame = false;
 	private String name = "";
-	private String ip = "";
 	private Connection connection;
 	private int slotNumber = -1;
 	private String id = "";
@@ -143,9 +158,6 @@ class ServerPlayer {
 	public String getName()	{
 		return name;
 	}
-	public String getIP() {
-		return ip;
-	}
 	public Connection getConnection() {
 		return connection;
 	}
@@ -157,5 +169,14 @@ class ServerPlayer {
 	}
 	public String getId(){
 		return this.id;
+	}
+	public void joinGame() {
+		this.inGame = true;
+	}
+	public void leaveGame() {
+		this.inGame = false;
+	}
+	public boolean isInGame() {
+		return this.inGame;
 	}
 }

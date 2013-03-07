@@ -61,4 +61,7 @@ public class GameList {
 	public void reset(){
 		GameList.msg = "";
 	}
+	public void clear() {
+		this.gameList.clear();
+	}
 }

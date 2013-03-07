@@ -69,7 +69,7 @@ class Translator extends Thread {
 	protected LinkedList<GameThread> gameThreadList;
 	protected String message;
 	protected Connection connection;
-	private ResponseMessage reply;
+	private ResponseMessage reply = new ResponseMessage();
 	
 	public Translator(ServerPlayerList pL, ServerGameList gL, LinkedList<GameThread> gTL, String m, Connection c) {
 		playerList = pL;
@@ -86,42 +86,22 @@ class Translator extends Thread {
 			// add client to playerList and send new 
 			// playerLists and gameList to all alive clients
 			case "0" : {
-				String id = part.nextToken();
-				String name = part.nextToken();
-				if(!playerList.exists(id)){
-					ServerPlayer player = new ServerPlayer(id, name, connection);
+				String uId = part.nextToken();
+				String uName = part.nextToken();
+				if(!playerList.exists(uId)){
+					ServerPlayer player = new ServerPlayer(uId, uName, connection);
 					playerList.add(player);
 					player.resetKeys();
 					
-					reply = new ResponseMessage();
+					this.sendPlayerList();
+					this.sendGameList();
 					
-					reply.text = "0 " + playerList.toString();
-					for(int i = 0; i < playerList.size(); i++){
-						playerList.getServerPlayer(i).getConnection().sendUDP(reply);
-					}
-					
-					reply.text = "1 " + gameList.toString();
-					for(int i = 0; i < playerList.size(); i++){
-						playerList.getServerPlayer(i).getConnection().sendUDP(reply);
-					}
 				} else {
-					playerList.getById(id).resetKeys();
-					boolean flag = false;
+					playerList.getById(uId).resetKeys();
 					// Send new playerList only if someone has disconnected
-					for(int i = 0; i < playerList.size(); i++){
-						if(!playerList.getServerPlayer(i).getConnection().isConnected()){
-							synchronized(playerList){
-								playerList.remove(i);
-							}
-							flag = true;
-						}
-					}
-					if(flag){
-						reply = new ResponseMessage();
-						reply.text = "0 " + playerList.toString();
-						for(int i = 0; i < playerList.size(); i++){
-							playerList.getServerPlayer(i).getConnection().sendUDP(reply);
-						}
+					boolean someoneDisconnected = this.checkForDisconnections();
+					if(someoneDisconnected){
+						this.sendPlayerList();
 					}
 				}
 				break;
@@ -132,34 +112,18 @@ class Translator extends Thread {
 			case "1" : {
 				String gId = part.nextToken();
 				String gName = part.nextToken();
-				String id = part.nextToken();
-				reply = new ResponseMessage();
+				String uId = part.nextToken();
+				
 				ServerGame sGame;
-				synchronized(gameList) {
-					sGame = gameList.createGame(gId, gName);
-					sGame.addPlayer(playerList.getById(id));
-				}
-				System.out.println("Created game " + gId + " by user " + id + "!");
+				sGame = gameList.createGame(gId, gName);
+				sGame.addPlayer(playerList.getById(uId));
+				playerList.getById(uId).joinGame();
+				System.out.println("Created game " + gId + " by user " + uId + "!");
 				
-				reply.text = "2 " + sGame.getPlayerList().toString(1);
-				for(int i = 0; i < sGame.getPlayerList().size(); i++){
-					sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
-				}
+				this.sendPlayerList();
+				this.sendGameList();
+				this.sendSlotList(sGame);
 				
-//				GameThread game = new GameThread(sGame);
-//				
-//				gameThreadList.add(game);
-//				game.start();
-				
-				reply.text = "0 " + playerList.toString();
-				for(int i = 0; i < playerList.size(); i++){
-					playerList.getServerPlayer(i).getConnection().sendUDP(reply);
-				}
-				
-				reply.text = "1 " + gameList.toString();
-				for(int i = 0; i < playerList.size(); i++){
-					playerList.getServerPlayer(i).getConnection().sendUDP(reply);
-				}
 				break;
 			}
 			// Take slot and send list of players who
@@ -168,17 +132,12 @@ class Translator extends Thread {
 				String gId = part.nextToken();
 				String uId = part.nextToken();
 				String slotNumber = part.nextToken();
-				reply = new ResponseMessage();
 				System.out.println("Player " + uId + " took slot " + slotNumber + " in game " + gId);
 				
 				ServerGame sGame = gameList.getById(gId);
-				
 				sGame.getPlayerList().getById(uId).setSlotNumber(Integer.valueOf(slotNumber));
 				
-				reply.text = "2 " + sGame.getPlayerList().toString(1);
-				for(int i = 0; i < sGame.getPlayerList().size(); i++){
-					sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
-				}
+				this.sendSlotList(sGame);
 				
 				break;
 			}
@@ -186,29 +145,15 @@ class Translator extends Thread {
 			case "3" : {
 				String gId = part.nextToken();
 				String uId = part.nextToken();
-				ServerGame sGame;
-				synchronized(gameList) {
-					sGame = gameList.getById(gId);
-					sGame.addPlayer(playerList.getById(uId));
-				}
 				
+				ServerGame sGame = gameList.getById(gId);
+				sGame.addPlayer(playerList.getById(uId));
+				playerList.getById(uId).joinGame();
 				System.out.println("Player " + uId + " joined game " + gId + "!");
 				
-				reply = new ResponseMessage();
-				reply.text = "0 " + playerList.toString();
-				for(int i = 0; i < playerList.size(); i++){
-					playerList.getServerPlayer(i).getConnection().sendUDP(reply);
-				}
-				
-				reply.text = "2 " + sGame.getPlayerList().toString(1);
-				for(int i = 0; i < sGame.getPlayerList().size(); i++){
-					sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
-				}
-				
-				reply.text = "3 " + sGame.getPlayerList().toString();
-				for(int i = 0; i < sGame.getPlayerList().size(); i++){
-					sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
-				}
+				this.sendPlayerList();
+				this.sendSlotList(sGame);
+				this.sendInGamePlayerList(sGame);
 				
 				break;
 			}
@@ -216,52 +161,22 @@ class Translator extends Thread {
 			case "4" : {
 				String gId = part.nextToken();
 				String uId = part.nextToken();
-				reply = new ResponseMessage();
 				
-				ServerGame sGame;
-				synchronized(gameList) {
-					sGame = gameList.getById(gId);
-					sGame.removePlayer(playerList.getById(uId));
-				}
+				ServerGame sGame = gameList.getById(gId);
+				sGame.removePlayer(playerList.getById(uId));
+				playerList.getById(uId).setSlotNumber(-1);
+				playerList.getById(uId).leaveGame();
 				System.out.println("Player " + uId + " left game" + gId + "!");
 				
-				playerList.getById(uId).setSlotNumber(-1);
+				this.sendPlayerList();
 				
-				reply.text = "0 " + playerList.toString();
-				for(int i = 0; i < playerList.size(); i++){
-					playerList.getServerPlayer(i).getConnection().sendUDP(reply);
-				}
-				
-				System.out.println("playerlist size " + sGame.getPlayerList().size());
 				if(sGame.getPlayerList().size() > 0){
-					reply.text = "2 " + sGame.getPlayerList().toString(1);
-					for(int i = 0; i < sGame.getPlayerList().size(); i++){
-						sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
-					}
-					
-					reply.text = "3 " + sGame.getPlayerList().toString();
-					for(int i = 0; i < sGame.getPlayerList().size(); i++){
-						System.out.println("send to player " + sGame.getPlayerList().getServerPlayer(i).getId());
-						sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
-					}
-					
-				} //else {
-//					for(int i = 0; i < gameThreadList.size(); i++){
-//						if(gameThreadList.get(i).getName().equals(gName)){
-//							gameThreadList.get(i).stopGame();
-//							gameThreadList.get(i).interrupt();
-//							gameThreadList.remove(i);
-//							
-//							break;
-//						}
-//					}
-//					gameList.remove(gName);
-//					replyStr = "1 " + gameList.toString();
-//					reply.text = replyStr;
-//					for(int i = 0; i < playerList.size(); i++){
-//						playerList.getServerPlayer(i).getConnection().sendUDP(reply);
-//					}
-//				}
+					this.sendSlotList(sGame);
+					this.sendInGamePlayerList(sGame);
+				} else {
+					gameList.remove(gId);
+					this.sendGameList();
+				}
 				
 				break;
 			}
@@ -270,12 +185,10 @@ class Translator extends Thread {
 				String gId = part.nextToken();
 				String uId = part.nextToken();
 				String ready = part.nextToken();
-				reply = new ResponseMessage();
-				reply.text = "5 " + uId + " " + ready;
+				
 				ServerGame sGame = gameList.getById(gId);
-				for(int i = 0; i < sGame.getPlayerList().size(); i++){
-					sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
-				}
+				
+				this.sendReadyList(sGame, uId, ready);
 				
 				break;
 			}
@@ -284,11 +197,59 @@ class Translator extends Thread {
 				String gId = part.nextToken();
 				
 				runGameThread(gId);
+				gameList.remove(gId);
+				
+				this.sendGameList();
 				
 				break;
 			}
 			default : System.out.println("Unhandled message from client!"); break;
 		}
+	}
+	
+	public void sendPlayerList() {
+		reply.text = "0 " + playerList.mainLobbyToString();
+		for(int i = 0; i < playerList.size(); i++){
+			playerList.getServerPlayer(i).getConnection().sendUDP(reply);
+		}
+	}
+	
+	public void sendGameList() {
+		reply.text = "1 " + gameList.toString();
+		for(int i = 0; i < playerList.size(); i++){
+			playerList.getServerPlayer(i).getConnection().sendUDP(reply);
+		}
+	}
+	
+	public void sendSlotList(ServerGame sGame) {
+		reply.text = "2 " + sGame.getPlayerList().slotListToString();
+		for(int i = 0; i < sGame.getPlayerList().size(); i++){
+			sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
+		}
+	}
+	
+	public void sendInGamePlayerList(ServerGame sGame) {
+		reply.text = "3 " + sGame.getPlayerList().gameLobbyToString();
+		for(int i = 0; i < sGame.getPlayerList().size(); i++){
+			sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
+		}
+	}
+	
+	public void sendReadyList(ServerGame sGame, String uId, String ready) {
+		reply.text = "5 " + uId + " " + ready;
+		for(int i = 0; i < sGame.getPlayerList().size(); i++){
+			sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
+		}
+	}
+	
+	public boolean checkForDisconnections() {
+		for(int i = 0; i < playerList.size(); i++){
+			if(!playerList.getServerPlayer(i).getConnection().isConnected()){
+				playerList.remove(i);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public boolean runGameThread(String gId) {
@@ -305,5 +266,5 @@ class Translator extends Thread {
 			return false;
 		}
 	}
-
+	
 }
