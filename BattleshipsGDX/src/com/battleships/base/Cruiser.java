@@ -15,8 +15,10 @@ public class Cruiser extends Unit {
 	
 	void updateVelocity()
     {
-		if(CollisionBody.getLinearVelocity().len()>0)
-			setVisualRotation(CollisionBody.getLinearVelocity().x, CollisionBody.getLinearVelocity().y);
+		if(Math.abs(CollisionBody.getPosition().x*GameScreen.BOX_WORLD_TO - this.getX())>1 || 
+				Math.abs(CollisionBody.getPosition().y*GameScreen.BOX_WORLD_TO - this.getY())>1)
+			setVisualRotation(CollisionBody.getPosition().x - this.getX()*GameScreen.WORLD_TO_BOX, 
+					CollisionBody.getPosition().y - this.getY()*GameScreen.WORLD_TO_BOX);
     }
 	
 	void onUpdate(float delta)

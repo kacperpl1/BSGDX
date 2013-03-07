@@ -19,10 +19,10 @@ public abstract class Unit extends Actor {
 
 	String team;
 	public static String lastSpawnTeam;
-    int Health = 1000;
+    short Health = 1000;
     Sprite baseSprite;
 	Sprite colorSprite;
-	int MaxHealth = 1000;
+	short MaxHealth = 1000;
 	int moveSpeed = 50;
 	int goldworth = 50;
 	Body CollisionBody;
@@ -34,7 +34,7 @@ public abstract class Unit extends Actor {
 	protected int VisibleEnemiesCount = 0;
 	protected LinkedList<Unit> VisibleEnemies = new LinkedList<Unit>(); //used by allies
 	Actor icon;
-	private Vector2 CurrentPosition;
+	protected Vector2 CurrentPosition;
 	static BodyPool bodyPool = new BodyPool();
 	
 	Unit(String Team, float InitialX, float InitialY)
@@ -111,7 +111,6 @@ public abstract class Unit extends Actor {
 	void updateUnitData(UnitData data)
 	{
 		CollisionBody.setTransform(data.position, 0);
-		CollisionBody.setLinearVelocity(data.velocity);
 		Health = data.health;
 	}
 	
@@ -212,7 +211,7 @@ public abstract class Unit extends Actor {
     
     void setVisualRotation(float X, float Y)
     {
-    	int Angle = (int) Math.toDegrees(-Math.atan2(X, -Y));
+    	int Angle = (int) Math.toDegrees(-Math.atan2(X+0.0001f, -Y));
     	if(Angle < 0) 
     		Angle += 360;
 

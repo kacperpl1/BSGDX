@@ -15,8 +15,8 @@ public abstract class Unit {
 	BodyPool bodyPool;
 
 	String team;
-    int Health = 1000;
-	int MaxHealth = 1000;
+    short Health = 1000;
+	short MaxHealth = 1000;
 	int moveSpeed = 50;
 	int goldworth = 50;
 	Body CollisionBody;
@@ -37,7 +37,6 @@ public abstract class Unit {
 	{
 		UnitData uData = new UnitData();
 		uData.position = CollisionBody.getPosition();
-		uData.velocity = CollisionBody.getLinearVelocity();
 		uData.health = Health;
 		uData.type = unitType;
 		ownerThread.unitMap.map.put(hashCode(), uData);	
@@ -47,7 +46,6 @@ public abstract class Unit {
 	{
 		UnitData uData = ownerThread.unitMap.map.get(hashCode());
 		uData.position = CollisionBody.getPosition();
-		uData.velocity = CollisionBody.getLinearVelocity();
 		uData.health = Health;
 	}
 	
