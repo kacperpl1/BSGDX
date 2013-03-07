@@ -279,15 +279,30 @@ class Translator extends Thread {
 				
 				break;
 			}
+			// Start game
 			case "6" : {
 				String gId = part.nextToken();
-				ServerGame sGame = gameList.getById(gId);
-				GameThread gameThread = new GameThread(sGame);
-				this.gameThreadList.add(gameThread);
-				gameThread.start();
+				
+				runGameThread(gId);
+				
 				break;
 			}
 			default : System.out.println("Unhandled message from client!"); break;
+		}
+	}
+	
+	public boolean runGameThread(String gId) {
+		synchronized(gameThreadList) {
+			for(GameThread thread : gameThreadList) {
+				if(thread.getName().equals(gId)) {
+					return true;
+				}
+			}
+			ServerGame sGame = gameList.getById(gId);
+			GameThread gameThread = new GameThread(sGame);
+			this.gameThreadList.add(gameThread);
+			gameThread.start();
+			return false;
 		}
 	}
 

@@ -88,32 +88,36 @@ class GameThread extends Thread{
 	public void run(){
 		System.out.println("game " + game.getName() + " started");
 		while(running){
-			try {
-				physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
-				
-				// TODO Fixed step accumulator needed
-				
-				GLUH.onUpdate(0.1f);
-				for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
-					Unit aux = (Unit) iter.next().getUserData();
-					if(aux != null) {
-						aux.onUpdate(0.1f);
-						aux.updateUnitData();
+			if(playersAreConnected()) {
+				try {
+					physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
+					
+					// TODO Fixed step accumulator needed
+					
+					GLUH.onUpdate(0.1f);
+					for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
+						Unit aux = (Unit) iter.next().getUserData();
+						if(aux != null) {
+							aux.onUpdate(0.1f);
+							aux.updateUnitData();
+						}
 					}
-				}
-				for(int i = 0; i < game.getPlayerList().size(); i++) {
-					game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
-				}
-				for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
-					Unit aux = (Unit) iter.next().getUserData();
-					if(aux != null && aux.Health<=0)
-					{
-							aux.Destroy();
+					for(int i = 0; i < game.getPlayerList().size(); i++) {
+						game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
 					}
+					for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
+						Unit aux = (Unit) iter.next().getUserData();
+						if(aux != null && aux.Health<=0)
+						{
+								aux.Destroy();
+						}
+					}
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			} else {
+				this.running = false;
 			}
 		}
 		System.out.println("game " + game.getName() + " stopped");
@@ -121,6 +125,15 @@ class GameThread extends Thread{
 	
 	public void stopGame(){
 		this.running = false;
+	}
+	
+	public boolean playersAreConnected() {
+		for(int i = 0; i < game.getPlayerList().size(); i++) {
+			if(game.getPlayerList().getServerPlayer(i).getConnection().isConnected()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private ContactListener createContactListener() {
