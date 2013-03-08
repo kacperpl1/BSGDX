@@ -171,6 +171,12 @@ public abstract class Unit extends Actor {
 		gun.onUpdate(delta);
 	}
 	
+    void TakeDamage(int Damage, Unit Instigator)
+    {
+    	if(GameScreen.test_mode)
+    		Health -= Damage;
+    }
+	
 	void Destroy()
 	{
 		GameScreen.hudStage.getRoot().removeActor(icon);

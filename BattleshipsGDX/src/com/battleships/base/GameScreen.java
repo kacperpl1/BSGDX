@@ -64,6 +64,7 @@ public class GameScreen implements Screen {
     static final float WORLD_TO_BOX=0.01f;  
     static final float BOX_WORLD_TO=100.0f; 
     static boolean debug_mode=false;
+    static boolean test_mode=false;
     
     long frameTime = System.nanoTime();
     long lastFrameTime = System.nanoTime();
@@ -235,14 +236,17 @@ public class GameScreen implements Screen {
 		
 		new PlayerShip("red", 0f,768f, Color.ORANGE);
 		
-		objectGroup = map.objectGroups.get(1);
-//		for (TiledObject current : objectGroup.objects) {
-//			
-//			if(current.y>1024)
-//				new Tower("blue",current.x-1024+16,-current.y+1024);
-//			else
-//				new Tower("red",current.x-1024+16,-current.y+1024);
-//	    }
+		if(test_mode)
+		{
+			objectGroup = map.objectGroups.get(1);
+			for (TiledObject current : objectGroup.objects) {
+				
+				if(current.y>1024)
+					new Tower("blue",current.x-1024+16,-current.y+1024);
+				else
+					new Tower("red",current.x-1024+16,-current.y+1024);
+			}
+		}
 		
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera(w, h);

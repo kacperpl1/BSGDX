@@ -34,31 +34,29 @@ public class MenuScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-        // register the button "start game"
-        TextButton startGameButton = new TextButton( "Start game", Resources.skin );
-        startGameButton.addListener(new ClickListener(){
+        TextButton practiceButton = new TextButton( "Practice", Resources.skin );
+        practiceButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event,float x,float y )
             {
+            	GameScreen.test_mode=true;
                 BaseGame.instance.setScreen( new GameScreen() );
             }
         } );
-        // register the button "options"
+        TextButton networkButton = new TextButton( "Network", Resources.skin );
+        networkButton.addListener( new ClickListener() {
+            @Override
+            public void clicked(InputEvent event,float x,float y )
+            {
+            	BaseGame.instance.setScreen( new MainLobbyScreen(menuScreen) );
+            }
+        } );
         TextButton optionsButton = new TextButton( "Options", Resources.skin );
         optionsButton.addListener( new ClickListener() {
             @Override
             public void clicked(InputEvent event,float x,float y )
             {
             	//BaseGame.instance.setScreen( game.getOptionsScreen() );
-            }
-        } );
-        // register the button "hall of fame"
-        TextButton aboutButton = new TextButton( "About", Resources.skin );
-        aboutButton.addListener( new ClickListener() {
-            @Override
-            public void clicked(InputEvent event,float x,float y )
-            {
-            	BaseGame.instance.setScreen( new MainLobbyScreen(menuScreen) );
             }
         } );
 
@@ -73,15 +71,15 @@ public class MenuScreen implements Screen {
         // move to the next row
         table.row();
         // add the start-game button sized 300x60 with a margin-bottom of 10 units
-        table.add( startGameButton ).size( 300f, 60f ).uniform().spaceBottom( 10 );
+        table.add( practiceButton ).size( 300f, 60f ).uniform().spaceBottom( 10 );
         // move to the next row
         table.row();
         // add the options button in a cell similiar to the start-game button's cell
-        table.add( optionsButton ).uniform().fill().spaceBottom( 10 );
+        table.add( networkButton ).uniform().fill().spaceBottom( 10 );
         // move to the next row
         table.row();
         // add the about button in a cell similiar to the start-game button's cell
-        table.add( aboutButton ).uniform().fill();
+        table.add( optionsButton ).uniform().fill();
     }
 
 	@Override

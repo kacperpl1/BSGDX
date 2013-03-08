@@ -11,7 +11,36 @@ public class GameLoopUpdateHandler{
 	public GameLoopUpdateHandler()
 	{
 		WaveDelay = 30;
-		WaveCounter = 20;
+		WaveCounter = 25;
+	}
+	
+	public void SpawnWave()
+	{
+
+		new PracticeCruiser("red",-32, 512,"MID");
+		new PracticeCruiser("red",0, 480,"MID");
+		new PracticeCruiser("red",32, 512,"MID");
+		
+		new PracticeCruiser("red",-256, 670,"LEFT");
+		new PracticeCruiser("red",-288, 700,"LEFT");
+		new PracticeCruiser("red",-256, 700,"LEFT");
+		
+		new PracticeCruiser("red",256, 670,"RIGHT");
+		new PracticeCruiser("red",288, 700,"RIGHT");
+		new PracticeCruiser("red",256, 700,"RIGHT");
+
+		new PracticeCruiser("blue",-32, -512,"MID");
+		new PracticeCruiser("blue",0, -480,"MID");
+		new PracticeCruiser("blue",32, -512,"MID");
+		
+		new PracticeCruiser("blue",-256, -670,"LEFT");
+		new PracticeCruiser("blue",-288, -700,"LEFT");
+		new PracticeCruiser("blue",-256, -700,"LEFT");
+		
+		new PracticeCruiser("blue",256, -670,"RIGHT");
+		new PracticeCruiser("blue",288, -700,"RIGHT");
+		new PracticeCruiser("blue",256, -700,"RIGHT");
+		
 	}
 
 	public void onUpdate(float pSecondsElapsed) {
@@ -27,6 +56,8 @@ public class GameLoopUpdateHandler{
 					iter.remove();
 			}
 			WaveCounter=0;
+			if(GameScreen.test_mode)
+				SpawnWave();
 		}
 	}
 }
