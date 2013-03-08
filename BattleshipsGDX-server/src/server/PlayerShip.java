@@ -18,15 +18,16 @@ public class PlayerShip extends Unit {
 	
 	public LinkedList<PlayerWeapon> Inventory = new LinkedList<PlayerWeapon>();
 	
-	PlayerShip(String Team, float InitialX, float InitialY, GameThread owner, Color PlayerColor)
+	PlayerShip(String Team, float InitialX, float InitialY, GameThread owner, int slot)
     {
 		super(Team, InitialX, InitialY, owner);
     	moveSpeed = 150;
     	MaxHealth = 2500;
     	Health = MaxHealth;
-    	createUnitData(UnitData.Type.SHIP);
+    	createUnitData(UnitData.Type.SHIP, slot);
+    	
     }
-	
+
 	void setVelocity()
     {
     	float velocity = CurrentVelocity.len();

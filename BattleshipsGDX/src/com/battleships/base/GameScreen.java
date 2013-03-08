@@ -229,12 +229,34 @@ public class GameScreen implements Screen {
 			touchpad.setBounds(knobsize/2,0, knobsize, knobsize);
 		hudStage.addActor(touchpad);
 		
-		LocalPlayerTeam = "blue";
-		localPlayerShip = new PlayerShip("blue", 0f,-768f, Color.CYAN);
+		
+		UnitMap message = null;
+		try {
+            message = msgQueue.take();
+            handleMessage(message);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+		
+		for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
+			if(entry.getValue().slot == lobbyClient.getPlayer().getSlotNumber()) {
+				localPlayerShip = (PlayerShip) unitMap.get(entry.getKey());
+				break;
+			}
+		}
+		
+		if(lobbyClient.getPlayer().getSlotNumber() < 3) {
+			LocalPlayerTeam = "red";
+		} else {
+			LocalPlayerTeam = "blue";
+		}
+		
+//		LocalPlayerTeam = "blue";
+//		localPlayerShip = new PlayerShip("blue", 0f,-768f, Color.CYAN);
 		localPlayerDirection = new Vector2();
 		new Shop(localPlayerShip);
-		
-		new PlayerShip("red", 0f,768f, Color.ORANGE);
+//		
+//		new PlayerShip("red", 0f,768f, Color.ORANGE);
 		
 		if(test_mode)
 		{

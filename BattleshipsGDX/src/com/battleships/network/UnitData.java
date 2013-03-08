@@ -11,5 +11,6 @@ public class UnitData implements Serializable {
 	}
 	public Vector2 position = new Vector2(0,0);
 	public short health = -1;
+	public int  slot = -1;
 	public Type type = Type.UNKNOWN;
 }

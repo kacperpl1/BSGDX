@@ -5,7 +5,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
@@ -16,13 +15,21 @@ public class PlayerShip extends Unit {
 	
 	public LinkedList<PlayerWeapon> Inventory = new LinkedList<PlayerWeapon>();
 	
-	PlayerShip(String Team, float InitialX, float InitialY, Color PlayerColor)
+	PlayerShip(String Team, float InitialX, float InitialY, int slot)
     {
 		super(Team, InitialX, InitialY);
     	moveSpeed = 150;
     	MaxHealth = 2500;
     	Health = MaxHealth;
-		colorSprite.setColor(PlayerColor);
+    	switch(slot) {
+			case 0 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.RED); break;
+			case 1 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.PINK); break;
+			case 2 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.ORANGE); break;
+			case 3 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.BLUE); break;
+			case 4 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.GREEN); break;
+			case 5 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.YELLOW); break;
+			default : break;
+    	}
     	visor = new Visor(this);
     	setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
     }

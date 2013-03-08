@@ -89,7 +89,7 @@ public abstract class Unit extends Actor {
 		Unit unit;
 		switch(data.type) {
 			case SHIP : {
-				unit = new PlayerShip(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO, Color.WHITE);
+				unit = new PlayerShip(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO, data.slot);
 				break;
 			}
 			case CREEP : {

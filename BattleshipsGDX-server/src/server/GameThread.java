@@ -1,5 +1,6 @@
 package server;
 
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -86,6 +87,19 @@ class GameThread extends Thread{
 				new Tower("red",current.x-1024+16,-current.y+1024, this);
 			}
 	    }
+		int slot;
+		for(int i = 0; i < game.getPlayerList().size(); i++) {
+			slot = game.getPlayerList().getServerPlayer(i).getSlotNumber();
+			if( slot < 3) {
+				new PlayerShip("red", 0f, 768f, this, slot);
+			} else {
+				new PlayerShip("blue", 0f, -768f, this, slot);
+			}
+		}
+		
+		for(int i = 0; i < game.getPlayerList().size(); i++) {
+			game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
+		}
 	}
 	
 	public void run(){
