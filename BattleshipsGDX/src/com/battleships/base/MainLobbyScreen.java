@@ -40,10 +40,12 @@ public class MainLobbyScreen implements Screen {
 	protected volatile boolean queueFlag = true;
 	private Thread messenger;
 	
+	private BSPreferences prefs = new BSPreferences();
+	
 	public MainLobbyScreen(final Screen parentScreen){
 		// Get instance of BSClient and start it
 		lobbyClient = BSClient.getInstance();
-	    lobbyClient.init("Battleship");
+	    lobbyClient.init(prefs.getUserName());
 		try{
 			lobbyClient.start();
 		}catch(Exception e){
@@ -92,7 +94,7 @@ public class MainLobbyScreen implements Screen {
 					public void canceled () {
 						gameName = "";
 					}
-				}, "Enter name of game", "game name");
+				}, "Enter name of game", prefs.getUserName()+"\'s game");
             }
         } );
 		

@@ -1,5 +1,8 @@
 package server;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -102,6 +105,11 @@ class GameThread extends Thread{
 							aux.updateUnitData();
 						}
 					}
+//					ByteArrayOutputStream bOut = new ByteArrayOutputStream();  
+//					ObjectOutputStream oOut = new ObjectOutputStream(bOut);  
+//					oOut.writeObject(unitMap);  
+//					oOut.close();  
+//					System.out.println("The size of the object is: "+bOut.toByteArray().length);  
 					for(int i = 0; i < game.getPlayerList().size(); i++) {
 						game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
 					}
@@ -115,6 +123,8 @@ class GameThread extends Thread{
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+//				} catch (IOException e) {
+//					e.printStackTrace();
 				}
 			} else {
 				this.running = false;

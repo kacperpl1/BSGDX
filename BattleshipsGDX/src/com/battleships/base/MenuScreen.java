@@ -56,7 +56,7 @@ public class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event,float x,float y )
             {
-            	//BaseGame.instance.setScreen( game.getOptionsScreen() );
+            	BaseGame.instance.setScreen( new OptionsScreen(menuScreen) );
             }
         } );
 
