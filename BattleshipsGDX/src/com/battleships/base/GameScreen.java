@@ -11,7 +11,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -229,37 +228,13 @@ public class GameScreen implements Screen {
 			touchpad.setBounds(knobsize/2,0, knobsize, knobsize);
 		hudStage.addActor(touchpad);
 		
-		
-		UnitMap message = null;
-		try {
-            message = msgQueue.take();
-            handleMessage(message);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-		
-		for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
-			if(entry.getValue().slot == lobbyClient.getPlayer().getSlotNumber()) {
-				localPlayerShip = (PlayerShip) unitMap.get(entry.getKey());
-				break;
-			}
-		}
-		
-		if(lobbyClient.getPlayer().getSlotNumber() < 3) {
-			LocalPlayerTeam = "red";
-		} else {
-			LocalPlayerTeam = "blue";
-		}
-		
-//		LocalPlayerTeam = "blue";
-//		localPlayerShip = new PlayerShip("blue", 0f,-768f, Color.CYAN);
-		localPlayerDirection = new Vector2();
-		new Shop(localPlayerShip);
-//		
-//		new PlayerShip("red", 0f,768f, Color.ORANGE);
+
 		
 		if(test_mode)
 		{
+			LocalPlayerTeam = "blue";
+			localPlayerShip = new PlayerShip("blue", 0f,-768f, 3);
+			
 			objectGroup = map.objectGroups.get(1);
 			for (TiledObject current : objectGroup.objects) {
 				
@@ -269,6 +244,32 @@ public class GameScreen implements Screen {
 					new Tower("red",current.x-1024+16,-current.y+1024);
 			}
 		}
+		else
+		{
+			if(lobbyClient.getPlayer().getSlotNumber() < 3) {
+				LocalPlayerTeam = "red";
+			} else {
+				LocalPlayerTeam = "blue";
+			}
+			
+			UnitMap message = null;
+			try {
+	            message = msgQueue.take();
+	            handleMessage(message);
+	        } catch (InterruptedException e) {
+	            e.printStackTrace();
+	        }
+			
+			for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
+				if(entry.getValue().slot == lobbyClient.getPlayer().getSlotNumber()) {
+					localPlayerShip = (PlayerShip) unitMap.get(entry.getKey());
+					break;
+				}
+			}
+		}
+		
+		localPlayerDirection = new Vector2();
+		new Shop(localPlayerShip);
 		
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera(w, h);

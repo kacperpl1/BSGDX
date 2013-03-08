@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.battleships.network.UnitData;
 
 public class PlayerShip extends Unit {
 	
@@ -22,10 +23,10 @@ public class PlayerShip extends Unit {
     	MaxHealth = 2500;
     	Health = MaxHealth;
     	switch(slot) {
-			case 0 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.RED); break;
+			case 0 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.MAGENTA); break;
 			case 1 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.PINK); break;
 			case 2 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.ORANGE); break;
-			case 3 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.BLUE); break;
+			case 3 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.CYAN); break;
 			case 4 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.GREEN); break;
 			case 5 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.YELLOW); break;
 			default : break;
@@ -40,6 +41,11 @@ public class PlayerShip extends Unit {
     	CollisionBody.setLinearVelocity(CurrentVelocity.x*moveSpeed/velocity*GameScreen.WORLD_TO_BOX, CurrentVelocity.y*moveSpeed/velocity*GameScreen.WORLD_TO_BOX);
         setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
     }
+	
+	void updateUnitData(UnitData data)
+	{
+		Health = data.health;
+	}
 	
 	void updateVelocity()
     {
