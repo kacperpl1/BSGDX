@@ -104,7 +104,11 @@ public class GameScreen implements Screen {
 			if(unitMap.containsKey(entry.getKey())) {
 				if(!entry.getKey().equals(this.unitHash)) {
 					unitMap.get(entry.getKey()).updateUnitData(entry.getValue());
-					System.out.println(entry.getValue().position.x + " " + entry.getValue().position.y);
+					if(entry.getValue().type.equals(UnitData.Type.SHIP)) {
+						System.out.println(entry.getValue().slot + ": " + entry.getValue().position.x + " " + entry.getValue().position.y);
+					}
+				} else {
+					System.out.println(entry.getValue().slot + ": " + entry.getValue().position.x + " " + entry.getValue().position.y);
 				}
 			} else {
 				unitMap.put(entry.getKey(), Unit.createNewUnit(entry.getValue()));

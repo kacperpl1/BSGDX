@@ -1,7 +1,10 @@
 package server;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Stack;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -42,7 +45,10 @@ class GameThread extends Thread{
 	static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 	
 	public UnitMap unitMap = new UnitMap();
+	private Stack<UnitMap> msgStack = new Stack<UnitMap>();
 	private server.GameLoopUpdateHandler GLUH;
+	
+	private Map<Integer, Unit> playerShipMap = new HashMap<Integer, Unit>();
 	
 	public GameThread(ServerGame game){
 		this.game = game;
@@ -89,9 +95,11 @@ class GameThread extends Thread{
 		for(int i = 0; i < game.getPlayerList().size(); i++) {
 			slot = game.getPlayerList().getServerPlayer(i).getSlotNumber();
 			if( slot < 3) {
-				new PlayerShip("red", 0f, 768f, this, slot);
+				Unit player = new PlayerShip("red", 0f, 768f, this, slot);
+				playerShipMap.put(player.hashCode(), player);
 			} else {
-				new PlayerShip("blue", 0f, -768f, this, slot);
+				Unit player = new PlayerShip("blue", 0f, -768f, this, slot);
+				playerShipMap.put(player.hashCode(), player);
 			}
 		}
 		
@@ -117,16 +125,27 @@ class GameThread extends Thread{
 							aux.updateUnitData();
 						}
 					}
+					
+					if(!msgStack.isEmpty()) {
+			            UnitMap message = msgStack.pop(); 
+			            for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
+			            	playerShipMap.get(entry.getKey()).CollisionBody.setTransform(entry.getValue().position, 0);
+//			            	System.out.println(this.unitMap.map.get(entry.getKey()).slot + ": " + playerShipMap.get(entry.getKey()).CollisionBody.getPosition().x + " " + playerShipMap.get(entry.getKey()).CollisionBody.getPosition().y);
+//			            	System.out.println(this.unitMap.map.get(entry.getKey()).slot + ": " + this.unitMap.map.get(entry.getKey()).position.x + " " + this.unitMap.map.get(entry.getKey()).position.y);
+			            }
+					}
+					
 //					ByteArrayOutputStream bOut = new ByteArrayOutputStream();  
 //					ObjectOutputStream oOut = new ObjectOutputStream(bOut);  
 //					oOut.writeObject(unitMap);  
 //					oOut.close();  
 //					System.out.println("The size of the object is: "+bOut.toByteArray().length);  
-					for(Entry<Integer, UnitData> entry : unitMap.map.entrySet()) {
-						if(entry.getValue().type.equals(UnitData.Type.SHIP)) {
-							System.out.println(entry.getValue().slot + ": " + entry.getValue().position.x + " " + entry.getValue().position.y);
-						}
-					}
+					
+//					for(Entry<Integer, UnitData> entry : unitMap.map.entrySet()) {
+//						if(entry.getValue().type.equals(UnitData.Type.SHIP)) {
+//							System.out.println(entry.getValue().slot + ": " + entry.getValue().position.x + " " + entry.getValue().position.y);
+//						}
+//					}
 					for(int i = 0; i < game.getPlayerList().size(); i++) {
 						game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
 					}
@@ -164,6 +183,10 @@ class GameThread extends Thread{
 			}
 			//System.out.println(this.unitMap.map.get(entry.getKey()).position.x + " " +this.unitMap.map.get(entry.getKey()).position.y);
 		}
+	}
+	
+	public Stack<UnitMap> getMsgStack() {
+		return this.msgStack;
 	}
 	
 	public boolean playersAreConnected() {

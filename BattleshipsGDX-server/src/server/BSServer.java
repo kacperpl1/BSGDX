@@ -3,6 +3,7 @@ package server;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 import shared.Common;
@@ -96,10 +97,12 @@ class Translator extends Thread {
 		String gId = "";
 		for(Entry<Integer, UnitData> entry : unitMap.map.entrySet()) {
 			gId = entry.getValue().gameID;
+			//System.out.println(entry.getValue().position.x + " " + entry.getValue().position.y);
 		}
 		for(GameThread gThread : gameThreadList) {
 			if(gThread.getName().equals(gId)) {
-				gThread.movePlayer(unitMap);
+				Stack<UnitMap> msgStack = gThread.getMsgStack();
+				msgStack.push(unitMap);
 				break;
 			}
 		}
