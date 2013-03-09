@@ -24,7 +24,7 @@ public class PlayerShip extends Unit {
     	moveSpeed = 150;
     	MaxHealth = 2500;
     	Health = MaxHealth;
-    	createUnitData(UnitData.Type.SHIP, slot);
+    	createUnitData(UnitData.Type.SHIP, slot, owner.getName());
     	
     }
 

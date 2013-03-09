@@ -248,8 +248,15 @@ public class BSClient implements Runnable	{
 			System.out.println("Failed to start game");
 		}
 	}
+	// Send position update to gameThread
+	public void move(UnitMap unitMap) {
+		client.sendUDP(unitMap);
+	}
 	public Player getPlayer() {
 		return this.clientPlayer;
+	}
+	public Game getGame() {
+		return gameList.getGameById(clientPlayer.getGameId());
 	}
 	public BlockingQueue<String> getMainLobbyQueue() {
 		return this.mainLobbyMsgQueue;

@@ -91,6 +91,8 @@ public class GameScreen implements Screen {
 	private BSClient lobbyClient;
 	private BlockingQueue<UnitMap> msgQueue;
 	static Map<Integer, Unit> unitMap = new HashMap<Integer, Unit>();
+	private Integer unitHash = null;
+	private UnitMap playerData = new UnitMap();
 	
 	public GameScreen() {
 		lobbyClient = BSClient.getInstance();
@@ -100,7 +102,10 @@ public class GameScreen implements Screen {
 	public void handleMessage(UnitMap message) {
 		for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
 			if(unitMap.containsKey(entry.getKey())) {
-				unitMap.get(entry.getKey()).updateUnitData(entry.getValue());
+				if(!entry.getKey().equals(this.unitHash)) {
+					unitMap.get(entry.getKey()).updateUnitData(entry.getValue());
+					System.out.println(entry.getValue().position.x + " " + entry.getValue().position.y);
+				}
 			} else {
 				unitMap.put(entry.getKey(), Unit.createNewUnit(entry.getValue()));
 			}
@@ -263,6 +268,8 @@ public class GameScreen implements Screen {
 			for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
 				if(entry.getValue().slot == lobbyClient.getPlayer().getSlotNumber()) {
 					localPlayerShip = (PlayerShip) unitMap.get(entry.getKey());
+					this.unitHash = entry.getKey();
+					playerData.map.put(unitHash, entry.getValue());
 					break;
 				}
 			}
@@ -395,6 +402,11 @@ public class GameScreen implements Screen {
 
 		
 		localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
+		
+		this.playerData.map.get(this.unitHash).position.x = localPlayerShip.CollisionBody.getPosition().x;
+		this.playerData.map.get(this.unitHash).position.y = localPlayerShip.CollisionBody.getPosition().y;
+		
+		lobbyClient.move(playerData);
 		
 		box_accu+=delta;
 		if(box_accu>BOX_STEP)

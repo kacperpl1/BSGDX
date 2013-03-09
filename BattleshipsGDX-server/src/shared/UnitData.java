@@ -13,4 +13,5 @@ public class UnitData implements Serializable {
 	public short health = -1;
 	public int  slot = -1;
 	public Type type = Type.UNKNOWN;
+	public String gameID = "";
 }

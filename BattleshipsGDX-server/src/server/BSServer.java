@@ -2,10 +2,13 @@ package server;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
 import shared.Common;
 import shared.ResponseMessage;
+import shared.UnitData;
+import shared.UnitMap;
 
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.esotericsoftware.kryonet.Connection;
@@ -51,6 +54,15 @@ class ServerThread {
 						
 						Translator translator = new Translator(playerList, gameList, gameThreadList, request.text, connection);
 						translator.start();
+					} else {
+						if(object instanceof UnitMap) {
+							Translator translator = new Translator(gameThreadList, (UnitMap)object);
+							
+//							for(Entry<Integer, UnitData> entry : map.map.entrySet()) {
+//								System.out.println(entry.getValue().gameID);
+//								System.out.println(entry.getValue().position.x + " " + entry.getValue().position.y);
+//							}
+						}
 					}
 				}
 			});			
@@ -78,6 +90,21 @@ class Translator extends Thread {
 		message = m;
 		connection = c;
 	}
+	
+	public Translator(LinkedList<GameThread> gTL, UnitMap unitMap) {
+		gameThreadList = gTL;
+		String gId = "";
+		for(Entry<Integer, UnitData> entry : unitMap.map.entrySet()) {
+			gId = entry.getValue().gameID;
+		}
+		for(GameThread gThread : gameThreadList) {
+			if(gThread.getName().equals(gId)) {
+				gThread.movePlayer(unitMap);
+				break;
+			}
+		}
+	}
+	
 	public synchronized void run() {
 		StringTokenizer part = new StringTokenizer(message);
 		

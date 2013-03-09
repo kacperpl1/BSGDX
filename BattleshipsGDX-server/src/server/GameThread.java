@@ -1,13 +1,11 @@
 package server;
 
-import java.awt.Color;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import shared.UnitData;
 import shared.UnitMap;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
@@ -124,6 +122,11 @@ class GameThread extends Thread{
 //					oOut.writeObject(unitMap);  
 //					oOut.close();  
 //					System.out.println("The size of the object is: "+bOut.toByteArray().length);  
+					for(Entry<Integer, UnitData> entry : unitMap.map.entrySet()) {
+						if(entry.getValue().type.equals(UnitData.Type.SHIP)) {
+							System.out.println(entry.getValue().slot + ": " + entry.getValue().position.x + " " + entry.getValue().position.y);
+						}
+					}
 					for(int i = 0; i < game.getPlayerList().size(); i++) {
 						game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
 					}
@@ -149,6 +152,18 @@ class GameThread extends Thread{
 	
 	public void stopGame(){
 		this.running = false;
+	}
+	
+	public void movePlayer(UnitMap unitMap) {
+		for(Entry<Integer, UnitData> entry : unitMap.map.entrySet()) {
+			for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
+				Unit aux = (Unit) iter.next().getUserData();
+				if(aux != null && aux.hashCode() == entry.getKey()) {
+					aux.CollisionBody.setTransform(entry.getValue().position, 0);
+				}
+			}
+			//System.out.println(this.unitMap.map.get(entry.getKey()).position.x + " " +this.unitMap.map.get(entry.getKey()).position.y);
+		}
 	}
 	
 	public boolean playersAreConnected() {

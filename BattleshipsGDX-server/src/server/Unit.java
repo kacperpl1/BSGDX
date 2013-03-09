@@ -33,14 +33,15 @@ public abstract class Unit {
 		
 	}
 	
-	void createUnitData(UnitData.Type unitType, int... slot)
+	void createUnitData(UnitData.Type unitType, Object... shipData)
 	{
 		UnitData uData = new UnitData();
 		uData.position = CollisionBody.getPosition();
 		uData.health = Health;
 		uData.type = unitType;
 		if(unitType.equals(UnitData.Type.SHIP)) {
-			uData.slot = slot[0];
+			uData.slot = (int) shipData[0];
+			uData.gameID = (String) shipData[1];
 		}
 		ownerThread.unitMap.map.put(hashCode(), uData);	
 	}
