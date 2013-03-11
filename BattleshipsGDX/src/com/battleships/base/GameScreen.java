@@ -51,7 +51,7 @@ public class GameScreen implements Screen {
 	static Stage hudStage;
 	static Stage gameStage;
 	private Touchpad touchpad;
-	private PlayerShip localPlayerShip;
+	static PlayerShip localPlayerShip;
 	private GameLoopUpdateHandler GLUH;
 	private Box2DDebugRenderer debugRenderer;
 	
@@ -104,11 +104,6 @@ public class GameScreen implements Screen {
 			if(unitMap.containsKey(entry.getKey())) {
 				if(!entry.getKey().equals(this.unitHash)) {
 					unitMap.get(entry.getKey()).updateUnitData(entry.getValue());
-					if(entry.getValue().type.equals(UnitData.Type.SHIP)) {
-						System.out.println(entry.getValue().slot + ": " + entry.getValue().position.x + " " + entry.getValue().position.y);
-					}
-				} else {
-					System.out.println(entry.getValue().slot + ": " + entry.getValue().position.x + " " + entry.getValue().position.y);
 				}
 			} else {
 				unitMap.put(entry.getKey(), Unit.createNewUnit(entry.getValue()));
@@ -407,10 +402,12 @@ public class GameScreen implements Screen {
 		
 		localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
 		
-		this.playerData.map.get(this.unitHash).position.x = localPlayerShip.CollisionBody.getPosition().x;
-		this.playerData.map.get(this.unitHash).position.y = localPlayerShip.CollisionBody.getPosition().y;
+		if(!test_mode)
+		{
+			this.playerData.map.get(this.unitHash).position.set(localPlayerShip.CollisionBody.getPosition());
+			lobbyClient.move(playerData);
+		}
 		
-		lobbyClient.move(playerData);
 		
 		box_accu+=delta;
 		if(box_accu>BOX_STEP)
