@@ -249,8 +249,8 @@ public class BSClient implements Runnable	{
 		}
 	}
 	// Send position update to gameThread
-	public void move(UnitMap unitMap) {
-		client.sendUDP(unitMap);
+	public void move(UnitData unitData) {
+		client.sendUDP(unitData);
 	}
 	public Player getPlayer() {
 		return this.clientPlayer;

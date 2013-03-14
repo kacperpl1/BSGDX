@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import shared.UnitData;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
@@ -18,7 +17,7 @@ public class PlayerShip extends Unit {
 	
 	public LinkedList<PlayerWeapon> Inventory = new LinkedList<PlayerWeapon>();
 	
-	PlayerShip(String Team, float InitialX, float InitialY, GameThread owner, int slot)
+	PlayerShip(String Team, float InitialX, float InitialY, GameThread owner, short slot)
     {
 		super(Team, InitialX, InitialY, owner);
     	moveSpeed = 150;

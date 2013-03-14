@@ -40,8 +40,9 @@ public abstract class Unit {
 		uData.health = Health;
 		uData.type = unitType;
 		if(unitType.equals(UnitData.Type.SHIP)) {
-			uData.slot = (int) shipData[0];
+			uData.slot = (short) shipData[0];
 			uData.gameID = (String) shipData[1];
+			uData.unitKey = hashCode();
 		}
 		ownerThread.unitMap.map.put(hashCode(), uData);	
 	}

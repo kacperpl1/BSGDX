@@ -92,7 +92,8 @@ public class GameScreen implements Screen {
 	private BlockingQueue<UnitMap> msgQueue;
 	static Map<Integer, Unit> unitMap = new HashMap<Integer, Unit>();
 	private Integer unitHash = null;
-	private UnitMap playerData = new UnitMap();
+	private UnitData playerData = new UnitData();
+	//private UnitMap playerData = new UnitMap();
 	
 	public GameScreen() {
 		lobbyClient = BSClient.getInstance();
@@ -102,9 +103,9 @@ public class GameScreen implements Screen {
 	public void handleMessage(UnitMap message) {
 		for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
 			if(unitMap.containsKey(entry.getKey())) {
-				if(!entry.getKey().equals(this.unitHash)) {
+				//if(!entry.getKey().equals(this.unitHash)) {
 					unitMap.get(entry.getKey()).updateUnitData(entry.getValue());
-				}
+			//{
 			} else {
 				unitMap.put(entry.getKey(), Unit.createNewUnit(entry.getValue()));
 			}
@@ -268,7 +269,7 @@ public class GameScreen implements Screen {
 				if(entry.getValue().slot == lobbyClient.getPlayer().getSlotNumber()) {
 					localPlayerShip = (PlayerShip) unitMap.get(entry.getKey());
 					this.unitHash = entry.getKey();
-					playerData.map.put(unitHash, entry.getValue());
+					playerData = entry.getValue();
 					break;
 				}
 			}
@@ -402,13 +403,6 @@ public class GameScreen implements Screen {
 		
 		localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
 		
-		if(!test_mode)
-		{
-			this.playerData.map.get(this.unitHash).position.set(localPlayerShip.CollisionBody.getPosition());
-			lobbyClient.move(playerData);
-		}
-		
-		
 		box_accu+=delta;
 		if(box_accu>BOX_STEP)
 		{
@@ -422,6 +416,11 @@ public class GameScreen implements Screen {
             }
 			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
 			box_accu-=BOX_STEP;
+		}
+		
+		if(!test_mode) {
+			this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
+			lobbyClient.move(playerData);
 		}
 		
 		gameStage.getRoot().getChildren().sort(ActorComparator);

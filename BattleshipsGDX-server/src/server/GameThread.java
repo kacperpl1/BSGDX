@@ -1,7 +1,9 @@
 package server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
@@ -45,7 +47,7 @@ class GameThread extends Thread{
 	static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 	
 	public UnitMap unitMap = new UnitMap();
-	private Stack<UnitMap> msgStack = new Stack<UnitMap>();
+	List<Stack<UnitData>> stackArray = new ArrayList<Stack<UnitData>>();
 	private server.GameLoopUpdateHandler GLUH;
 	
 	private Map<Integer, Unit> playerShipMap = new HashMap<Integer, Unit>();
@@ -54,6 +56,13 @@ class GameThread extends Thread{
 		this.game = game;
 		this.running = true;
 		this.setName(game.getId());
+		
+		for(int i = 0; i < 6; i++) {
+			stackArray.add(null);
+		}
+		for(int i = 0; i < game.getPlayerList().size(); i++) {
+			stackArray.add(game.getPlayerList().getServerPlayer(i).getSlotNumber(), new Stack<UnitData>());
+		}
 		
 		physicsWorld = new World(new Vector2(0, 0), true);
 		contactListener = createContactListener();
@@ -91,7 +100,7 @@ class GameThread extends Thread{
 				new Tower("red",current.x-1024+16,-current.y+1024, this);
 			}
 	    }
-		int slot;
+		short slot;
 		for(int i = 0; i < game.getPlayerList().size(); i++) {
 			slot = game.getPlayerList().getServerPlayer(i).getSlotNumber();
 			if( slot < 3) {
@@ -115,7 +124,7 @@ class GameThread extends Thread{
 				try {
 					physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
 					
-					// TODO Fixed step accumulator needed
+					// TODO Fixed step accumulator needed1
 					
 					GLUH.onUpdate(0.1f);
 					for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
@@ -126,14 +135,23 @@ class GameThread extends Thread{
 						}
 					}
 					
-					if(!msgStack.isEmpty()) {
-			            UnitMap message = msgStack.pop(); 
-			            for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
-			            	playerShipMap.get(entry.getKey()).CollisionBody.setTransform(entry.getValue().position, 0);
-//			            	System.out.println(this.unitMap.map.get(entry.getKey()).slot + ": " + playerShipMap.get(entry.getKey()).CollisionBody.getPosition().x + " " + playerShipMap.get(entry.getKey()).CollisionBody.getPosition().y);
-//			            	System.out.println(this.unitMap.map.get(entry.getKey()).slot + ": " + this.unitMap.map.get(entry.getKey()).position.x + " " + this.unitMap.map.get(entry.getKey()).position.y);
-			            }
+					for(int i = 0 ; i < game.getPlayerList().size(); i++) {
+						int slot = game.getPlayerList().getServerPlayer(i).getSlotNumber(); 
+						if(!stackArray.get(slot).isEmpty()) {
+							UnitData message = stackArray.get(slot).pop();
+							playerShipMap.get(message.unitKey).CollisionBody.setTransform(message.position, 0);
+							stackArray.get(slot).clear();
+						}
 					}
+//					if(!msgStack.isEmpty()) {
+//			            UnitMap message = msgStack.pop(); 
+//			            for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
+//			            	playerShipMap.get(entry.getKey()).CollisionBody.setTransform(entry.getValue().position, 0);
+////			            	System.out.println(this.unitMap.map.get(entry.getKey()).slot + ": " + playerShipMap.get(entry.getKey()).CollisionBody.getPosition().x + " " + playerShipMap.get(entry.getKey()).CollisionBody.getPosition().y);
+////			            	System.out.println(this.unitMap.map.get(entry.getKey()).slot + ": " + this.unitMap.map.get(entry.getKey()).position.x + " " + this.unitMap.map.get(entry.getKey()).position.y);
+//			            }
+//			            msgStack.clear();
+//					}
 					
 //					ByteArrayOutputStream bOut = new ByteArrayOutputStream();  
 //					ObjectOutputStream oOut = new ObjectOutputStream(bOut);  
@@ -185,8 +203,8 @@ class GameThread extends Thread{
 		}
 	}
 	
-	public Stack<UnitMap> getMsgStack() {
-		return this.msgStack;
+	public Stack<UnitData> getMsgStack(int slot) {
+		return this.stackArray.get(slot);
 	}
 	
 	public boolean playersAreConnected() {

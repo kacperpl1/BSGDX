@@ -127,7 +127,7 @@ class ServerPlayer {
 	private boolean inGame = false;
 	private String name = "";
 	private Connection connection;
-	private int slotNumber = -1;
+	private short slotNumber = -1;
 	private String id = "";
 	
 	//time out counter
@@ -161,10 +161,10 @@ class ServerPlayer {
 	public Connection getConnection() {
 		return connection;
 	}
-	public void setSlotNumber(int num){
+	public void setSlotNumber(short num){
 		this.slotNumber = num;
 	}
-	public int getSlotNumber(){
+	public short getSlotNumber(){
 		return slotNumber;
 	}
 	public String getId(){

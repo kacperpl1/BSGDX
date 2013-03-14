@@ -56,8 +56,8 @@ class ServerThread {
 						Translator translator = new Translator(playerList, gameList, gameThreadList, request.text, connection);
 						translator.start();
 					} else {
-						if(object instanceof UnitMap) {
-							Translator translator = new Translator(gameThreadList, (UnitMap)object);
+						if(object instanceof UnitData) {
+							Translator translator = new Translator(gameThreadList, (UnitData)object);
 							
 //							for(Entry<Integer, UnitData> entry : map.map.entrySet()) {
 //								System.out.println(entry.getValue().gameID);
@@ -92,17 +92,12 @@ class Translator extends Thread {
 		connection = c;
 	}
 	
-	public Translator(LinkedList<GameThread> gTL, UnitMap unitMap) {
+	public Translator(LinkedList<GameThread> gTL, UnitData unitData) {
 		gameThreadList = gTL;
-		String gId = "";
-		for(Entry<Integer, UnitData> entry : unitMap.map.entrySet()) {
-			gId = entry.getValue().gameID;
-			//System.out.println(entry.getValue().position.x + " " + entry.getValue().position.y);
-		}
 		for(GameThread gThread : gameThreadList) {
-			if(gThread.getName().equals(gId)) {
-				Stack<UnitMap> msgStack = gThread.getMsgStack();
-				msgStack.push(unitMap);
+			if(gThread.getName().equals(unitData.gameID)) {
+				Stack<UnitData> msgStack = gThread.getMsgStack(unitData.slot);
+				msgStack.push(unitData);
 				break;
 			}
 		}
@@ -165,7 +160,7 @@ class Translator extends Thread {
 				System.out.println("Player " + uId + " took slot " + slotNumber + " in game " + gId);
 				
 				ServerGame sGame = gameList.getById(gId);
-				sGame.getPlayerList().getById(uId).setSlotNumber(Integer.valueOf(slotNumber));
+				sGame.getPlayerList().getById(uId).setSlotNumber(Short.valueOf(slotNumber));
 				
 				this.sendSlotList(sGame);
 				
@@ -194,7 +189,7 @@ class Translator extends Thread {
 				
 				ServerGame sGame = gameList.getById(gId);
 				sGame.removePlayer(playerList.getById(uId));
-				playerList.getById(uId).setSlotNumber(-1);
+				playerList.getById(uId).setSlotNumber((short) -1);
 				playerList.getById(uId).leaveGame();
 				System.out.println("Player " + uId + " left game" + gId + "!");
 				
