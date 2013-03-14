@@ -17,6 +17,9 @@ public class Common {
     public static final int DEFAULT_PORT_TCP=6456;
     public static final int DEFAULT_PORT_UDP=6466;
     
+    public static final short PLAYER_SHIP = 1;
+    public static final short CRUISER = 2;
+    public static final short TOWER = 3;
    
     /**
      * Registers all messages used in the game with JGN which optimizes them
@@ -28,6 +31,5 @@ public class Common {
     	kryo.register(java.util.HashMap.class);
     	kryo.register(UnitData.class);
     	kryo.register(com.badlogic.gdx.math.Vector2.class);
-    	kryo.register(UnitData.Type.class);
     }
 }

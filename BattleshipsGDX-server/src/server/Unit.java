@@ -1,6 +1,7 @@
 package server;
 
 
+import shared.Common;
 import shared.UnitData;
 
 import com.badlogic.gdx.math.Vector2;
@@ -33,13 +34,13 @@ public abstract class Unit {
 		
 	}
 	
-	void createUnitData(UnitData.Type unitType, Object... shipData)
+	void createUnitData(short unitType, Object... shipData)
 	{
 		UnitData uData = new UnitData();
 		uData.position = CollisionBody.getPosition();
 		uData.health = Health;
 		uData.type = unitType;
-		if(unitType.equals(UnitData.Type.SHIP)) {
+		if(unitType == Common.PLAYER_SHIP) {
 			uData.slot = (short) shipData[0];
 			uData.gameID = (String) shipData[1];
 			uData.unitKey = hashCode();

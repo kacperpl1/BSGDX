@@ -1,6 +1,6 @@
 package server;
 
-import shared.UnitData;
+import shared.Common;
 
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
@@ -13,6 +13,6 @@ public class Tower extends Unit {
     	Health = MaxHealth;
     	gun = new PlayerWeapon(this,9);
     	CollisionBody.setType(BodyType.StaticBody);
-    	createUnitData(UnitData.Type.TOWER);
+    	createUnitData(Common.TOWER);
 	}
 }

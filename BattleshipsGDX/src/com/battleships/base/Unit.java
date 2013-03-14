@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.battleships.network.Common;
 import com.battleships.network.UnitData;
 
 public abstract class Unit extends Actor {
@@ -88,15 +89,15 @@ public abstract class Unit extends Actor {
 		}
 		Unit unit;
 		switch(data.type) {
-			case SHIP : {
+			case Common.PLAYER_SHIP : {
 				unit = new PlayerShip(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO, data.slot);
 				break;
 			}
-			case CREEP : {
+			case Common.CRUISER : {
 				unit = new Cruiser(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO);
 				break;
 			}
-			case TOWER : {
+			case Common.TOWER : {
 				unit = new Tower(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO);
 				break;
 			}

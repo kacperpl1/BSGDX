@@ -143,15 +143,6 @@ class GameThread extends Thread{
 							stackArray.get(slot).clear();
 						}
 					}
-//					if(!msgStack.isEmpty()) {
-//			            UnitMap message = msgStack.pop(); 
-//			            for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
-//			            	playerShipMap.get(entry.getKey()).CollisionBody.setTransform(entry.getValue().position, 0);
-////			            	System.out.println(this.unitMap.map.get(entry.getKey()).slot + ": " + playerShipMap.get(entry.getKey()).CollisionBody.getPosition().x + " " + playerShipMap.get(entry.getKey()).CollisionBody.getPosition().y);
-////			            	System.out.println(this.unitMap.map.get(entry.getKey()).slot + ": " + this.unitMap.map.get(entry.getKey()).position.x + " " + this.unitMap.map.get(entry.getKey()).position.y);
-//			            }
-//			            msgStack.clear();
-//					}
 					
 //					ByteArrayOutputStream bOut = new ByteArrayOutputStream();  
 //					ObjectOutputStream oOut = new ObjectOutputStream(bOut);  
@@ -199,7 +190,6 @@ class GameThread extends Thread{
 					aux.CollisionBody.setTransform(entry.getValue().position, 0);
 				}
 			}
-			//System.out.println(this.unitMap.map.get(entry.getKey()).position.x + " " +this.unitMap.map.get(entry.getKey()).position.y);
 		}
 	}
 	

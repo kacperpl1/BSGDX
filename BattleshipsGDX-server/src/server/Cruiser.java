@@ -1,6 +1,6 @@
 package server;
 
-import shared.UnitData;
+import shared.Common;
 
 public class Cruiser extends Unit {
 	
@@ -13,7 +13,7 @@ public class Cruiser extends Unit {
     	MaxHealth = 500;
     	Health = MaxHealth;
     	gun = new Weapon(this,0);
-    	createUnitData(UnitData.Type.CREEP);
+    	createUnitData(Common.CRUISER);
     }	
 	
 	void updateVelocity()
