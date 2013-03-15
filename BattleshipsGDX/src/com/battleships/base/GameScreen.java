@@ -11,6 +11,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -19,14 +21,16 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.tiled.TiledLoader;
-import com.badlogic.gdx.graphics.g2d.tiled.TiledMap;
-import com.badlogic.gdx.graphics.g2d.tiled.TiledObject;
-import com.badlogic.gdx.graphics.g2d.tiled.TiledObjectGroup;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -91,13 +95,17 @@ public class GameScreen implements Screen {
 	private BSClient lobbyClient;
 	private BlockingQueue<UnitMap> msgQueue;
 	static Map<Integer, Unit> unitMap = new HashMap<Integer, Unit>();
-	private Integer unitHash = null;
 	private UnitData playerData = new UnitData();
 	//private UnitMap playerData = new UnitMap();
+	
+	Controller gamepad = null;
+	private Vector2 camOffset = new Vector2(0,0);
 	
 	public GameScreen() {
 		lobbyClient = BSClient.getInstance();
 		msgQueue = lobbyClient.getMainGameQueue();
+		if(Controllers.getControllers().size>0)
+			gamepad = Controllers.getControllers().get(0);
 	}
 	
 	public void handleMessage(UnitMap message) {
@@ -143,21 +151,23 @@ public class GameScreen implements Screen {
         bodyDef.position.set(0,0);  
 		Body WorldCollisionBody = GameScreen.physicsWorld.createBody(bodyDef);
 		
-		TiledMap map = TiledLoader.createMap(Gdx.files.internal("data/BattleShipsCollision.tmx"));
-		TiledObjectGroup objectGroup = map.objectGroups.get(0);
-		for (TiledObject current : objectGroup.objects) {
-			
-			
-			PolygonShape staticRectangle = new PolygonShape();
-			staticRectangle.setAsBox(current.width/2*GameScreen.WORLD_TO_BOX, current.height/2*GameScreen.WORLD_TO_BOX,
-					new Vector2((current.x-1024 +current.width/2)*GameScreen.WORLD_TO_BOX,
-							(-current.y+1024 -current.height/2)*GameScreen.WORLD_TO_BOX), 0);
-	        FixtureDef fixtureDef = new FixtureDef();  
-	        fixtureDef.shape = staticRectangle;  
-	        fixtureDef.density = 1.0f;  
-	        fixtureDef.friction = 0.0f;  
-	        fixtureDef.restitution = 0.0f;
-	        WorldCollisionBody.createFixture(fixtureDef);  
+		TiledMap map = new TmxMapLoader().load("data/BattleShipsCollision.tmx");
+		MapObjects objectGroup = map.getLayers().get("Collision").getObjects();
+		for (MapObject currentObject : objectGroup) {
+			if((RectangleMapObject)currentObject != null)
+			{
+				Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
+				PolygonShape staticRectangle = new PolygonShape();
+				staticRectangle.setAsBox(current.width/2*GameScreen.WORLD_TO_BOX, current.height/2*GameScreen.WORLD_TO_BOX,
+						new Vector2((current.x-1024 +current.width/2)*GameScreen.WORLD_TO_BOX,
+								(current.y-1024 +current.height/2)*GameScreen.WORLD_TO_BOX), 0);
+		        FixtureDef fixtureDef = new FixtureDef();  
+		        fixtureDef.shape = staticRectangle;  
+		        fixtureDef.density = 1.0f;  
+		        fixtureDef.friction = 0.0f;  
+		        fixtureDef.restitution = 0.0f;
+		        WorldCollisionBody.createFixture(fixtureDef);  
+			}
 	    }
 		
 		hudStage = new Stage(w,h,true);
@@ -239,14 +249,18 @@ public class GameScreen implements Screen {
 		{
 			LocalPlayerTeam = "blue";
 			localPlayerShip = new PlayerShip("blue", 0f,-768f, 3);
-			
-			objectGroup = map.objectGroups.get(1);
-			for (TiledObject current : objectGroup.objects) {
+
+			objectGroup = map.getLayers().get("Towers").getObjects();
+			for (MapObject currentObject : objectGroup) {
+				if((RectangleMapObject)currentObject != null)
+				{
+					Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
 				
 				if(current.y>1024)
-					new Tower("blue",current.x-1024+16,-current.y+1024);
+					new Tower("blue",current.x-1024+16,-current.y+1024+32);
 				else
-					new Tower("red",current.x-1024+16,-current.y+1024);
+					new Tower("red",current.x-1024+16,-current.y+1024+32);
+				}
 			}
 		}
 		else
@@ -268,7 +282,6 @@ public class GameScreen implements Screen {
 			for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
 				if(entry.getValue().slot == lobbyClient.getPlayer().getSlotNumber()) {
 					localPlayerShip = (PlayerShip) unitMap.get(entry.getKey());
-					this.unitHash = entry.getKey();
 					playerData = entry.getValue();
 					break;
 				}
@@ -395,11 +408,42 @@ public class GameScreen implements Screen {
 		localPlayerDirection.x = touchpad.getKnobPercentX();
 		localPlayerDirection.y = touchpad.getKnobPercentY();
 		
-		if( Gdx.input.isKeyPressed( Input.Keys.UP ) || Gdx.input.isKeyPressed( Input.Keys.W ) ) localPlayerDirection.y = 1;
-		else if( Gdx.input.isKeyPressed( Input.Keys.DOWN ) || Gdx.input.isKeyPressed( Input.Keys.S ) ) localPlayerDirection.y = -1;
-		if( Gdx.input.isKeyPressed( Input.Keys.LEFT ) || Gdx.input.isKeyPressed( Input.Keys.A ) ) localPlayerDirection.x = -1;
-		else if( Gdx.input.isKeyPressed( Input.Keys.RIGHT ) || Gdx.input.isKeyPressed( Input.Keys.D ) ) localPlayerDirection.x = 1;
-
+		if(gamepad == null)
+		{
+			if( Gdx.input.isKeyPressed( Input.Keys.UP ) || Gdx.input.isKeyPressed( Input.Keys.W ) ) localPlayerDirection.y = 1;
+			else if( Gdx.input.isKeyPressed( Input.Keys.DOWN ) || Gdx.input.isKeyPressed( Input.Keys.S ) ) localPlayerDirection.y = -1;
+			if( Gdx.input.isKeyPressed( Input.Keys.LEFT ) || Gdx.input.isKeyPressed( Input.Keys.A ) ) localPlayerDirection.x = -1;
+			else if( Gdx.input.isKeyPressed( Input.Keys.RIGHT ) || Gdx.input.isKeyPressed( Input.Keys.D ) ) localPlayerDirection.x = 1;
+			
+			if(camToggle)
+			gameStage.getCamera().position.set(
+					MathUtils.clamp(localPlayerShip.getX(), -1024+w/2, 1024-w/2), 
+					MathUtils.clamp(localPlayerShip.getY()-centerOffsetY, -1024-h/2, 1024+h/2), 0);
+			gameStage.getCamera().update();
+		}
+		else
+		{
+			if(Math.abs(gamepad.getAxis(1))>0.1f)
+			{
+				localPlayerDirection.x = gamepad.getAxis(1);
+				camOffset.set(camOffset.x*0.9f, camOffset.y*0.9f);
+			}
+			if(Math.abs(gamepad.getAxis(0))>0.1f)
+			{
+				localPlayerDirection.y = -gamepad.getAxis(0);
+				camOffset.set(camOffset.x*0.9f, camOffset.y*0.9f);
+			}
+			
+			if(Math.abs(gamepad.getAxis(3))>0.1f)
+				camOffset.x += gamepad.getAxis(3) * delta * 512;
+			
+			if(Math.abs(gamepad.getAxis(2))>0.1f)
+				camOffset.y -= gamepad.getAxis(2) * delta * 512;
+			
+			gameStage.getCamera().position.set(
+				MathUtils.clamp(localPlayerShip.getX() + camOffset.x,-1024+w/2, 1024-w/2), 
+				MathUtils.clamp(localPlayerShip.getY() + camOffset.y,-1024+h/2, 1024-h/2), 0);
+		}
 		
 		localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
 		
@@ -424,14 +468,7 @@ public class GameScreen implements Screen {
 		}
 		
 		gameStage.getRoot().getChildren().sort(ActorComparator);
-		Map.toBack();
-
-		if(camToggle)
-		gameStage.getCamera().position.set(
-				MathUtils.clamp(localPlayerShip.getX(), -1024+w/2, 1024-w/2), 
-				MathUtils.clamp(localPlayerShip.getY()-centerOffsetY, -1024-h/2, 1024+h/2), 0);
-		gameStage.getCamera().update();
-		
+		Map.toBack();		
 
 	    camera.position.set(gameStage.getCamera().position);
 	    camera.update();

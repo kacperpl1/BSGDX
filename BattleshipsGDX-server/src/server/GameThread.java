@@ -13,11 +13,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import shared.UnitData;
 import shared.UnitMap;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
-import com.badlogic.gdx.graphics.g2d.tiled.TiledLoader;
-import com.badlogic.gdx.graphics.g2d.tiled.TiledMap;
-import com.badlogic.gdx.graphics.g2d.tiled.TiledObject;
-import com.badlogic.gdx.graphics.g2d.tiled.TiledObjectGroup;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -74,30 +77,38 @@ class GameThread extends Thread{
         bodyDef.position.set(0,0);  
 		Body WorldCollisionBody = physicsWorld.createBody(bodyDef);
 		
-		LwjglFiles files = new LwjglFiles();
-		TiledMap map = TiledLoader.createMap(files.internal("data/BattleShipsCollision.tmx"));
-		TiledObjectGroup objectGroup = map.objectGroups.get(0);
-		for (TiledObject current : objectGroup.objects) {
-			
+		Gdx.files = new LwjglFiles();
+		TiledMap map = new TmxMapLoader().load("data/BattleShipsCollision.tmx");
+		MapObjects objectGroup = map.getLayers().get("Collision").getObjects();
+		for (MapObject currentObject : objectGroup) {
+			if((RectangleMapObject)currentObject != null)
+			{
+				Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
 			PolygonShape staticRectangle = new PolygonShape();
-			staticRectangle.setAsBox(current.width/2*WORLD_TO_BOX, current.height/2*WORLD_TO_BOX,
-					new Vector2((current.x-1024 +current.width/2)*WORLD_TO_BOX,
-							(-current.y+1024 -current.height/2)*WORLD_TO_BOX), 0);
-	        FixtureDef fixtureDef = new FixtureDef();  
-	        fixtureDef.shape = staticRectangle;  
-	        fixtureDef.density = 1.0f;  
-	        fixtureDef.friction = 0.0f;  
-	        fixtureDef.restitution = 0.0f;
-	        WorldCollisionBody.createFixture(fixtureDef);  
+				staticRectangle.setAsBox(current.width/2*WORLD_TO_BOX, current.height/2*WORLD_TO_BOX,
+						new Vector2((current.x-1024 +current.width/2)*WORLD_TO_BOX,
+								(current.y-1024 +current.height/2)*WORLD_TO_BOX), 0);
+		        FixtureDef fixtureDef = new FixtureDef();  
+		        fixtureDef.shape = staticRectangle;  
+		        fixtureDef.density = 1.0f;  
+		        fixtureDef.friction = 0.0f;  
+		        fixtureDef.restitution = 0.0f;
+		        WorldCollisionBody.createFixture(fixtureDef);  
+			}
 	    }
 		
-		objectGroup = map.objectGroups.get(1);
-		for (TiledObject current : objectGroup.objects) {
-			if(current.y>1024) {
-				new Tower("blue",current.x-1024+16,-current.y+1024, this);
-			}
-			else {
-				new Tower("red",current.x-1024+16,-current.y+1024, this);
+		objectGroup = map.getLayers().get("Towers").getObjects();
+		for (MapObject currentObject : objectGroup) {
+			if((RectangleMapObject)currentObject != null)
+			{
+				Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
+			
+				if(current.y>1024) {
+					new Tower("blue",current.x-1024+16,-current.y+1024, this);
+				}
+				else {
+					new Tower("red",current.x-1024+16,-current.y+1024, this);
+				}
 			}
 	    }
 		short slot;
