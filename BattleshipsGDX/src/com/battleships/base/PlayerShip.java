@@ -1,13 +1,11 @@
 package com.battleships.base;
 
 import java.util.LinkedList;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.battleships.network.UnitData;
 
 public class PlayerShip extends Unit {
 	
@@ -105,39 +103,41 @@ public class PlayerShip extends Unit {
 		setVelocity();
     }
 	
+	public void draw (SpriteBatch batch, float parentAlpha) {
+		if(Health >0)
+			super.draw(batch, parentAlpha);	
+		else
+    		Destroy();
+	}
+	
 	void Destroy()
 	{
-		icon.setVisible(false);
     	CollisionBody.setLinearVelocity(0, 0);
-    	this.getParent().removeActor(this);
     	if(team.equals(GameScreen.LocalPlayerTeam))
 		{
-    		Visor.VisorList.remove(visor);
 			for(Unit current : VisibleEnemies)
 			{
+				current.gun.Enemies.remove(this);
 				current.VisibleEnemiesCount--;
 			}
+			VisibleEnemies.clear();
 		}  
-    	GameScreen.executorService.schedule(new Callable<PlayerShip>() {
-  		  @Override
-  		  public PlayerShip call() {
-      		icon.setVisible(true);
-  			GameScreen.gameStage.addActor(PlayerShip.this);
-  			if(team == GameScreen.LocalPlayerTeam)
-  				Visor.VisorList.add(visor);
-  			Health = MaxHealth;
 
-        	if(team == "red")
-        	{
-        		CollisionBody.setTransform(0, 768*GameScreen.WORLD_TO_BOX, 0);
-        	}
-        	else
-        	{
-        		CollisionBody.setTransform(0, -768*GameScreen.WORLD_TO_BOX, 0);
-        	}
-  		    return PlayerShip.this;
-  		  }
-  		}, 5, TimeUnit.SECONDS);
+    	if(team == "red")
+    	{
+    		CollisionBody.setTransform(0, 768*GameScreen.WORLD_TO_BOX, 0);
+    		this.setPosition(0, 768);
+    	}
+    	else
+    	{
+    		CollisionBody.setTransform(0, -768*GameScreen.WORLD_TO_BOX, 0);
+    		this.setPosition(0, -768);
+    	}
+
+    	if(GameScreen.test_mode)
+    	{
+  			Health = MaxHealth;
+    	}
 	}
 	
 	void onUpdate(float delta)

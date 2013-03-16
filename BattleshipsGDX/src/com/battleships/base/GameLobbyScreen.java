@@ -169,7 +169,7 @@ public class GameLobbyScreen implements Screen {
         batch.end();
 		stage.draw();
 		if(gameFlag){
-			BaseGame.instance.setScreen( new GameScreen() );
+			BaseGame.instance.setScreen( new NetworkGameScreen() );
 		}
 	}
 	

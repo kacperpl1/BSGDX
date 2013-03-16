@@ -1,6 +1,7 @@
 package com.battleships.network;
 
 import com.battleships.base.BSPreferences;
+import com.battleships.base.UnitData;
 import com.esotericsoftware.kryo.Kryo;
 
 

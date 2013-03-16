@@ -1,18 +1,11 @@
 package com.battleships.base;
 
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -23,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -47,9 +41,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.battleships.network.BSClient;
-import com.battleships.network.UnitData;
-import com.battleships.network.UnitMap;
 
 public class GameScreen implements Screen {
 	static Stage hudStage;
@@ -69,13 +60,9 @@ public class GameScreen implements Screen {
     static boolean debug_mode=false;
     static boolean test_mode=false;
     
-    long frameTime = System.nanoTime();
-    long lastFrameTime = System.nanoTime();
 	private SpriteBatch batch;
 	private ShaderProgram shader;
 	static OrthographicCamera camera;
-    
-    public static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     
     private float m_fboScaler = 0.1f;
     private FrameBuffer m_fbo = null;
@@ -89,35 +76,62 @@ public class GameScreen implements Screen {
 	private ActorPositionComparator ActorComparator;
 	private Vector2 localPlayerDirection;
 	private BitmapFont font;
+	private Vector2 camOffset;
 	static Actor miniMap;
 	static String LocalPlayerTeam;
 	
-	private BSClient lobbyClient;
-	private BlockingQueue<UnitMap> msgQueue;
-	static Map<Integer, Unit> unitMap = new HashMap<Integer, Unit>();
-	private UnitData playerData = new UnitData();
-	//private UnitMap playerData = new UnitMap();
-	
-	Controller gamepad = null;
-	private Vector2 camOffset = new Vector2(0,0);
-	
 	public GameScreen() {
-		lobbyClient = BSClient.getInstance();
-		msgQueue = lobbyClient.getMainGameQueue();
-		if(Controllers.getControllers().size>0)
-			gamepad = Controllers.getControllers().get(0);
 	}
 	
-	public void handleMessage(UnitMap message) {
-		for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
-			if(unitMap.containsKey(entry.getKey())) {
-				//if(!entry.getKey().equals(this.unitHash)) {
-					unitMap.get(entry.getKey()).updateUnitData(entry.getValue());
-			//{
-			} else {
-				unitMap.put(entry.getKey(), Unit.createNewUnit(entry.getValue()));
+	public void loadMapData()
+	{
+		BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyType.StaticBody; 
+        bodyDef.position.set(0,0);  
+		Body WorldCollisionBody = GameScreen.physicsWorld.createBody(bodyDef);
+		
+		TiledMap map = new TmxMapLoader().load("data/BattleShipsCollision.tmx");
+		Iterator<MapLayer> layerIterator = map.getLayers().iterator();
+		MapObjects objectGroup = layerIterator.next().getObjects();
+		for (MapObject currentObject : objectGroup) {
+			if((RectangleMapObject)currentObject != null)
+			{
+				Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
+				PolygonShape staticRectangle = new PolygonShape();
+				staticRectangle.setAsBox(current.width/2*GameScreen.WORLD_TO_BOX, current.height/2*GameScreen.WORLD_TO_BOX,
+						new Vector2((current.x-1024 +current.width/2)*GameScreen.WORLD_TO_BOX,
+								(current.y-1024 +current.height/2)*GameScreen.WORLD_TO_BOX), 0);
+		        FixtureDef fixtureDef = new FixtureDef();  
+		        fixtureDef.shape = staticRectangle;  
+		        fixtureDef.density = 1.0f;  
+		        fixtureDef.friction = 0.0f;  
+		        fixtureDef.restitution = 0.0f;
+		        WorldCollisionBody.createFixture(fixtureDef);  
+			}
+	    }
+		
+		if(test_mode)
+		{
+			objectGroup = layerIterator.next().getObjects();
+			for (MapObject currentObject : objectGroup) {
+				if((RectangleMapObject)currentObject != null)
+				{
+					Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
+				
+				if(current.y>1024)
+					new Tower("blue",current.x-1024+16,-current.y+1024+32);
+				else
+					new Tower("red",current.x-1024+16,-current.y+1024+32);
+				}
 			}
 		}
+		
+	}
+	
+	public void loadPlayers()
+	{
+			LocalPlayerTeam = "blue";
+			localPlayerShip = new PlayerShip("blue", 0f,-768f, 3);
 	}
 	
 	@Override
@@ -139,36 +153,13 @@ public class GameScreen implements Screen {
 	    gl.glActiveTexture(GL20.GL_TEXTURE0);
 	    gl.glClearColor(0f,0f,0f,1f);
 	    
-	    font = new BitmapFont();
+	    font = new BitmapFont(Gdx.files.internal("data/font.fnt"),Gdx.files.internal("data/font.png"),false);
 	    font.scale(w/Gdx.graphics.getWidth());
 		
 		physicsWorld = new World(new Vector2(0, 0), true); 
 		
 		ActorComparator = new ActorPositionComparator();
 
-		BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyType.StaticBody; 
-        bodyDef.position.set(0,0);  
-		Body WorldCollisionBody = GameScreen.physicsWorld.createBody(bodyDef);
-		
-		TiledMap map = new TmxMapLoader().load("data/BattleShipsCollision.tmx");
-		MapObjects objectGroup = map.getLayers().get("Collision").getObjects();
-		for (MapObject currentObject : objectGroup) {
-			if((RectangleMapObject)currentObject != null)
-			{
-				Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
-				PolygonShape staticRectangle = new PolygonShape();
-				staticRectangle.setAsBox(current.width/2*GameScreen.WORLD_TO_BOX, current.height/2*GameScreen.WORLD_TO_BOX,
-						new Vector2((current.x-1024 +current.width/2)*GameScreen.WORLD_TO_BOX,
-								(current.y-1024 +current.height/2)*GameScreen.WORLD_TO_BOX), 0);
-		        FixtureDef fixtureDef = new FixtureDef();  
-		        fixtureDef.shape = staticRectangle;  
-		        fixtureDef.density = 1.0f;  
-		        fixtureDef.friction = 0.0f;  
-		        fixtureDef.restitution = 0.0f;
-		        WorldCollisionBody.createFixture(fixtureDef);  
-			}
-	    }
 		
 		hudStage = new Stage(w,h,true);
 		gameStage = new Stage(w,h,true);
@@ -243,50 +234,7 @@ public class GameScreen implements Screen {
 			touchpad.setBounds(knobsize/2,0, knobsize, knobsize);
 		hudStage.addActor(touchpad);
 		
-
-		
-		if(test_mode)
-		{
-			LocalPlayerTeam = "blue";
-			localPlayerShip = new PlayerShip("blue", 0f,-768f, 3);
-
-			objectGroup = map.getLayers().get("Towers").getObjects();
-			for (MapObject currentObject : objectGroup) {
-				if((RectangleMapObject)currentObject != null)
-				{
-					Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
-				
-				if(current.y>1024)
-					new Tower("blue",current.x-1024+16,-current.y+1024+32);
-				else
-					new Tower("red",current.x-1024+16,-current.y+1024+32);
-				}
-			}
-		}
-		else
-		{
-			if(lobbyClient.getPlayer().getSlotNumber() < 3) {
-				LocalPlayerTeam = "red";
-			} else {
-				LocalPlayerTeam = "blue";
-			}
-			
-			UnitMap message = null;
-			try {
-	            message = msgQueue.take();
-	            handleMessage(message);
-	        } catch (InterruptedException e) {
-	            e.printStackTrace();
-	        }
-			
-			for(Entry<Integer, UnitData> entry : message.map.entrySet()) {
-				if(entry.getValue().slot == lobbyClient.getPlayer().getSlotNumber()) {
-					localPlayerShip = (PlayerShip) unitMap.get(entry.getKey());
-					playerData = entry.getValue();
-					break;
-				}
-			}
-		}
+		loadPlayers();
 		
 		localPlayerDirection = new Vector2();
 		new Shop(localPlayerShip);
@@ -306,6 +254,8 @@ public class GameScreen implements Screen {
 		GLUH = new GameLoopUpdateHandler();
 		
         debugRenderer = new Box2DDebugRenderer(); 
+        
+        loadMapData();
 	}
 	
 	public ShaderProgram createFowShader () {
@@ -399,6 +349,16 @@ public class GameScreen implements Screen {
 	    }
 	 
 	}
+	
+	public void worldStep(float delta)
+	{
+		box_accu+=delta;
+		if(box_accu>BOX_STEP)
+		{
+			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
+			box_accu-=BOX_STEP;
+		}
+	}
 
 	@Override
 	public void render(float delta) {
@@ -408,14 +368,14 @@ public class GameScreen implements Screen {
 		localPlayerDirection.x = touchpad.getKnobPercentX();
 		localPlayerDirection.y = touchpad.getKnobPercentY();
 		
-		if(gamepad == null)
+		if(BaseGame.gamepad == null)
 		{
 			if( Gdx.input.isKeyPressed( Input.Keys.UP ) || Gdx.input.isKeyPressed( Input.Keys.W ) ) localPlayerDirection.y = 1;
 			else if( Gdx.input.isKeyPressed( Input.Keys.DOWN ) || Gdx.input.isKeyPressed( Input.Keys.S ) ) localPlayerDirection.y = -1;
 			if( Gdx.input.isKeyPressed( Input.Keys.LEFT ) || Gdx.input.isKeyPressed( Input.Keys.A ) ) localPlayerDirection.x = -1;
 			else if( Gdx.input.isKeyPressed( Input.Keys.RIGHT ) || Gdx.input.isKeyPressed( Input.Keys.D ) ) localPlayerDirection.x = 1;
-			
-			if(camToggle)
+
+			if(camToggle && localPlayerShip.Health>0)
 			gameStage.getCamera().position.set(
 					MathUtils.clamp(localPlayerShip.getX(), -1024+w/2, 1024-w/2), 
 					MathUtils.clamp(localPlayerShip.getY()-centerOffsetY, -1024-h/2, 1024+h/2), 0);
@@ -423,49 +383,33 @@ public class GameScreen implements Screen {
 		}
 		else
 		{
-			if(Math.abs(gamepad.getAxis(1))>0.1f)
+			if(Math.abs(BaseGame.gamepad.getAxis(1))>0.1f)
 			{
-				localPlayerDirection.x = gamepad.getAxis(1);
+				localPlayerDirection.x = BaseGame.gamepad.getAxis(1);
 				camOffset.set(camOffset.x*0.9f, camOffset.y*0.9f);
 			}
-			if(Math.abs(gamepad.getAxis(0))>0.1f)
+			if(Math.abs(BaseGame.gamepad.getAxis(0))>0.1f)
 			{
-				localPlayerDirection.y = -gamepad.getAxis(0);
+				localPlayerDirection.y = -BaseGame.gamepad.getAxis(0);
 				camOffset.set(camOffset.x*0.9f, camOffset.y*0.9f);
 			}
-			
-			if(Math.abs(gamepad.getAxis(3))>0.1f)
-				camOffset.x += gamepad.getAxis(3) * delta * 512;
-			
-			if(Math.abs(gamepad.getAxis(2))>0.1f)
-				camOffset.y -= gamepad.getAxis(2) * delta * 512;
-			
+
+			if(Math.abs(BaseGame.gamepad.getAxis(3))>0.1f)
+				camOffset.x += BaseGame.gamepad.getAxis(3) * delta * 512;
+
+			if(Math.abs(BaseGame.gamepad.getAxis(2))>0.1f)
+				camOffset.y -= BaseGame.gamepad.getAxis(2) * delta * 512;
+
 			gameStage.getCamera().position.set(
 				MathUtils.clamp(localPlayerShip.getX() + camOffset.x,-1024+w/2, 1024-w/2), 
 				MathUtils.clamp(localPlayerShip.getY() + camOffset.y,-1024+h/2, 1024-h/2), 0);
+			gameStage.getCamera().update();
 		}
+		
 		
 		localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
 		
-		box_accu+=delta;
-		if(box_accu>BOX_STEP)
-		{
-			try {
-				if(!msgQueue.isEmpty()) {
-	                UnitMap message = msgQueue.take();
-	                handleMessage(message);
-				}
-            } catch (InterruptedException e) {
-                //e.printStackTrace();
-            }
-			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
-			box_accu-=BOX_STEP;
-		}
-		
-		if(!test_mode) {
-			this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
-			lobbyClient.move(playerData);
-		}
+		worldStep(delta);
 		
 		gameStage.getRoot().getChildren().sort(ActorComparator);
 		Map.toBack();		

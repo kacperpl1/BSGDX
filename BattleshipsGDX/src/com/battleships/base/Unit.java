@@ -14,7 +14,6 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.battleships.network.Common;
-import com.battleships.network.UnitData;
 
 public abstract class Unit extends Actor {
 
@@ -67,7 +66,7 @@ public abstract class Unit extends Actor {
 		icon = new Actor(){
 			float scale = GameScreen.miniMap.getWidth()/2048;
 	        public void draw (SpriteBatch batch, float parentAlpha) {
-	    		if(team != GameScreen.LocalPlayerTeam && VisibleEnemiesCount<=0 && !(Unit.this instanceof Tower))
+	    		if(team != GameScreen.LocalPlayerTeam && VisibleEnemiesCount<=0 && !(Unit.this instanceof Tower) || Health <= 0 )
 	    			return;
 	    		
         		batch.setColor(colorSprite.getColor());

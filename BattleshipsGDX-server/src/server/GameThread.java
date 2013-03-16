@@ -104,10 +104,10 @@ class GameThread extends Thread{
 				Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
 			
 				if(current.y>1024) {
-					new Tower("blue",current.x-1024+16,-current.y+1024, this);
+					new Tower("blue",current.x-1024+16,-current.y+1024+32, this);
 				}
 				else {
-					new Tower("red",current.x-1024+16,-current.y+1024, this);
+					new Tower("red",current.x-1024+16,-current.y+1024+32, this);
 				}
 			}
 	    }

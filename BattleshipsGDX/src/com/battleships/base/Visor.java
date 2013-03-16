@@ -44,13 +44,6 @@ public class Visor {
 	    SensorFixture.setSensor(true);
 	}
 	
-	public void checkDestroy()
-	{	
-		if(Owner.Health <=0)
-		{
-			VisorList.remove(this);
-		}
-	}
 	public void draw(SpriteBatch batch) {
 		if(Owner.Health>0)
 			batch.draw(visionArea, -GameScreen.camera.position.x+Owner.getX()-256*visionArea.getScaleX(),

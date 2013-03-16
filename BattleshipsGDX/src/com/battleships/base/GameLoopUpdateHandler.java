@@ -52,7 +52,7 @@ public class GameLoopUpdateHandler{
 			while(iter.hasNext())
 			{
 				current = iter.next();
-				if(current.Owner.Health<=0)
+				if(current.Owner.Health<=0 && !(current.Owner instanceof PlayerShip))
 					iter.remove();
 			}
 			WaveCounter=0;

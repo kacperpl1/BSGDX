@@ -8,3 +8,6 @@
 /BattleshipsGDX/bin
 /BattleshipsGDX-server/bin
 /BattleshipsGDX-server/assets
+
+/BattleshipsGDX-html/war
+/BattleshipsGDX-html/gwt-unitCache

@@ -5,5 +5,10 @@
 	<classpathentry exported="true" kind="lib" path="libs/gdx.jar" sourcepath="libs/gdx-sources.jar"/>
 	<classpathentry kind="lib" path="libs/kryonet-debug-2.18-all.jar"/>
 	<classpathentry kind="lib" path="libs/gdx-controllers.jar"/>
+	<classpathentry kind="lib" path="libs/gdx-controllers-gwt-sources.jar"/>
+	<classpathentry kind="lib" path="libs/gdx-controllers-sources.jar"/>
+	<classpathentry kind="lib" path="libs/gdx-sources.jar"/>
+	<classpathentry kind="lib" path="libs/reactive4java-0.97.jar"/>
+	<classpathentry kind="lib" path="libs/reactive4java-gwt-0.97.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

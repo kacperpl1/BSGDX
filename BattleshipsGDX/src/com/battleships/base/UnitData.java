@@ -1,4 +1,4 @@
-package com.battleships.network;
+package com.battleships.base;
 
 import java.io.Serializable;
 
