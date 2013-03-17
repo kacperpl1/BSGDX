@@ -32,6 +32,8 @@ public class PlayerShip extends Unit {
     	}
     	visor = new Visor(this);
     	setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
+    	Inventory.add(new PlayerWeapon(this, 8));
+    	Inventory.add(new PlayerWeapon(this, 8));
     }
 	
 	void setVelocity()

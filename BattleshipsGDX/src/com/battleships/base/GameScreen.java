@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -38,14 +37,11 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 public class GameScreen implements Screen {
 	static Stage hudStage;
 	static Stage gameStage;
-	private Touchpad touchpad;
+	private Actor touchpad;
 	static PlayerShip localPlayerShip;
 	private GameLoopUpdateHandler GLUH;
 	private Box2DDebugRenderer debugRenderer;
@@ -77,6 +73,7 @@ public class GameScreen implements Screen {
 	private Vector2 localPlayerDirection;
 	private BitmapFont font;
 	private Vector2 camOffset;
+	private Vector2 knobOffset = new Vector2();
 	static Actor miniMap;
 	static String LocalPlayerTeam;
 	
@@ -214,10 +211,6 @@ public class GameScreen implements Screen {
 		miniMap.toFront();
 		hudStage.addActor(miniMap);
 		
-		TouchpadStyle style = new TouchpadStyle();
-		style.background = new SpriteDrawable(new Sprite(Resources.touchpadBase));
-		style.knob = new SpriteDrawable(new Sprite(Resources.touchpadKnob));
-		
 		float knobsize = w*0.25f;
 		if(w<h)
 		{
@@ -225,9 +218,46 @@ public class GameScreen implements Screen {
 			centerOffsetY = (int)(w*0.25f);
 		}
 		
-		style.knob.setMinWidth(knobsize/2);
-		style.knob.setMinHeight(knobsize/2);
-		touchpad = new Touchpad(1, style);
+		touchpad = new Actor(){
+	        public void draw (SpriteBatch batch, float parentAlpha) {
+        		batch.setColor(1, 1, 1, 0.5f);
+	            batch.draw(Resources.touchpadBase,getX(),getY(),getWidth(),getHeight());
+	            batch.draw(Resources.touchpadKnob,
+	            		getX()+getWidth()*(0.25f + knobOffset.x),
+	            		getY()+getHeight()*(0.25f + knobOffset.y),
+	            		getWidth()/2,getHeight()/2);
+	            batch.setColor(1, 1, 1, 1);
+	        }
+		};
+		touchpad.setTouchable(Touchable.enabled);
+		touchpad.addListener(new InputListener() {
+	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+	        	knobOffset.x = (x-touchpad.getWidth()/2)/(touchpad.getWidth());
+	        	knobOffset.y = (y-touchpad.getHeight()/2)/(touchpad.getWidth());
+	        	if(knobOffset.len() > 0.3f)
+	        	{
+		        	knobOffset.x /= knobOffset.len()/0.3f;
+		        	knobOffset.y /= knobOffset.len()/0.3f;
+	        	}
+	        	
+	        	return true;
+	        }
+	        
+	        public void touchDragged (InputEvent event, float x, float y, int pointer) {
+	        	knobOffset.x = (x-touchpad.getWidth()/2)/(touchpad.getWidth());
+	        	knobOffset.y = (y-touchpad.getHeight()/2)/(touchpad.getWidth());
+	        	if(knobOffset.len() > 0.3f)
+	        	{
+		        	knobOffset.x /= knobOffset.len()/0.3f;
+		        	knobOffset.y /= knobOffset.len()/0.3f;
+	        	}
+	    	}
+	        
+	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+	        	knobOffset.set(0,0);
+	        }
+		});
+		
 		if(w>h)
 			touchpad.setBounds(w-knobsize,0, knobsize, knobsize);
 		else
@@ -352,7 +382,10 @@ public class GameScreen implements Screen {
 	
 	public void worldStep(float delta)
 	{
-		box_accu+=delta;
+		
+		GLUH.onUpdate(Math.min(delta, BOX_STEP));
+		
+		box_accu+=Math.min(delta, BOX_STEP);
 		if(box_accu>BOX_STEP)
 		{
 			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
@@ -362,11 +395,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-		
-		GLUH.onUpdate(delta);
-		
-		localPlayerDirection.x = touchpad.getKnobPercentX();
-		localPlayerDirection.y = touchpad.getKnobPercentY();
+		localPlayerDirection.set(knobOffset);
 		
 		if(BaseGame.gamepad == null)
 		{

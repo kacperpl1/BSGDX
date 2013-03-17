@@ -24,6 +24,8 @@ public class PlayerShip extends Unit {
     	MaxHealth = 2500;
     	Health = MaxHealth;
     	createUnitData(Common.PLAYER_SHIP, slot, owner.getName());
+    	Inventory.add(new PlayerWeapon(this, 8));
+    	Inventory.add(new PlayerWeapon(this, 8));
     	
     }
 

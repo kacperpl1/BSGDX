@@ -6,7 +6,7 @@
   <object x="768" y="0" width="512" height="224"/>
   <object x="1280" y="0" width="192" height="320"/>
   <object x="1472" y="0" width="576" height="480"/>
-  <object x="864" y="320" width="320" height="128"/>
+  <object x="864" y="320" width="96" height="128"/>
   <object x="448" y="672" width="96" height="160"/>
   <object x="1408" y="736" width="64" height="128"/>
   <object x="608" y="832" width="256" height="320"/>
@@ -15,7 +15,7 @@
   <object x="352" y="928" width="160" height="160"/>
   <object x="0" y="1568" width="576" height="512"/>
   <object x="576" y="1728" width="192" height="320"/>
-  <object x="864" y="1600" width="320" height="128"/>
+  <object x="864" y="1600" width="96" height="128"/>
   <object x="768" y="1824" width="512" height="224"/>
   <object x="1280" y="1728" width="192" height="320"/>
   <object x="1472" y="1568" width="576" height="480"/>
@@ -31,6 +31,8 @@
   <object x="800" y="1376" width="96" height="128"/>
   <object x="1152" y="1376" width="96" height="128"/>
   <object x="1216" y="1312" width="96" height="128"/>
+  <object x="1088" y="1600" width="96" height="128"/>
+  <object x="1088" y="320" width="96" height="128"/>
  </objectgroup>
  <objectgroup name="Towers" width="64" height="64">
   <object x="1248" y="1344" width="32" height="32"/>
@@ -49,5 +51,9 @@
   <object x="768" y="640" width="32" height="32"/>
   <object x="1184" y="576" width="32" height="32"/>
   <object x="1248" y="640" width="32" height="32"/>
+  <object x="512" y="384" width="32" height="32"/>
+  <object x="512" y="1600" width="32" height="32"/>
+  <object x="1504" y="1600" width="32" height="32"/>
+  <object x="1504" y="384" width="32" height="32"/>
  </objectgroup>
 </map>
