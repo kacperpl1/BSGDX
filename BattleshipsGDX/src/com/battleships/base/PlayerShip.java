@@ -119,7 +119,7 @@ public class PlayerShip extends Unit {
 		{
 			for(Unit current : VisibleEnemies)
 			{
-				if(current.gun.Enemies.contains(this))
+				if(current.gun != null && current.gun.Enemies.contains(this))
 					current.gun.Enemies.remove(this);
 				current.VisibleEnemiesCount--;
 			}

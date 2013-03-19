@@ -29,7 +29,7 @@ public abstract class Unit extends Actor {
 	
 	Vector2 DesiredVelocity = new Vector2(0,0);
 	
-	Weapon gun;
+	Weapon gun = null;
 	Visor visor;
 	protected int VisibleEnemiesCount = 0;
 	protected LinkedList<Unit> VisibleEnemies = new LinkedList<Unit>(); //used by allies
