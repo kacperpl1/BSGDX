@@ -14,7 +14,6 @@ public class PlayerShip extends Unit {
 	
 	public LinkedList<PlayerWeapon> Inventory = new LinkedList<PlayerWeapon>();
 	private Vector2 networkPosition = new Vector2(0,0);
-	private boolean destroyed = false;
 	
 	PlayerShip(String Team, float InitialX, float InitialY, int slot)
     {
@@ -108,17 +107,9 @@ public class PlayerShip extends Unit {
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
 		if(Health >0)
-		{
 			super.draw(batch, parentAlpha);	
-			
-			if(destroyed)
-				destroyed = false;
-		}
-		else if(!destroyed)
-		{
+		else
     		Destroy();
-    		destroyed = true;
-		}
 	}
 	
 	void Destroy()
@@ -128,7 +119,8 @@ public class PlayerShip extends Unit {
 		{
 			for(Unit current : VisibleEnemies)
 			{
-				current.gun.Enemies.remove(this);
+				if(current.gun.Enemies.contains(this))
+					current.gun.Enemies.remove(this);
 				current.VisibleEnemiesCount--;
 			}
 			VisibleEnemies.clear();
