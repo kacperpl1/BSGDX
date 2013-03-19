@@ -1,9 +1,7 @@
 package server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
@@ -50,7 +48,7 @@ class GameThread extends Thread{
 	static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 	
 	public UnitMap unitMap = new UnitMap();
-	List<Stack<UnitData>> stackArray = new ArrayList<Stack<UnitData>>();
+	Map<Short, Stack<UnitData>> stackMap = new HashMap<Short, Stack<UnitData>>();
 	private server.GameLoopUpdateHandler GLUH;
 	
 	private Map<Integer, Unit> playerShipMap = new HashMap<Integer, Unit>();
@@ -60,11 +58,8 @@ class GameThread extends Thread{
 		this.running = true;
 		this.setName(game.getId());
 		
-		for(int i = 0; i < 6; i++) {
-			stackArray.add(null);
-		}
 		for(int i = 0; i < game.getPlayerList().size(); i++) {
-			stackArray.add(game.getPlayerList().getServerPlayer(i).getSlotNumber(), new Stack<UnitData>());
+			stackMap.put(game.getPlayerList().getServerPlayer(i).getSlotNumber(), new Stack<UnitData>());
 		}
 		
 		physicsWorld = new World(new Vector2(0, 0), true);
@@ -147,11 +142,11 @@ class GameThread extends Thread{
 					}
 					
 					for(int i = 0 ; i < game.getPlayerList().size(); i++) {
-						int slot = game.getPlayerList().getServerPlayer(i).getSlotNumber(); 
-						if(!stackArray.get(slot).isEmpty()) {
-							UnitData message = stackArray.get(slot).pop();
+						short slot = game.getPlayerList().getServerPlayer(i).getSlotNumber(); 
+						if(!stackMap.get(slot).isEmpty()) {
+							UnitData message = stackMap.get(slot).pop();
 							playerShipMap.get(message.unitKey).CollisionBody.setTransform(message.position, 0);
-							stackArray.get(slot).clear();
+							stackMap.get(slot).clear();
 						}
 					}
 					
@@ -161,11 +156,6 @@ class GameThread extends Thread{
 //					oOut.close();  
 //					System.out.println("The size of the object is: "+bOut.toByteArray().length);  
 					
-//					for(Entry<Integer, UnitData> entry : unitMap.map.entrySet()) {
-//						if(entry.getValue().type.equals(UnitData.Type.SHIP)) {
-//							System.out.println(entry.getValue().slot + ": " + entry.getValue().position.x + " " + entry.getValue().position.y);
-//						}
-//					}
 					for(int i = 0; i < game.getPlayerList().size(); i++) {
 						game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
 					}
@@ -204,8 +194,9 @@ class GameThread extends Thread{
 		}
 	}
 	
-	public Stack<UnitData> getMsgStack(int slot) {
-		return this.stackArray.get(slot);
+	public Stack<UnitData> getMsgStack(short slot) {
+		return this.stackMap.get(slot);
+		//return this.stackArray.get(slot);
 	}
 	
 	public boolean playersAreConnected() {

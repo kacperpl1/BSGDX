@@ -2,14 +2,12 @@ package server;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
 import shared.Common;
 import shared.ResponseMessage;
 import shared.UnitData;
-import shared.UnitMap;
 
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.esotericsoftware.kryonet.Connection;
@@ -57,12 +55,8 @@ class ServerThread {
 						translator.start();
 					} else {
 						if(object instanceof UnitData) {
+							@SuppressWarnings("unused")
 							Translator translator = new Translator(gameThreadList, (UnitData)object);
-							
-//							for(Entry<Integer, UnitData> entry : map.map.entrySet()) {
-//								System.out.println(entry.getValue().gameID);
-//								System.out.println(entry.getValue().position.x + " " + entry.getValue().position.y);
-//							}
 						}
 					}
 				}
