@@ -1,13 +1,13 @@
 package com.battleships.base;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 
 import com.battleships.network.BSClient;
 import com.battleships.network.Player;
-import com.battleships.network.UnitMap;
 
 public class NetworkGameScreen extends GameScreen{
 	private BSClient lobbyClient;
@@ -23,17 +23,9 @@ public class NetworkGameScreen extends GameScreen{
 	}
 	
 	public void handleMessage(Map<Short, UnitData> message) {
-		//System.out.println("heheheheh");
-		//System.out.println(message.size());
 		for(Entry<Short, UnitData> entry : message.entrySet()) {
-			System.out.println(entry.getKey());
 			if(shipMap.containsKey(entry.getKey())) {
-				System.out.println("jest");
 				shipMap.get(entry.getKey()).setDesiredVelocity(entry.getValue().direction.x, entry.getValue().direction.y);
-				//	unitMap.get(entry.getKey()).updateUnitData(entry.getValue());
-			//{
-			} else {
-			//	unitMap.put(entry.getKey(), Unit.createNewUnit(entry.getValue()));
 			}
 		}
 	}
@@ -62,7 +54,11 @@ public class NetworkGameScreen extends GameScreen{
 					shipMap.put((short)player.getSlotNumber(), new PlayerShip("blue", 0, -768, player.getSlotNumber()));
 				}
 			}
-			localPlayerShip = shipMap.get((short)lobbyClient.getPlayer().getSlotNumber());
+			//localPlayerShip = shipMap.get((short)lobbyClient.getPlayer().getSlotNumber());
+			localPlayerShip = shipMap.get((short)3);
+
+			//send initial direction packet
+			lobbyClient.sendDirection(playerData);
 	}
 	
 	public void worldStep(float delta)
@@ -74,19 +70,36 @@ public class NetworkGameScreen extends GameScreen{
 				if(!msgQueue.isEmpty()) {
 					Map<Short, UnitData> message = msgQueue.take();
 	                handleMessage(message);
+
+	        		GLUH.onUpdate(BOX_STEP);
+	    			
+	    			Iterator<Unit> iter = Unit.AllUnits.iterator();
+	    			Unit current;
+	    			while(iter.hasNext())
+	    			{
+	    				current = iter.next();
+    					current.onUpdate(BOX_STEP);
+	    				if(current.Health<=0 && !(current instanceof PlayerShip))
+	    				{
+	    					iter.remove();
+	    				}
+	    			}
+	        		
+	    			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
+	    			box_accu = 0;
+	    			
+	    			this.playerData.direction.set(localPlayerDirection);
+	    			lobbyClient.sendDirection(playerData);
+	    			
+	    			msgQueue.clear();
+	    			Weapon.m_w = 1182370352;
+	    			Weapon.m_z = 1352118237;
 				}
             } catch (InterruptedException e) {
                 //e.printStackTrace();
+            	System.out.println("Connection Error!");
             }
-			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
-			box_accu-=BOX_STEP;
 		}
-//			this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
-//			lobbyClient.move(playerData);
-
-			//localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
-			this.playerData.direction.set(localPlayerDirection);
-			lobbyClient.sendDirection(playerData);
 	}	
 
 }

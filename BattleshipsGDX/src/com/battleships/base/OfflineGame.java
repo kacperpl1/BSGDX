@@ -8,7 +8,6 @@ public class OfflineGame extends Game {
 	public void create() {
 		Resources.init();
 		// TODO Auto-generated method stub
-		GameScreen.test_mode = true;
 		this.setScreen(new GameScreen());
 	}
 }

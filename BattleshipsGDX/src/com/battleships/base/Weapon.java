@@ -1,9 +1,7 @@
 package com.battleships.base;
 
 import java.util.LinkedList;
-import java.util.Random;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -24,6 +22,15 @@ public class Weapon {
 	int Damage;
 	int cost;
 	int weapon_id;
+	public static long m_w = 1182370352;
+	public static long m_z = 1352118237;
+	
+	long get_random()
+	{
+	    m_z = 36969 * (m_z & 65535) + (m_z >> 16);
+	    m_w = 18000 * (m_w & 65535) + (m_w >> 16);
+	    return (m_z << 16) + m_w;  /* 32-bit result */
+	}
 	
 	public Weapon(Unit o, int type)
 	{
@@ -79,7 +86,7 @@ public class Weapon {
     	{
 	    		if(Enemies.size()>0)
 	    		{
-	    			Unit target = Enemies.get(new Random().nextInt(Enemies.size()));
+	    			Unit target = Enemies.get((int)(get_random()%Enemies.size()));
 	    			if(target.Health<=0)//HACK!!
 	    			{
 	    				Enemies.remove(target);
@@ -87,9 +94,10 @@ public class Weapon {
 	    			else
 	    			{
 	    				Projectile.Launch(Owner,target,Damage, weapon_id);
+	    				target.TakeDamage(Damage, Owner);
 	    			}
 	    		}
-				FireDelayTimer = MathUtils.random(FireDelay * 0.9f,FireDelay * 1.1f);
+				FireDelayTimer = FireDelay;//MathUtils.random(FireDelay * 0.9f,FireDelay * 1.1f);
     	}
     };
     

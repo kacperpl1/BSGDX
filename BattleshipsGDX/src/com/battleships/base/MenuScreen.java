@@ -39,7 +39,6 @@ public class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event,float x,float y )
             {
-            	GameScreen.test_mode=true;
                 BaseGame.instance.setScreen( new GameScreen() );
             }
         } );

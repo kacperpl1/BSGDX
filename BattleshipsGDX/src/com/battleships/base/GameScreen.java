@@ -43,7 +43,7 @@ public class GameScreen implements Screen {
 	static Stage gameStage;
 	private Actor touchpad;
 	static PlayerShip localPlayerShip;
-	private GameLoopUpdateHandler GLUH;
+	protected GameLoopUpdateHandler GLUH;
 	private Box2DDebugRenderer debugRenderer;
 	
 	static World physicsWorld; 
@@ -54,7 +54,6 @@ public class GameScreen implements Screen {
     static final float WORLD_TO_BOX=0.01f;  
     static final float BOX_WORLD_TO=100.0f; 
     static boolean debug_mode=false;
-    static boolean test_mode=false;
     
 	private SpriteBatch batch;
 	private ShaderProgram shader;
@@ -104,8 +103,7 @@ public class GameScreen implements Screen {
 			}
 	    }
 		
-		if(test_mode)
-		{
+		
 			objectGroup = layerIterator.next().getObjects();
 			for (MapObject currentObject : objectGroup) {
 				if((RectangleMapObject)currentObject != null)
@@ -118,8 +116,6 @@ public class GameScreen implements Screen {
 					new Tower("red",current.x-1024+16,-current.y+1024+32);
 				}
 			}
-		}
-		
 	}
 	
 	public void loadPlayers()
@@ -385,21 +381,28 @@ public class GameScreen implements Screen {
 		box_accu+=Math.min(delta, BOX_STEP);
 		if(box_accu>BOX_STEP)
 		{
-			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
-			box_accu-=BOX_STEP;
+    		GLUH.onUpdate(BOX_STEP);
 			
-			Iterator<Body> iter = physicsWorld.getBodies();
-			Body current;
+			Iterator<Unit> iter = Unit.AllUnits.iterator();
+			Unit current;
 			while(iter.hasNext())
 			{
 				current = iter.next();
-				if(current.getFixtureList().size()>0 &&
-					current.getFixtureList().get(0).getUserData() != null &&
-					current.getFixtureList().get(0).getUserData()instanceof Unit)
-					((Unit)(current.getFixtureList().get(0).getUserData())).onUpdate(BOX_STEP);
+				current.onUpdate(BOX_STEP);
+				if(current.Health<=0 && !(current instanceof PlayerShip))
+				{
+					iter.remove();
+				}
 			}
+    		
+			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);
 			
 			localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
+			
+			box_accu = 0;
+
+			Weapon.m_w = 1182370352;
+			Weapon.m_z = 1352118237;
 		}
 	}
 

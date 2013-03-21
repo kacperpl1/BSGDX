@@ -13,7 +13,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.battleships.network.Common;
 
 public abstract class Unit extends Actor {
 
@@ -35,7 +34,9 @@ public abstract class Unit extends Actor {
 	protected LinkedList<Unit> VisibleEnemies = new LinkedList<Unit>(); //used by allies
 	Actor icon;
 	protected Vector2 CurrentPosition;
+	protected int IncomingDamage;
 	static BodyPool bodyPool = new BodyPool();
+	public static LinkedList<Unit> AllUnits = new LinkedList<Unit>();
 	
 	Unit(String Team, float InitialX, float InitialY)
 	{
@@ -77,6 +78,7 @@ public abstract class Unit extends Actor {
 	        }
 		};
 		GameScreen.hudStage.addActor(icon);
+		AllUnits.add(this);
 	}
 	
 //	public static Unit createNewUnit(UnitData data) {
@@ -136,7 +138,6 @@ public abstract class Unit extends Actor {
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
 		//onUpdate(Gdx.graphics.getDeltaTime());
-		updateVelocity();
 		
 		CurrentPosition.x = this.getX()*GameScreen.WORLD_TO_BOX;
 		CurrentPosition.y = this.getY()*GameScreen.WORLD_TO_BOX;
@@ -162,6 +163,9 @@ public abstract class Unit extends Actor {
 	
 	void onUpdate(float delta)
 	{
+    	Health -= IncomingDamage;
+    	IncomingDamage = 0;
+    	
     	if(Health<=0)
     	{
     		Health=0;
@@ -169,12 +173,12 @@ public abstract class Unit extends Actor {
     		return;
     	}
 		gun.onUpdate(delta);
+		updateVelocity();
 	}
 	
     void TakeDamage(int Damage, Unit Instigator)
     {
-    	if(GameScreen.test_mode)
-    		Health -= Damage;
+    	IncomingDamage += Damage;
     }
 	
 	void Destroy()

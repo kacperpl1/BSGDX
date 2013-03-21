@@ -55,8 +55,7 @@ public class GameLoopUpdateHandler{
 					iter.remove();
 			}
 			WaveCounter=0;
-			if(GameScreen.test_mode)
-				SpawnWave();
+			SpawnWave();
 		}
 	}
 }

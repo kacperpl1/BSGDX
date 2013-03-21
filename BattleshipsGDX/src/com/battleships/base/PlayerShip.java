@@ -13,7 +13,6 @@ public class PlayerShip extends Unit {
 	Vector2 CurrentVelocity = new Vector2(0,0);
 	
 	public LinkedList<PlayerWeapon> Inventory = new LinkedList<PlayerWeapon>();
-	private Vector2 networkPosition = new Vector2(0,0);
 	
 	PlayerShip(String Team, float InitialX, float InitialY, int slot)
     {
@@ -107,7 +106,10 @@ public class PlayerShip extends Unit {
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
 		if(Health >0)
+		{
 			super.draw(batch, parentAlpha);	
+			updateVelocity();
+		}
 		else
     		Destroy();
 	}
@@ -137,14 +139,14 @@ public class PlayerShip extends Unit {
     		this.setPosition(0, -768);
     	}
 
-    	if(GameScreen.test_mode)
-    	{
-  			Health = MaxHealth;
-    	}
+    	Health = MaxHealth;
 	}
 	
 	void onUpdate(float delta)
 	{
+    	Health -= IncomingDamage;
+    	IncomingDamage = 0;
+    	
     	if(Health<=0)
     	{
     		Health=0;
