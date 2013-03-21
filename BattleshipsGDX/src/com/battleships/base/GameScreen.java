@@ -260,7 +260,7 @@ public class GameScreen implements Screen {
 		loadPlayers();
 		
 		localPlayerDirection = new Vector2();
-		//new Shop(localPlayerShip);
+		new Shop(localPlayerShip);
 		
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera(w, h);

@@ -19,7 +19,6 @@ public class Projectile extends Actor{
 	float TravelTime;
 	private Sprite sprite;
 	private BalisticMoveModifier moveModifier;
-	boolean destroyed = false;
 
 	public static ProjectilePool projectilepool = new ProjectilePool();
 	
@@ -73,13 +72,11 @@ public class Projectile extends Actor{
   			  explode();
 			  return;
 			}
-			if(!destroyed)
-			{
-				this.mX3 = (LaunchX+3*Target.getX())/4;
-				this.mY3 = (LaunchY+3*Target.getY())/4 + yOffset*TravelTime;
-				this.mX4 = Target.getX();
-				this.mY4 = Target.getY();
-			}
+			
+			this.mX3 = (LaunchX+3*Target.getX())/4;
+			this.mY3 = (LaunchY+3*Target.getY())/4 + yOffset*TravelTime;
+			this.mX4 = Target.getX();
+			this.mY4 = Target.getY();
 			
 			final float u = 1 - percentageDone;
 			final float tt = percentageDone * percentageDone;
@@ -103,9 +100,6 @@ public class Projectile extends Actor{
 	}
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
-		if(Target.Health <= 0)
-			destroyed=true;
-		
 		moveModifier.onManagedUpdate(Gdx.graphics.getDeltaTime());
         batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, this.getRotation());
 	}

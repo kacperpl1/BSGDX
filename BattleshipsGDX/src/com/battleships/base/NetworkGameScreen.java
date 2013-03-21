@@ -62,9 +62,28 @@ public class NetworkGameScreen extends GameScreen{
 			lobbyClient.sendDirection(playerData);
 	}
 	
+	void update()
+	{
+		Iterator<Unit> iter = Unit.AllUnits.iterator();
+		Unit current;
+		while(iter.hasNext())
+		{
+			current = iter.next();
+			current.onUpdate(BOX_STEP/2f);
+			if(current.Health<=0 && !(current instanceof PlayerShip))
+			{
+				iter.remove();
+			}
+		}
+	}
+	
 	public void worldStep(float delta)
 	{
 		box_accu+=delta;
+		
+		if(box_accu - delta <BOX_STEP/2f && box_accu > BOX_STEP/2f)
+			update();
+		
 		if(box_accu>BOX_STEP)
 		{
 			try {
@@ -73,18 +92,8 @@ public class NetworkGameScreen extends GameScreen{
 	                handleMessage(message);
 
 	        		GLUH.onUpdate(BOX_STEP);
-	    			
-	    			Iterator<Unit> iter = Unit.AllUnits.iterator();
-	    			Unit current;
-	    			while(iter.hasNext())
-	    			{
-	    				current = iter.next();
-    					current.onUpdate(BOX_STEP);
-	    				if(current.Health<=0 && !(current instanceof PlayerShip))
-	    				{
-	    					iter.remove();
-	    				}
-	    			}
+	        		
+	        		update();
 	        		
 	    			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
 	    			box_accu = 0;
@@ -94,8 +103,8 @@ public class NetworkGameScreen extends GameScreen{
 	    			lobbyClient.sendDirection(playerData);
 	    			
 	    			msgQueue.clear();
-	    			Weapon.m_w = 1182370352;
-	    			Weapon.m_z = 1352118237;
+	    			//Weapon.m_w = 1182370352;
+	    			//Weapon.m_z = 1352118237;
 				}
             } catch (InterruptedException e) {
                 //e.printStackTrace();

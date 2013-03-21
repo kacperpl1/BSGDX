@@ -92,21 +92,26 @@ public class Weapon {
     	{
 	    		if(Enemies.size()>0)
 	    		{
-	    			Unit target = Enemies.get((int)(get_random()%Enemies.size()));
-	    			if(target.Health<=0)//HACK!!
+	    			Unit target;
+	    			while(Enemies.size()>0)
 	    			{
-	    				Enemies.remove(target);
-	    			}
-	    			else
-	    			{
-	    				Projectile.Launch(Owner,target,Damage, weapon_id);
-	    				target.TakeDamage(Damage, Owner);
+	    				target = Enemies.get((int)(get_random()%Enemies.size()));
+		    			if(target.Health<=0)
+		    			{
+		    				Enemies.remove(target);
+		    			}
+		    			else
+		    			{
+		    				Projectile.Launch(Owner,target,Damage, weapon_id);
+		    				target.TakeDamage(Damage, Owner);
+		    				break;
+		    			}
 	    			}
 	    		}
 	    		//switch ((int)(get_random()%3))
 	    		//{
-	    			//case 0: FireDelayTimer = FireDelay - GameScreen.BOX_STEP; break;
-	    			//case 1: FireDelayTimer = FireDelay + GameScreen.BOX_STEP; break;
+	    		//	case 0: FireDelayTimer = FireDelay - GameScreen.BOX_STEP; break;
+	    		//	case 1: FireDelayTimer = FireDelay + GameScreen.BOX_STEP; break;
 	    		//	default: 
 	    				FireDelayTimer = FireDelay; 
 	    		//		break;
