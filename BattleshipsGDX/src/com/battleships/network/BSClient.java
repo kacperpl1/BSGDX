@@ -1,6 +1,8 @@
 package com.battleships.network;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,7 +23,7 @@ public class BSClient implements Runnable	{
    	private GameList gameList = new GameList();
    	private BlockingQueue<String> mainLobbyMsgQueue = new LinkedBlockingQueue<String>();
    	private BlockingQueue<String> gameLobbyMsgQueue = new LinkedBlockingQueue<String>();
-   	private BlockingQueue<UnitMap> mainGameMsgQueue = new LinkedBlockingQueue<UnitMap>();
+   	private BlockingQueue<Map<Short, UnitData>> mainGameMsgQueue = new LinkedBlockingQueue<Map<Short, UnitData>>();
    	
 	private Client client;
 	private Player clientPlayer;
@@ -91,8 +93,8 @@ public class BSClient implements Runnable	{
 							case 2 : {
 								String list = "0 ";
 								while(part.hasMoreTokens()){
-									part.nextToken();
-									list += part.nextToken() + " ";
+									
+									list += part.nextToken() + " " + part.nextToken() + " ";
 								}
 								try {
 									gameLobbyMsgQueue.put(list);
@@ -127,9 +129,10 @@ public class BSClient implements Runnable	{
 							default : break;
 						}
 					} else {
-						if(object instanceof UnitMap) {
+						if(object instanceof HashMap) {
+							Map<Short, UnitData> map = (HashMap<Short, UnitData>)object;
 							try {
-								mainGameMsgQueue.put((UnitMap)object);
+								mainGameMsgQueue.put(map);
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
@@ -253,6 +256,10 @@ public class BSClient implements Runnable	{
 	public void move(UnitData unitData) {
 		client.sendUDP(unitData);
 	}
+	// Send player directory to gameThread
+	public void sendDirection(UnitData unitData) {
+		client.sendUDP(unitData);
+	}
 	public Player getPlayer() {
 		return this.clientPlayer;
 	}
@@ -265,7 +272,7 @@ public class BSClient implements Runnable	{
 	public BlockingQueue<String> getGameLobbyQueue() {
 		return this.gameLobbyMsgQueue;
 	}
-	public BlockingQueue<UnitMap> getMainGameQueue() {
+	public BlockingQueue<Map<Short, UnitData>> getMainGameQueue() {
 		return this.mainGameMsgQueue;
 	}
 	public void stopGame() {

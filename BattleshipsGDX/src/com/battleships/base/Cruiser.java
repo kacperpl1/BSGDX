@@ -44,16 +44,16 @@ public class Cruiser extends Unit {
 		BlockerBody.setTransform(this.getX()*GameScreen.WORLD_TO_BOX,this.getY()*GameScreen.WORLD_TO_BOX,0);
 	}
 	
-	void updateUnitData(UnitData data)
-	{
-		CollisionBody.setTransform(data.position, 0);
-		Health = data.health;
-		
-		if(Math.abs(data.position.x - networkPosition.x) > GameScreen.WORLD_TO_BOX || Math.abs(data.position.y - networkPosition.y) > GameScreen.WORLD_TO_BOX)
-			setVisualRotation(data.position.x - networkPosition.x, data.position.y - networkPosition.y);
-		
-		networkPosition.set(data.position);
-	}
+//	void updateUnitData(UnitData data)
+//	{
+//		CollisionBody.setTransform(data.position, 0);
+//		//Health = data.health;
+//		
+//		if(Math.abs(data.position.x - networkPosition.x) > GameScreen.WORLD_TO_BOX || Math.abs(data.position.y - networkPosition.y) > GameScreen.WORLD_TO_BOX)
+//			setVisualRotation(data.position.x - networkPosition.x, data.position.y - networkPosition.y);
+//		
+//		networkPosition.set(data.position);
+//	}
 	
 	void onUpdate(float delta)
     {

@@ -51,76 +51,82 @@ class GameThread extends Thread{
 	Map<Short, Stack<UnitData>> stackMap = new HashMap<Short, Stack<UnitData>>();
 	private server.GameLoopUpdateHandler GLUH;
 	
-	private Map<Integer, Unit> playerShipMap = new HashMap<Integer, Unit>();
+	private Map<Short, UnitData> playerShipMap = new HashMap<Short, UnitData>();
 	
 	public GameThread(ServerGame game){
 		this.game = game;
 		this.running = true;
 		this.setName(game.getId());
 		
+		
+		
 		for(int i = 0; i < game.getPlayerList().size(); i++) {
 			stackMap.put(game.getPlayerList().getServerPlayer(i).getSlotNumber(), new Stack<UnitData>());
+			UnitData data = new UnitData();
+			data.gameID = this.getName();
+			data.unitKey = game.getPlayerList().getServerPlayer(i).getSlotNumber();
+			playerShipMap.put(game.getPlayerList().getServerPlayer(i).getSlotNumber(), data);
 		}
 		
-		physicsWorld = new World(new Vector2(0, 0), true);
-		contactListener = createContactListener();
-		physicsWorld.setContactListener(contactListener);
-		GLUH = new GameLoopUpdateHandler(this);
-		
-		BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyType.StaticBody; 
-        bodyDef.position.set(0,0);  
-		Body WorldCollisionBody = physicsWorld.createBody(bodyDef);
-		
-		Gdx.files = new LwjglFiles();
-		TiledMap map = new TmxMapLoader().load("data/BattleShipsCollision.tmx");
-		MapObjects objectGroup = map.getLayers().get("Collision").getObjects();
-		for (MapObject currentObject : objectGroup) {
-			if((RectangleMapObject)currentObject != null)
-			{
-				Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
-			PolygonShape staticRectangle = new PolygonShape();
-				staticRectangle.setAsBox(current.width/2*WORLD_TO_BOX, current.height/2*WORLD_TO_BOX,
-						new Vector2((current.x-1024 +current.width/2)*WORLD_TO_BOX,
-								(current.y-1024 +current.height/2)*WORLD_TO_BOX), 0);
-		        FixtureDef fixtureDef = new FixtureDef();  
-		        fixtureDef.shape = staticRectangle;  
-		        fixtureDef.density = 1.0f;  
-		        fixtureDef.friction = 0.0f;  
-		        fixtureDef.restitution = 0.0f;
-		        WorldCollisionBody.createFixture(fixtureDef);  
-			}
-	    }
-		
-		objectGroup = map.getLayers().get("Towers").getObjects();
-		for (MapObject currentObject : objectGroup) {
-			if((RectangleMapObject)currentObject != null)
-			{
-				Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
-			
-				if(current.y>1024) {
-					new Tower("blue",current.x-1024+16,-current.y+1024+32, this);
-				}
-				else {
-					new Tower("red",current.x-1024+16,-current.y+1024+32, this);
-				}
-			}
-	    }
-		short slot;
-		for(int i = 0; i < game.getPlayerList().size(); i++) {
-			slot = game.getPlayerList().getServerPlayer(i).getSlotNumber();
-			if( slot < 3) {
-				Unit player = new PlayerShip("red", 0f, 768f, this, slot);
-				playerShipMap.put(player.hashCode(), player);
-			} else {
-				Unit player = new PlayerShip("blue", 0f, -768f, this, slot);
-				playerShipMap.put(player.hashCode(), player);
-			}
-		}
-		
-		for(int i = 0; i < game.getPlayerList().size(); i++) {
-			game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
-		}
+//		physicsWorld = new World(new Vector2(0, 0), true);
+//		contactListener = createContactListener();
+//		physicsWorld.setContactListener(contactListener);
+//		GLUH = new GameLoopUpdateHandler(this);
+//		
+//		BodyDef bodyDef = new BodyDef();
+//        bodyDef.type = BodyType.StaticBody; 
+//        bodyDef.position.set(0,0);  
+//		Body WorldCollisionBody = physicsWorld.createBody(bodyDef);
+//		
+//		Gdx.files = new LwjglFiles();
+//		TiledMap map = new TmxMapLoader().load("data/BattleShipsCollision.tmx");
+//		MapObjects objectGroup = map.getLayers().get("Collision").getObjects();
+//		for (MapObject currentObject : objectGroup) {
+//			if((RectangleMapObject)currentObject != null)
+//			{
+//				Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
+//			PolygonShape staticRectangle = new PolygonShape();
+//				staticRectangle.setAsBox(current.width/2*WORLD_TO_BOX, current.height/2*WORLD_TO_BOX,
+//						new Vector2((current.x-1024 +current.width/2)*WORLD_TO_BOX,
+//								(current.y-1024 +current.height/2)*WORLD_TO_BOX), 0);
+//		        FixtureDef fixtureDef = new FixtureDef();  
+//		        fixtureDef.shape = staticRectangle;  
+//		        fixtureDef.density = 1.0f;  
+//		        fixtureDef.friction = 0.0f;  
+//		        fixtureDef.restitution = 0.0f;
+//		        WorldCollisionBody.createFixture(fixtureDef);  
+//			}
+//	    }
+//		
+//		objectGroup = map.getLayers().get("Towers").getObjects();
+//		for (MapObject currentObject : objectGroup) {
+//			if((RectangleMapObject)currentObject != null)
+//			{
+//				Rectangle current = ((RectangleMapObject)currentObject).getRectangle();
+//			
+//				if(current.y>1024) {
+//					new Tower("blue",current.x-1024+16,-current.y+1024+32, this);
+//				}
+//				else {
+//					new Tower("red",current.x-1024+16,-current.y+1024+32, this);
+//				}
+//			}
+//	    }
+//		short slot;
+//		for(int i = 0; i < game.getPlayerList().size(); i++) {
+//			slot = game.getPlayerList().getServerPlayer(i).getSlotNumber();
+//			if( slot < 3) {
+//				Unit player = new PlayerShip("red", 0f, 768f, this, slot);
+//				playerShipMap.put(player.hashCode(), player);
+//			} else {
+//				Unit player = new PlayerShip("blue", 0f, -768f, this, slot);
+//				playerShipMap.put(player.hashCode(), player);
+//			}
+//		}
+//		
+//		for(int i = 0; i < game.getPlayerList().size(); i++) {
+//			game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
+//		}
 	}
 	
 	public void run(){
@@ -128,26 +134,36 @@ class GameThread extends Thread{
 		while(running){
 			if(playersAreConnected()) {
 				try {
-					physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
+					//physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
 					
 					// TODO Fixed step accumulator needed1
 					
-					GLUH.onUpdate(0.1f);
-					for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
-						Unit aux = (Unit) iter.next().getUserData();
-						if(aux != null) {
-							aux.onUpdate(0.1f);
-							aux.updateUnitData();
+					//GLUH.onUpdate(0.1f);
+//					for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
+//						Unit aux = (Unit) iter.next().getUserData();
+//						if(aux != null) {
+//							aux.onUpdate(0.1f);
+//							aux.updateUnitData();
+//						}
+//					}
+					
+					int counter = game.getPlayerList().size();
+					
+					while(counter > 0) {
+						for(int i = 0 ; i < game.getPlayerList().size(); i++) {
+							short slot = game.getPlayerList().getServerPlayer(i).getSlotNumber(); 
+							if(!stackMap.get(slot).isEmpty()) {
+								UnitData message = stackMap.get(slot).pop();
+								//System.out.println("got msg from " + slot);
+								playerShipMap.get(message.unitKey).direction = message.direction;
+								stackMap.get(slot).clear();
+								--counter;
+							}
 						}
 					}
 					
-					for(int i = 0 ; i < game.getPlayerList().size(); i++) {
-						short slot = game.getPlayerList().getServerPlayer(i).getSlotNumber(); 
-						if(!stackMap.get(slot).isEmpty()) {
-							UnitData message = stackMap.get(slot).pop();
-							playerShipMap.get(message.unitKey).CollisionBody.setTransform(message.position, 0);
-							stackMap.get(slot).clear();
-						}
+					for(int i = 0; i < game.getPlayerList().size(); i++) {
+						game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(playerShipMap);
 					}
 					
 //					ByteArrayOutputStream bOut = new ByteArrayOutputStream();  
@@ -156,16 +172,16 @@ class GameThread extends Thread{
 //					oOut.close();  
 //					System.out.println("The size of the object is: "+bOut.toByteArray().length);  
 					
-					for(int i = 0; i < game.getPlayerList().size(); i++) {
-						game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
-					}
-					for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
-						Unit aux = (Unit) iter.next().getUserData();
-						if(aux != null && aux.Health<=0)
-						{
-								aux.Destroy();
-						}
-					}
+//					for(int i = 0; i < game.getPlayerList().size(); i++) {
+//						game.getPlayerList().getServerPlayer(i).getConnection().sendUDP(unitMap);
+//					}
+//					for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
+//						Unit aux = (Unit) iter.next().getUserData();
+//						if(aux != null && aux.Health<=0)
+//						{
+//								aux.Destroy();
+//						}
+//					}
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -183,16 +199,16 @@ class GameThread extends Thread{
 		this.running = false;
 	}
 	
-	public void movePlayer(UnitMap unitMap) {
-		for(Entry<Integer, UnitData> entry : unitMap.map.entrySet()) {
-			for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
-				Unit aux = (Unit) iter.next().getUserData();
-				if(aux != null && aux.hashCode() == entry.getKey()) {
-					aux.CollisionBody.setTransform(entry.getValue().position, 0);
-				}
-			}
-		}
-	}
+//	public void movePlayer(UnitMap unitMap) {
+//		for(Entry<Integer, UnitData> entry : unitMap.map.entrySet()) {
+//			for (Iterator<Body> iter = physicsWorld.getBodies(); iter.hasNext();) {
+//				Unit aux = (Unit) iter.next().getUserData();
+//				if(aux != null && aux.hashCode() == entry.getKey()) {
+//					aux.CollisionBody.setTransform(entry.getValue().position, 0);
+//				}
+//			}
+//		}
+//	}
 	
 	public Stack<UnitData> getMsgStack(short slot) {
 		return this.stackMap.get(slot);

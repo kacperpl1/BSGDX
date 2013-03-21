@@ -1,14 +1,11 @@
 package server;
 
 
-import shared.Common;
-import shared.UnitData;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public abstract class Unit {
 	
@@ -36,23 +33,23 @@ public abstract class Unit {
 	
 	void createUnitData(short unitType, Object... shipData)
 	{
-		UnitData uData = new UnitData();
-		uData.position = CollisionBody.getPosition();
-		uData.health = Health;
-		uData.type = unitType;
-		if(unitType == Common.PLAYER_SHIP) {
-			uData.slot = (short) shipData[0];
-			uData.gameID = (String) shipData[1];
-			uData.unitKey = hashCode();
-		}
-		ownerThread.unitMap.map.put(hashCode(), uData);	
+//		UnitData uData = new UnitData();
+//		uData.position = CollisionBody.getPosition();
+//		uData.health = Health;
+//		uData.type = unitType;
+//		if(unitType == Common.PLAYER_SHIP) {
+//			uData.slot = (short) shipData[0];
+//			uData.gameID = (String) shipData[1];
+//			uData.unitKey = hashCode();
+//		}
+//		ownerThread.unitMap.map.put(hashCode(), uData);	
 	}
 	
 	void updateUnitData()
 	{
-		UnitData uData = ownerThread.unitMap.map.get(hashCode());
-		uData.position = CollisionBody.getPosition();
-		uData.health = Health;
+//		UnitData uData = ownerThread.unitMap.map.get(hashCode());
+//		uData.position = CollisionBody.getPosition();
+//		uData.health = Health;
 	}
 	
 	void createBody(float initialX, float initialY)

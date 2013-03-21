@@ -45,20 +45,20 @@ public class PlayerShip extends Unit {
 	
 	void updateUnitData(UnitData data)
 	{
-		if(this == GameScreen.localPlayerShip)
-		{
-			Health = data.health;
-		}
-		else
-		{
-			CollisionBody.setTransform(data.position, 0);
-			Health = data.health;
-			
-			if(Math.abs(data.position.x - networkPosition.x) > GameScreen.WORLD_TO_BOX || Math.abs(data.position.y - networkPosition.y) > GameScreen.WORLD_TO_BOX)
-				setVisualRotation(data.position.x - networkPosition.x, data.position.y - networkPosition.y);
-			
-			networkPosition.set(data.position);
-		}
+//		if(this == GameScreen.localPlayerShip)
+//		{
+//			Health = data.health;
+//		}
+//		else
+//		{
+//			CollisionBody.setTransform(data.position, 0);
+//			Health = data.health;
+//			
+//			if(Math.abs(data.position.x - networkPosition.x) > GameScreen.WORLD_TO_BOX || Math.abs(data.position.y - networkPosition.y) > GameScreen.WORLD_TO_BOX)
+//				setVisualRotation(data.position.x - networkPosition.x, data.position.y - networkPosition.y);
+//			
+//			networkPosition.set(data.position);
+//		}
 	}
 	
 	void updateVelocity()

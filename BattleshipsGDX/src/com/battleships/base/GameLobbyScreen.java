@@ -115,7 +115,12 @@ public class GameLobbyScreen implements Screen {
 				team2PlayerListTable.clear();
 				final ArrayList<Label> playerList = new ArrayList<Label>();
 				for(int i = 0; i < 3; i++) {
+					String uId = part.nextToken();
 					Label auxLabel = new Label(part.nextToken(), Resources.skin);
+					if(!auxLabel.getText().toString().equals("Empty")) {
+						//System.out.println(lobbyClient.getGame().getPlayerList().size());
+						lobbyClient.getGame().getPlayer(uId).takeSlot(i);
+					}
 					playerList.add(auxLabel);
 					auxLabel.addListener(new ClickListener() {
 						@Override
@@ -130,7 +135,11 @@ public class GameLobbyScreen implements Screen {
 					team1PlayerListTable.row();
 				}
 				for(int i = 0; i < 3; i++) {
+					String uId = part.nextToken();
 					Label auxLabel = new Label(part.nextToken(), Resources.skin);
+					if(!auxLabel.getText().toString().equals("Empty")) {
+						lobbyClient.getGame().getPlayer(uId).takeSlot(i+3);
+					}
 					playerList.add(auxLabel);
 					auxLabel.addListener(new ClickListener() {
 						@Override

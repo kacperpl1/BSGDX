@@ -9,6 +9,7 @@ import shared.Common;
 import shared.ResponseMessage;
 import shared.UnitData;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -57,6 +58,7 @@ class ServerThread {
 						if(object instanceof UnitData) {
 							@SuppressWarnings("unused")
 							Translator translator = new Translator(gameThreadList, (UnitData)object);
+							
 						}
 					}
 				}
@@ -88,9 +90,10 @@ class Translator extends Thread {
 	
 	public Translator(LinkedList<GameThread> gTL, UnitData unitData) {
 		gameThreadList = gTL;
+		//System.out.println(unitData.unitKey);
 		for(GameThread gThread : gameThreadList) {
 			if(gThread.getName().equals(unitData.gameID)) {
-				Stack<UnitData> msgStack = gThread.getMsgStack(unitData.slot);
+				Stack<UnitData> msgStack = gThread.getMsgStack(unitData.unitKey);
 				msgStack.push(unitData);
 				break;
 			}

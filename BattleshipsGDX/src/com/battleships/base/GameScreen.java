@@ -67,7 +67,7 @@ public class GameScreen implements Screen {
 	static int h;
 	static int centerOffsetY = 0;
 	private GL20 gl;
-	private boolean camToggle;
+	private boolean camToggle = false;
 	private Actor Map;
 	private ActorPositionComparator ActorComparator;
 	protected Vector2 localPlayerDirection;
@@ -76,9 +76,6 @@ public class GameScreen implements Screen {
 	private Vector2 knobOffset = new Vector2();
 	static Actor miniMap;
 	static String LocalPlayerTeam;
-	
-	public GameScreen() {
-	}
 	
 	public void loadMapData()
 	{
@@ -129,10 +126,10 @@ public class GameScreen implements Screen {
 	{
 			LocalPlayerTeam = "blue";
 			localPlayerShip = new PlayerShip("blue", 0f,-768f, 3);
+			System.out.println("wtf");
 	}
 	
-	@Override
-	public void show() {	
+	public GameScreen() {	
 		
 		if(Gdx.graphics.getWidth() > Gdx.graphics.getHeight())
 		{
@@ -267,7 +264,7 @@ public class GameScreen implements Screen {
 		loadPlayers();
 		
 		localPlayerDirection = new Vector2();
-		new Shop(localPlayerShip);
+		//new Shop(localPlayerShip);
 		
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera(w, h);
@@ -494,6 +491,12 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void hide() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void show() {
 		// TODO Auto-generated method stub
 		
 	}
