@@ -1,9 +1,7 @@
 package server;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -11,25 +9,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import shared.UnitData;
 import shared.UnitMap;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl.LwjglFiles;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 class GameThread extends Thread{
@@ -37,7 +21,7 @@ class GameThread extends Thread{
 	private volatile boolean running;
 	
 	World physicsWorld;
-	private ContactListener contactListener;
+	//private ContactListener contactListener;
 	
 	static final float BOX_STEP=1f/10f;
     static final int BOX_VELOCITY_ITERATIONS=6;  
@@ -49,7 +33,7 @@ class GameThread extends Thread{
 	
 	public UnitMap unitMap = new UnitMap();
 	Map<Short, Stack<UnitData>> stackMap = new HashMap<Short, Stack<UnitData>>();
-	private server.GameLoopUpdateHandler GLUH;
+	//private server.GameLoopUpdateHandler GLUH;
 	
 	private Map<Short, UnitData> playerShipMap = new HashMap<Short, UnitData>();
 	
@@ -156,6 +140,7 @@ class GameThread extends Thread{
 								UnitData message = stackMap.get(slot).pop();
 								//System.out.println("got msg from " + slot);
 								playerShipMap.get(message.unitKey).direction = message.direction;
+								playerShipMap.get(message.unitKey).position = message.position;
 								stackMap.get(slot).clear();
 								--counter;
 							}

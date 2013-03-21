@@ -25,6 +25,7 @@ public class NetworkGameScreen extends GameScreen{
 	public void handleMessage(Map<Short, UnitData> message) {
 		for(Entry<Short, UnitData> entry : message.entrySet()) {
 			if(shipMap.containsKey(entry.getKey())) {
+				shipMap.get(entry.getKey()).CollisionBody.getPosition().set(entry.getValue().position.x, entry.getValue().position.y);
 				shipMap.get(entry.getKey()).setDesiredVelocity(entry.getValue().direction.x, entry.getValue().direction.y);
 			}
 		}
@@ -54,8 +55,8 @@ public class NetworkGameScreen extends GameScreen{
 					shipMap.put((short)player.getSlotNumber(), new PlayerShip("blue", 0, -768, player.getSlotNumber()));
 				}
 			}
-			//localPlayerShip = shipMap.get((short)lobbyClient.getPlayer().getSlotNumber());
-			localPlayerShip = shipMap.get((short)3);
+			localPlayerShip = shipMap.get((short)lobbyClient.getPlayer().getSlotNumber());
+			//localPlayerShip = shipMap.get((short)3);
 
 			//send initial direction packet
 			lobbyClient.sendDirection(playerData);
@@ -88,6 +89,7 @@ public class NetworkGameScreen extends GameScreen{
 	    			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
 	    			box_accu = 0;
 	    			
+	    			this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
 	    			this.playerData.direction.set(localPlayerDirection);
 	    			lobbyClient.sendDirection(playerData);
 	    			

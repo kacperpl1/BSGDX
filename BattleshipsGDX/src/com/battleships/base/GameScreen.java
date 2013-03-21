@@ -375,9 +375,6 @@ public class GameScreen implements Screen {
 	
 	public void worldStep(float delta)
 	{
-		
-		GLUH.onUpdate(Math.min(delta, BOX_STEP));
-		
 		box_accu+=Math.min(delta, BOX_STEP);
 		if(box_accu>BOX_STEP)
 		{

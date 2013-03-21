@@ -1,5 +1,7 @@
 package com.battleships.base;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -12,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 
 public class Weapon {
 	static ContactListener contactListener;
+	static UnitIdComparator EnemySorter;
 	
 	Fixture SensorFixture;
 	LinkedList<Unit> Enemies;
@@ -25,7 +28,7 @@ public class Weapon {
 	public static long m_w = 1182370352;
 	public static long m_z = 1352118237;
 	
-	long get_random()
+	static long get_random()
 	{
 	    m_z = 36969 * (m_z & 65535) + (m_z >> 16);
 	    m_w = 18000 * (m_w & 65535) + (m_w >> 16);
@@ -36,7 +39,10 @@ public class Weapon {
 	{
 		weapon_id=type;
 		if(contactListener == null)
+		{
+			EnemySorter = new UnitIdComparator();
 			createContactListener();
+		}
 			
 		defaultProperties();
 		Enemies=new LinkedList<Unit>();
@@ -97,9 +103,29 @@ public class Weapon {
 	    				target.TakeDamage(Damage, Owner);
 	    			}
 	    		}
-				FireDelayTimer = FireDelay;//MathUtils.random(FireDelay * 0.9f,FireDelay * 1.1f);
+	    		//switch ((int)(get_random()%3))
+	    		//{
+	    			//case 0: FireDelayTimer = FireDelay - GameScreen.BOX_STEP; break;
+	    			//case 1: FireDelayTimer = FireDelay + GameScreen.BOX_STEP; break;
+	    		//	default: 
+	    				FireDelayTimer = FireDelay; 
+	    		//		break;
+	    		//}
     	}
     };
+    
+    class UnitIdComparator implements Comparator<Unit>{
+		 
+	    public int compare(Unit emp1, Unit emp2){ 
+	    	if(emp1.unitID > emp2.unitID)
+	    		return 1;
+	        else if(emp1.unitID < emp2.unitID)
+	        	return -1;
+	        else
+	        	return 0;
+	    }
+	 
+	}
     
     private static void createContactListener()
     {
@@ -113,12 +139,18 @@ public class Weapon {
                 if(x2.getUserData() instanceof Unit && x1.getUserData() instanceof Weapon)
                 {
                 	if(!((Weapon)x1.getUserData()).Owner.team.equals(((Unit)(x2.getUserData())).team))
+                	{
                 		((Weapon)x1.getUserData()).Enemies.add(((Unit)(x2.getUserData())));
+                		Collections.sort(((Weapon)x1.getUserData()).Enemies,EnemySorter);
+                	}
                 }
                 if(x1.getUserData() instanceof Unit && x2.getUserData() instanceof Weapon)
                 {
                 	if(!((Weapon)x2.getUserData()).Owner.team.equals(((Unit)(x1.getUserData())).team))
+                	{
                 		((Weapon)x2.getUserData()).Enemies.add(((Unit)(x1.getUserData())));
+                		Collections.sort(((Weapon)x2.getUserData()).Enemies,EnemySorter);
+                	}
                 }
                 if(x2.getUserData() instanceof Unit && x1.getUserData() instanceof Visor)
                 {
