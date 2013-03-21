@@ -16,7 +16,7 @@ public class Cruiser extends Unit {
     {
 		super(Team, InitialX, InitialY);
     	baseSprite.setScale(0.75f);
-    	MaxHealth = 500;
+    	MaxHealth = 100;
     	Health = MaxHealth;
     	visor = new Visor(this);
     	gun = new Weapon(this,0);

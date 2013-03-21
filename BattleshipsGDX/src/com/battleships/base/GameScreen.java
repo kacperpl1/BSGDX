@@ -396,8 +396,10 @@ public class GameScreen implements Screen {
 			while(iter.hasNext())
 			{
 				current = iter.next();
-				if(current.getFixtureList().get(0).getUserData() instanceof Unit)
-					((Unit)(current.getFixtureList().get(0).getUserData())).onUpdate(Math.min(delta, BOX_STEP));
+				if(current.getFixtureList().size()>0 &&
+					current.getFixtureList().get(0).getUserData() != null &&
+					current.getFixtureList().get(0).getUserData()instanceof Unit)
+					((Unit)(current.getFixtureList().get(0).getUserData())).onUpdate(BOX_STEP);
 			}
 			
 			localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
