@@ -77,6 +77,8 @@ public class NetworkGameScreen extends GameScreen{
 		}
 			this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
 			lobbyClient.move(playerData);
+
+			localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
 	}	
 
 }

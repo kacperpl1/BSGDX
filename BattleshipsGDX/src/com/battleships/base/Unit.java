@@ -135,7 +135,7 @@ public abstract class Unit extends Actor {
 	}  
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
-		onUpdate(Gdx.graphics.getDeltaTime());
+		//onUpdate(Gdx.graphics.getDeltaTime());
 		updateVelocity();
 		
 		CurrentPosition.x = this.getX()*GameScreen.WORLD_TO_BOX;

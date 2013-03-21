@@ -70,7 +70,7 @@ public class GameScreen implements Screen {
 	private boolean camToggle;
 	private Actor Map;
 	private ActorPositionComparator ActorComparator;
-	private Vector2 localPlayerDirection;
+	protected Vector2 localPlayerDirection;
 	private BitmapFont font;
 	private Vector2 camOffset;
 	private Vector2 knobOffset = new Vector2();
@@ -390,6 +390,17 @@ public class GameScreen implements Screen {
 		{
 			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
 			box_accu-=BOX_STEP;
+			
+			Iterator<Body> iter = physicsWorld.getBodies();
+			Body current;
+			while(iter.hasNext())
+			{
+				current = iter.next();
+				if(current.getFixtureList().get(0).getUserData() instanceof Unit)
+					((Unit)(current.getFixtureList().get(0).getUserData())).onUpdate(Math.min(delta, BOX_STEP));
+			}
+			
+			localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
 		}
 	}
 
@@ -434,9 +445,6 @@ public class GameScreen implements Screen {
 				MathUtils.clamp(localPlayerShip.getY() + camOffset.y,-1024+h/2, 1024-h/2), 0);
 			gameStage.getCamera().update();
 		}
-		
-		
-		localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
 		
 		worldStep(delta);
 		

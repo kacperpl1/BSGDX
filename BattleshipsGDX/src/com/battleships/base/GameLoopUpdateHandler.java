@@ -6,7 +6,6 @@ public class GameLoopUpdateHandler{
 	
 	private float WaveDelay;
 	private float WaveCounter;
-	static float FrameDelay = 1f/15f;
 	
 	public GameLoopUpdateHandler()
 	{
