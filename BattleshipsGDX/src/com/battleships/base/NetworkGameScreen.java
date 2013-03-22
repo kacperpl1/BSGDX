@@ -55,8 +55,8 @@ public class NetworkGameScreen extends GameScreen{
 					shipMap.put((short)player.getSlotNumber(), new PlayerShip("blue", 0, -768, player.getSlotNumber()));
 				}
 			}
-			localPlayerShip = shipMap.get((short)lobbyClient.getPlayer().getSlotNumber());
-			//localPlayerShip = shipMap.get((short)3);
+			//localPlayerShip = shipMap.get((short)lobbyClient.getPlayer().getSlotNumber());
+			localPlayerShip = shipMap.get((short)3);
 
 			//send initial direction packet
 			lobbyClient.sendDirection(playerData);
@@ -103,8 +103,8 @@ public class NetworkGameScreen extends GameScreen{
 	    			lobbyClient.sendDirection(playerData);
 	    			
 	    			msgQueue.clear();
-	    			//Weapon.m_w = 1182370352;
-	    			//Weapon.m_z = 1352118237;
+	    			Weapon.m_w = 1182370352;
+	    			Weapon.m_z = 1352118237;
 				}
             } catch (InterruptedException e) {
                 //e.printStackTrace();

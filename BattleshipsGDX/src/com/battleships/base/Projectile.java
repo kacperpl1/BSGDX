@@ -63,14 +63,16 @@ public class Projectile extends Actor{
 			setPosition(2*this.mX1-this.mX4, 2*this.mY1-this.mY4);
 		}
 		
-		protected void onManagedUpdate(final float pSecondsElapsed) {
+		protected void onManagedUpdate(SpriteBatch batch, final float pSecondsElapsed) {
 			this.timer += pSecondsElapsed;
 			final float percentageDone = this.timer/this.Duration;
 			
-			if(percentageDone >=0.95)
+			if(percentageDone >=0.95f)
 			{
-  			  explode();
-			  return;
+				if(GameScreen.box_accu + pSecondsElapsed > GameScreen.BOX_STEP)
+					explode();
+				
+				return;
 			}
 			
 			this.mX3 = (LaunchX+3*Target.getX())/4;
@@ -95,13 +97,14 @@ public class Projectile extends Actor{
 			
 			setRotation((float) Math.toDegrees(-Math.atan2(x-getX(), y-getY())));
 			setPosition(x, y);
+			
+	        batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, Projectile.this.getRotation());
 		}
 		
 	}
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
-		moveModifier.onManagedUpdate(Gdx.graphics.getDeltaTime());
-        batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, this.getRotation());
+		moveModifier.onManagedUpdate(batch, Gdx.graphics.getDeltaTime());
 	}
 	
 	void Init(Unit inst, Unit targ, int dmg, int type)
@@ -149,7 +152,7 @@ public class Projectile extends Actor{
     void explode()
     {
     	//if(!destroyed)
-    	//	Target.TakeDamage(Damage, Instigator);
+    	Target.TakeDamage(Damage, Instigator);
     	
 		this.setVisible(false);
     	projectilepool.free(this);

@@ -35,6 +35,15 @@ public class Weapon {
 	    return (m_z << 16) + m_w;  /* 32-bit result */
 	}
 	
+	static float get_frandom()
+	{
+		return ((float)(get_random()%1024))/1024f;
+	}
+	
+	static public final float get_frandom (float start, float end) {
+		return start + get_frandom() * (end - start);
+	}
+	
 	public Weapon(Unit o, int type)
 	{
 		weapon_id=type;
@@ -103,19 +112,12 @@ public class Weapon {
 		    			else
 		    			{
 		    				Projectile.Launch(Owner,target,Damage, weapon_id);
-		    				target.TakeDamage(Damage, Owner);
+		    				FireDelayTimer = FireDelay; 
+		    				//FireDelayTimer = FireDelay * get_frandom(0.9f, 1.1f);
 		    				break;
 		    			}
 	    			}
 	    		}
-	    		//switch ((int)(get_random()%3))
-	    		//{
-	    		//	case 0: FireDelayTimer = FireDelay - GameScreen.BOX_STEP; break;
-	    		//	case 1: FireDelayTimer = FireDelay + GameScreen.BOX_STEP; break;
-	    		//	default: 
-	    				FireDelayTimer = FireDelay; 
-	    		//		break;
-	    		//}
     	}
     };
     
