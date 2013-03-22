@@ -27,6 +27,7 @@ public class BSClient implements Runnable	{
    	
 	private Client client;
 	private Player clientPlayer;
+	private String gameId = "";
 	
 	private BSClient(){}
 	
@@ -91,15 +92,19 @@ public class BSClient implements Runnable	{
 							// Translate message about player taking slot
 							// in game and send it to parent activity
 							case 2 : {
-								String list = "0 ";
-								while(part.hasMoreTokens()){
-									
-									list += part.nextToken() + " " + part.nextToken() + " ";
-								}
-								try {
-									gameLobbyMsgQueue.put(list);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
+								if(clientPlayer.getGameId().length() > 2) {
+									String list = "0 ";
+									while(part.hasMoreTokens()){
+										
+										list += part.nextToken() + " " + part.nextToken() + " ";
+									}
+									try {
+										gameLobbyMsgQueue.put(list);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
+								} else {
+									joinGame(gameId);
 								}
 
 								break;
@@ -177,6 +182,7 @@ public class BSClient implements Runnable	{
 	// Send create game packet to server
 	public void createGame(String gameName) {
 		Game game = new Game(gameName);
+		this.gameId = game.getId();
 		game.addPlayer(clientPlayer);
 		gameList.addGame(game);
 		this.clientPlayer.joinGame(game.getId());
@@ -192,6 +198,7 @@ public class BSClient implements Runnable	{
 	}
 	// Send join game packet to server
 	public void joinGame(String gameId) {
+		this.gameId = gameId;
 		this.clientPlayer.joinGame(gameId);
 		gameList.getGameById(gameId).addPlayer(clientPlayer);
 		try{
@@ -218,6 +225,7 @@ public class BSClient implements Runnable	{
 	// Send leave game packet to server
 	public void leaveGame() {
 		try{
+			this.gameId = "";
 			ResponseMessage req = new ResponseMessage();
 			req.text = "4 " + this.clientPlayer.getGameId() + " " + this.clientPlayer.getId();
 			client.sendUDP(req);

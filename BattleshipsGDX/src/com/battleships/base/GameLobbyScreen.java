@@ -108,6 +108,8 @@ public class GameLobbyScreen implements Screen {
 	
 	public void handleMessage(String message){
 		StringTokenizer part = new StringTokenizer(message);
+		String uId;
+		String uName;
 		switch(Integer.valueOf(part.nextToken())) {
 			// Message containing list of players in game
 			case 0 : {
@@ -115,40 +117,44 @@ public class GameLobbyScreen implements Screen {
 				team2PlayerListTable.clear();
 				final ArrayList<Label> playerList = new ArrayList<Label>();
 				for(int i = 0; i < 3; i++) {
-					final String uId = part.nextToken();
-					String uName = part.nextToken();
+					uId = part.nextToken();
+					uName = part.nextToken();
+					System.out.println(uId);
+					//System.out.println(lobbyClient.getGame().getPlayerList().size());
 					Label auxLabel = new Label(uName, Resources.skin);
-					if(uId.length() > 2) {
-						lobbyClient.getGame().getPlayer(uId).takeSlot(i);
-					}
 					playerList.add(auxLabel);
-					auxLabel.addListener(new ClickListener() {
-						@Override
-			            public void clicked(InputEvent event,float x,float y ) {
-							if(uId.length() < 2) {
+					if(uId.length() > 2) {
+						//System.out.println(uId);
+						//System.out.println(lobbyClient.getGame().getPlayerList().size());
+						//System.out.println(uId + " took slot" + " " + i);
+						lobbyClient.getGame().getPlayer(uId, uName).takeSlot(i);
+					} else {
+						auxLabel.addListener(new ClickListener() {
+							@Override
+				            public void clicked(InputEvent event,float x,float y ) {
 								lobbyClient.takeSlot(playerList.indexOf((Label)(event.getListenerActor())));
 							}
-						}
-					});
+						});
+					}
 					team1PlayerListTable.add(auxLabel);
 					team1PlayerListTable.row();
 				}
+				System.out.println("-------------");
 				for(int i = 0; i < 3; i++) {
-					final String uId = part.nextToken();
-					String uName = part.nextToken();
+					uId = part.nextToken();
+					uName = part.nextToken();
 					Label auxLabel = new Label(uName, Resources.skin);
-					if(uId.length() > 2) {
-						lobbyClient.getGame().getPlayer(uId).takeSlot(i);
-					}
 					playerList.add(auxLabel);
-					auxLabel.addListener(new ClickListener() {
-						@Override
-			            public void clicked(InputEvent event,float x,float y ) {
-							if(uId.length() < 2) {
+					if(uId.length() > 2) {
+						lobbyClient.getGame().getPlayer(uId, uName).takeSlot(i+3);
+					} else {
+						auxLabel.addListener(new ClickListener() {
+							@Override
+				            public void clicked(InputEvent event,float x,float y ) {
 								lobbyClient.takeSlot(playerList.indexOf((Label)(event.getListenerActor())));
 							}
-						}
-					});
+						});
+					}
 					team2PlayerListTable.add(auxLabel);
 					team2PlayerListTable.row();
 				}

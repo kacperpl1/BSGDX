@@ -56,14 +56,16 @@ public class Game {
 	    	getPlayer(id, name);
 	    }
 	}
-	public void getPlayer(String id, String name) {
+	public Player getPlayer(String id, String name) {
 		for(Player player : playerList) {
 			if(player.getId().equals(id)){
-				return;
+				return player;
 			}
 		}
 		Player player = new Player(id, name);
 		playerList.add(player);
+		System.out.println(id + " added");
+		return player;
 	}
 	
 	public Player getPlayer(String id) {
