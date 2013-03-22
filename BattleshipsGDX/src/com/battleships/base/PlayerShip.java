@@ -13,6 +13,7 @@ public class PlayerShip extends Unit {
 	Vector2 CurrentVelocity = new Vector2(0,0);
 	
 	public LinkedList<PlayerWeapon> Inventory = new LinkedList<PlayerWeapon>();
+	private int deathcounter;
 	
 	PlayerShip(String Team, float InitialX, float InitialY, int slot)
     {
@@ -114,6 +115,17 @@ public class PlayerShip extends Unit {
 	
 	void Destroy()
 	{
+		switch(deathcounter)
+		{
+			case 1: hide(); break;
+			case 10: Health = MaxHealth; IncomingDamage = 0; deathcounter = 0; break;
+			default: break;
+		}
+		deathcounter++;
+	}
+	
+	void hide()
+	{
     	CollisionBody.setLinearVelocity(0, 0);
     	if(team.equals(GameScreen.LocalPlayerTeam))
 		{
@@ -136,8 +148,6 @@ public class PlayerShip extends Unit {
     		CollisionBody.setTransform(0, -768*GameScreen.WORLD_TO_BOX, 0);
     		this.setPosition(0, -768);
     	}
-
-    	Health = MaxHealth;
 	}
 	
 	void onUpdate(float delta)

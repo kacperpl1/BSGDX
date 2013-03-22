@@ -387,7 +387,8 @@ public class GameScreen implements Screen {
 			if(current.Health<=0)
 			{
 				current.Destroy();
-				iter.remove();
+				if(!(current instanceof PlayerShip))
+					iter.remove();
 			}
 		}
 	}

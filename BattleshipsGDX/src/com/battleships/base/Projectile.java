@@ -19,6 +19,7 @@ public class Projectile extends Actor{
 	float TravelTime;
 	private Sprite sprite;
 	private BalisticMoveModifier moveModifier;
+	public boolean destroyed;
 
 	public static ProjectilePool projectilepool = new ProjectilePool();
 	
@@ -67,6 +68,9 @@ public class Projectile extends Actor{
 			this.timer += pSecondsElapsed;
 			final float percentageDone = this.timer/this.Duration;
 			
+			if(Target.Health <=0)
+				destroyed = true;
+			
 			if(percentageDone >=0.95f)
 			{
 				if(GameScreen.box_accu + pSecondsElapsed > GameScreen.BOX_STEP)
@@ -75,10 +79,13 @@ public class Projectile extends Actor{
 				return;
 			}
 			
-			this.mX3 = (LaunchX+3*Target.getX())/4;
-			this.mY3 = (LaunchY+3*Target.getY())/4 + yOffset*TravelTime;
-			this.mX4 = Target.getX();
-			this.mY4 = Target.getY();
+			if(!destroyed)
+			{
+				this.mX3 = (LaunchX+3*Target.getX())/4;
+				this.mY3 = (LaunchY+3*Target.getY())/4 + yOffset*TravelTime;
+				this.mX4 = Target.getX();
+				this.mY4 = Target.getY();
+			}
 			
 			final float u = 1 - percentageDone;
 			final float tt = percentageDone * percentageDone;
@@ -121,6 +128,7 @@ public class Projectile extends Actor{
 		sprite.setPosition(Instigator.getX(), Instigator.getY());
 		DistToTarget = new Vector2(HitX - sprite.getX(),HitY - sprite.getY()).len();
 		TravelTime = DistToTarget / PlayerWeapon.Speed[type];
+		destroyed = false;
 		
 		Damage = dmg;
 		
@@ -151,8 +159,8 @@ public class Projectile extends Actor{
 	
     void explode()
     {
-    	//if(!destroyed)
-    	Target.TakeDamage(Damage, Instigator);
+    	if(!destroyed)
+    		Target.TakeDamage(Damage, Instigator);
     	
 		this.setVisible(false);
     	projectilepool.free(this);
