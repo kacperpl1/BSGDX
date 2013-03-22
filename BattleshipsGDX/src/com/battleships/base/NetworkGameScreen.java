@@ -1,7 +1,6 @@
 package com.battleships.base;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
@@ -60,21 +59,6 @@ public class NetworkGameScreen extends GameScreen{
 
 			//send initial direction packet
 			lobbyClient.sendDirection(playerData);
-	}
-	
-	void update()
-	{
-		Iterator<Unit> iter = Unit.AllUnits.iterator();
-		Unit current;
-		while(iter.hasNext())
-		{
-			current = iter.next();
-			current.onUpdate(BOX_STEP/2f);
-			if(current.Health<=0 && !(current instanceof PlayerShip))
-			{
-				iter.remove();
-			}
-		}
 	}
 	
 	public void worldStep(float delta)

@@ -373,24 +373,37 @@ public class GameScreen implements Screen {
 	 
 	}
 	
+	void update()
+	{
+		for(Unit current : Unit.AllUnits)
+		{
+			current.onUpdate(BOX_STEP/2f);
+		}
+		Unit current;
+		Iterator<Unit> iter = Unit.AllUnits.iterator();
+		while(iter.hasNext())
+		{
+			current = iter.next();
+			if(current.Health<=0)
+			{
+				current.Destroy();
+				iter.remove();
+			}
+		}
+	}
+	
 	public void worldStep(float delta)
 	{
 		box_accu+=Math.min(delta, BOX_STEP);
+		
+		if(box_accu - delta <BOX_STEP/2f && box_accu > BOX_STEP/2f)
+			update();
+		
 		if(box_accu>BOX_STEP)
 		{
     		GLUH.onUpdate(BOX_STEP);
-			
-			Iterator<Unit> iter = Unit.AllUnits.iterator();
-			Unit current;
-			while(iter.hasNext())
-			{
-				current = iter.next();
-				current.onUpdate(BOX_STEP);
-				if(current.Health<=0 && !(current instanceof PlayerShip))
-				{
-					iter.remove();
-				}
-			}
+    		
+    		update();
     		
 			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);
 			

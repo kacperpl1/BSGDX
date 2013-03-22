@@ -169,13 +169,6 @@ public abstract class Unit extends Actor {
 	{
     	Health -= IncomingDamage;
     	IncomingDamage = 0;
-    	
-    	if(Health<=0)
-    	{
-    		Health=0;
-    		Destroy();
-    		return;
-    	}
 		gun.onUpdate(delta);
 		updateVelocity();
 	}

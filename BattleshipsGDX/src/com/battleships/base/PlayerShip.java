@@ -110,8 +110,6 @@ public class PlayerShip extends Unit {
 			super.draw(batch, parentAlpha);	
 			updateVelocity();
 		}
-		else
-    		Destroy();
 	}
 	
 	void Destroy()
@@ -146,13 +144,6 @@ public class PlayerShip extends Unit {
 	{
     	Health -= IncomingDamage;
     	IncomingDamage = 0;
-    	
-    	if(Health<=0)
-    	{
-    		Health=0;
-    		Destroy();
-    		return;
-    	}
 		for(Weapon current : Inventory)
     	{
     		current.onUpdate(delta);

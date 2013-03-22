@@ -44,19 +44,17 @@ public class Cruiser extends Unit {
 		BlockerBody.setTransform(this.getX()*GameScreen.WORLD_TO_BOX,this.getY()*GameScreen.WORLD_TO_BOX,0);
 	}
 	
+	void Destroy()
+	{
+		super.Destroy();
+		BlockerBody.destroyFixture(BlockerBody.getFixtureList().get(0));
+		bodyPool.free(BlockerBody);
+	}
+	
 	void onUpdate(float delta)
     {
     	Health -= IncomingDamage;
     	IncomingDamage = 0;
-    	
-    	if(Health<=0)
-    	{
-    		Health=0;
-    		Destroy();
-    		BlockerBody.destroyFixture(BlockerBody.getFixtureList().get(0));
-    		bodyPool.free(BlockerBody);
-    		return;
-    	}
     	gun.onUpdate(delta);
 		updateVelocity();
     }
