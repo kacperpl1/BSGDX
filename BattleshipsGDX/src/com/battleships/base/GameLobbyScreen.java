@@ -115,19 +115,18 @@ public class GameLobbyScreen implements Screen {
 				team2PlayerListTable.clear();
 				final ArrayList<Label> playerList = new ArrayList<Label>();
 				for(int i = 0; i < 3; i++) {
-					String uId = part.nextToken();
-					Label auxLabel = new Label(part.nextToken(), Resources.skin);
-					if(!auxLabel.getText().toString().equals("Empty")) {
-						//System.out.println(lobbyClient.getGame().getPlayerList().size());
+					final String uId = part.nextToken();
+					String uName = part.nextToken();
+					Label auxLabel = new Label(uName, Resources.skin);
+					if(uId.length() > 2) {
 						lobbyClient.getGame().getPlayer(uId).takeSlot(i);
 					}
 					playerList.add(auxLabel);
 					auxLabel.addListener(new ClickListener() {
 						@Override
 			            public void clicked(InputEvent event,float x,float y ) {
-							Label temp = (Label)(event.getListenerActor());
-							if(temp.getText().toString().equals("Empty")) {
-								lobbyClient.takeSlot(playerList.indexOf(temp));
+							if(uId.length() < 2) {
+								lobbyClient.takeSlot(playerList.indexOf((Label)(event.getListenerActor())));
 							}
 						}
 					});
@@ -135,18 +134,18 @@ public class GameLobbyScreen implements Screen {
 					team1PlayerListTable.row();
 				}
 				for(int i = 0; i < 3; i++) {
-					String uId = part.nextToken();
-					Label auxLabel = new Label(part.nextToken(), Resources.skin);
-					if(!auxLabel.getText().toString().equals("Empty")) {
-						lobbyClient.getGame().getPlayer(uId).takeSlot(i+3);
+					final String uId = part.nextToken();
+					String uName = part.nextToken();
+					Label auxLabel = new Label(uName, Resources.skin);
+					if(uId.length() > 2) {
+						lobbyClient.getGame().getPlayer(uId).takeSlot(i);
 					}
 					playerList.add(auxLabel);
 					auxLabel.addListener(new ClickListener() {
 						@Override
 			            public void clicked(InputEvent event,float x,float y ) {
-							Label temp = (Label)(event.getListenerActor());
-							if(temp.getText().toString().equals("Empty")) {
-								lobbyClient.takeSlot(playerList.indexOf(temp));
+							if(uId.length() < 2) {
+								lobbyClient.takeSlot(playerList.indexOf((Label)(event.getListenerActor())));
 							}
 						}
 					});

@@ -9,7 +9,6 @@ import shared.Common;
 import shared.ResponseMessage;
 import shared.UnitData;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
