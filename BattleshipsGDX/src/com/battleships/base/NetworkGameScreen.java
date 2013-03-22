@@ -24,7 +24,9 @@ public class NetworkGameScreen extends GameScreen{
 	public void handleMessage(Map<Short, UnitData> message) {
 		for(Entry<Short, UnitData> entry : message.entrySet()) {
 			if(shipMap.containsKey(entry.getKey())) {
-				shipMap.get(entry.getKey()).CollisionBody.getPosition().set(entry.getValue().position.x, entry.getValue().position.y);
+				if(shipMap.get(entry.getKey()) != localPlayerShip)
+					shipMap.get(entry.getKey()).CollisionBody.setTransform(entry.getValue().position.x,entry.getValue().position.y,0);
+				
 				shipMap.get(entry.getKey()).setDesiredVelocity(entry.getValue().direction.x, entry.getValue().direction.y);
 			}
 		}
@@ -58,6 +60,7 @@ public class NetworkGameScreen extends GameScreen{
 			//localPlayerShip = shipMap.get((short)3);
 
 			//send initial direction packet
+			playerData.position.set(localPlayerShip.CollisionBody.getPosition());
 			lobbyClient.sendDirection(playerData);
 	}
 	
@@ -89,6 +92,11 @@ public class NetworkGameScreen extends GameScreen{
 	    			msgQueue.clear();
 	    			Weapon.m_w = 1182370352;
 	    			Weapon.m_z = 1352118237;
+				}
+				else
+				{
+					System.out.println("No messages");
+	    			lobbyClient.sendDirection(playerData);
 				}
             } catch (InterruptedException e) {
                 //e.printStackTrace();

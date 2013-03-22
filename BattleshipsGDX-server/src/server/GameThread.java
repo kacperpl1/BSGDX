@@ -139,8 +139,8 @@ class GameThread extends Thread{
 							if(!stackMap.get(slot).isEmpty()) {
 								UnitData message = stackMap.get(slot).pop();
 								//System.out.println("got msg from " + slot);
-								playerShipMap.get(message.unitKey).direction = message.direction;
-								playerShipMap.get(message.unitKey).position = message.position;
+								playerShipMap.get(message.unitKey).direction.set(message.direction.x,message.direction.y);
+								playerShipMap.get(message.unitKey).position.set(message.position.x,message.position.y);
 								stackMap.get(slot).clear();
 								--counter;
 							}
