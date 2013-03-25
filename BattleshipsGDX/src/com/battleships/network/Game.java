@@ -57,24 +57,27 @@ public class Game {
 	    }
 	}
 	public Player getPlayer(String id, String name) {
-		for(Player player : playerList) {
-			if(player.getId().equals(id)){
-				return player;
+		synchronized(playerList) {
+			for(Player player : playerList) {
+				if(player.getId().equals(id)){
+					return player;
+				}
 			}
+			Player player = new Player(id, name);
+			playerList.add(player);
+			return player;
 		}
-		Player player = new Player(id, name);
-		playerList.add(player);
-		System.out.println(id + " added");
-		return player;
 	}
 	
 	public Player getPlayer(String id) {
-		for(Player player : playerList) {
-			if(player.getId().equals(id)){
-				return player;
+		synchronized(playerList) {
+			for(Player player : playerList) {
+				if(player.getId().equals(id)){
+					return player;
+				}
 			}
+			return null;
 		}
-		return null;
 	}
 	public boolean allReady(){
 		for(Player player : playerList) {

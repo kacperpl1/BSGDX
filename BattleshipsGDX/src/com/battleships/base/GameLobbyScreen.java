@@ -37,8 +37,6 @@ public class GameLobbyScreen implements Screen {
 	private String gameName = "";
 	
 	private BSClient lobbyClient;
-	private Thread messenger;
-	protected volatile boolean queueFlag = true;
 	private boolean gameFlag = false;
 	
 	public GameLobbyScreen(final Screen parentScreen, final String gameId, final String gameName) {
@@ -58,8 +56,6 @@ public class GameLobbyScreen implements Screen {
             @Override
             public void clicked(InputEvent event,float x,float y ) {
             	lobbyClient.leaveGame();
-            	queueFlag = false;
-            	messenger.interrupt();
             	BaseGame.instance.setScreen(parentScreen);
             }
         } );
@@ -88,22 +84,6 @@ public class GameLobbyScreen implements Screen {
 		stage.addActor(team1Table);
 		stage.addActor(team2Table);
 		
-		// Start thread listening for messages from BSClient
-		this.messenger = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (queueFlag) {
-                    try {
-                        String message = msgQueue.take();
-                        handleMessage(message);
-                    } catch (InterruptedException e) {
-                        //e.printStackTrace();
-                    }
-                }
-            }
-        }, "Messanger");
-		this.messenger.start();
-		
 	}
 	
 	public void handleMessage(String message){
@@ -119,14 +99,9 @@ public class GameLobbyScreen implements Screen {
 				for(int i = 0; i < 3; i++) {
 					uId = part.nextToken();
 					uName = part.nextToken();
-					System.out.println(uId);
-					//System.out.println(lobbyClient.getGame().getPlayerList().size());
 					Label auxLabel = new Label(uName, Resources.skin);
 					playerList.add(auxLabel);
 					if(uId.length() > 2) {
-						//System.out.println(uId);
-						//System.out.println(lobbyClient.getGame().getPlayerList().size());
-						//System.out.println(uId + " took slot" + " " + i);
 						lobbyClient.getGame().getPlayer(uId, uName).takeSlot(i);
 					} else {
 						auxLabel.addListener(new ClickListener() {
@@ -139,7 +114,6 @@ public class GameLobbyScreen implements Screen {
 					team1PlayerListTable.add(auxLabel);
 					team1PlayerListTable.row();
 				}
-				System.out.println("-------------");
 				for(int i = 0; i < 3; i++) {
 					uId = part.nextToken();
 					uName = part.nextToken();
@@ -177,6 +151,15 @@ public class GameLobbyScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor( 0f, 0f, 0f, 1f );
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT );
+        
+        try {
+        	if(!msgQueue.isEmpty()) {
+	            String message = msgQueue.take();
+	            handleMessage(message);
+        	}
+        } catch (InterruptedException e) {
+            //e.printStackTrace();
+        }
         
         batch.begin();
         batch.draw( Resources.splashTexture, 0, 0, w, h );

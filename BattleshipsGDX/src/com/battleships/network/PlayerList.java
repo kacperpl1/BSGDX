@@ -1,5 +1,6 @@
 package com.battleships.network;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
@@ -32,9 +33,10 @@ public class PlayerList {
 		}
 	}
 	public void checkKick() {
-		for(int i = list.size()-1; i >= 0; i--) {
-			if(list.get(i).isOffline())	{
-				list.remove(i);
+		Iterator<Player> iter = list.iterator();
+		while(iter.hasNext()) {
+			if(iter.next().isOffline()) {
+				iter.remove();
 			}
 		}
 	}
