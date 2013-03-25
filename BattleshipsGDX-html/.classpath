@@ -6,12 +6,12 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/BattleshipsGDX/libs/gdx.jar" sourcepath="/BattleshipsGDX/libs/gdx-sources.jar"/>
 	<classpathentry kind="lib" path="/BattleshipsGDX/libs/gdx-sources.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/gdx-backend-gwt.jar" sourcepath="war/WEB-INF/lib/gdx-backend-gwt-sources.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/gdx-backend-gwt-sources.jar"/>
 	<classpathentry kind="lib" path="/BattleshipsGDX/libs/gdx-controllers-gwt-sources.jar"/>
 	<classpathentry kind="lib" path="/BattleshipsGDX/libs/gdx-controllers-sources.jar"/>
 	<classpathentry kind="lib" path="/BattleshipsGDX/libs/gdx-controllers.jar"/>
 	<classpathentry kind="lib" path="/BattleshipsGDX/libs/reactive4java-0.97.jar"/>
 	<classpathentry kind="lib" path="/BattleshipsGDX/libs/reactive4java-gwt-0.97.jar"/>
+	<classpathentry kind="lib" path="/BattleshipsGDX/libs/gdx-backend-gwt-sources.jar"/>
+	<classpathentry kind="lib" path="/BattleshipsGDX/libs/gdx-backend-gwt.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
