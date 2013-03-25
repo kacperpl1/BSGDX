@@ -11,10 +11,15 @@ public class Cruiser extends Unit {
 	
 	Vector2 networkPosition = new Vector2(0,0);
 	private Body BlockerBody;
+
+	private String lane;
+	private Unit Target = null;
+	private Vector2 vecToTarget = new Vector2(0,0);
 	
-	Cruiser(String Team, float InitialX, float InitialY)
+	Cruiser(String Team, float InitialX, float InitialY, String Lane)
     {
 		super(Team, InitialX, InitialY);
+		lane = Lane;
     	baseSprite.setScale(0.75f);
     	MaxHealth = 250;
     	Health = MaxHealth;
@@ -42,7 +47,25 @@ public class Cruiser extends Unit {
 	
 	void updateVelocity(){
 		BlockerBody.setTransform(this.getX()*GameScreen.WORLD_TO_BOX,this.getY()*GameScreen.WORLD_TO_BOX,0);
+    	float velocity = DesiredVelocity.len();
+    	if(velocity > 1)
+    	{
+    		CollisionBody.setLinearVelocity(DesiredVelocity.x*moveSpeed/velocity*GameScreen.WORLD_TO_BOX, DesiredVelocity.y*moveSpeed/velocity*GameScreen.WORLD_TO_BOX);
+        	setVisualRotation(DesiredVelocity.x, DesiredVelocity.y);
+    	}
+    	else
+    		CollisionBody.setLinearVelocity(0, 0);
 	}
+	
+    void TakeDamage(int Damage, Unit Instigator)
+    {
+    	super.TakeDamage(Damage, Instigator);
+    	
+    	if(gun.Enemies.size()==0 && Target == null)
+    	{
+    		Target = Instigator;
+    	}
+    }
 	
 	void Destroy()
 	{
@@ -57,5 +80,73 @@ public class Cruiser extends Unit {
     	IncomingDamage = 0;
     	gun.onUpdate(delta);
 		updateVelocity();
+
+    	if(gun.Enemies.size()>0)
+    	{
+    		setDesiredVelocity(DesiredVelocity.x/4,DesiredVelocity.y/4);
+    	}
+    	else if (Target != null)
+    	{
+    		vecToTarget.set(Target.getX() - this.getX(), Target.getY() - this.getY());
+    		if(Target.Health <= 0 || vecToTarget.len() > gun.Range*3)
+    		{
+    			Target = null;
+    		}
+    		else
+    		{
+    			setDesiredVelocity(vecToTarget.x/4,vecToTarget.y/4);
+    		}
+    	}
+    	else
+    	{
+	    	if(team == "blue")
+	    	{
+	    		if(lane == "MID")
+	    			setDesiredVelocity(0,50);
+	    		else if(lane == "LEFT")
+	    		{
+	    			if(getY()<-192)
+	    				setDesiredVelocity(-50,50);
+	    			else if(getY()<192)
+	    				setDesiredVelocity(0,50);
+	    			else
+	    				setDesiredVelocity(50,50);
+	    		}
+	    		else if(lane == "RIGHT")
+	    		{
+	    			if(getY()<-192)
+	    				setDesiredVelocity(50,50);
+	    			else if(getY()<192)
+	    				setDesiredVelocity(0,50);
+	    			else
+	    				setDesiredVelocity(-50,50);
+	    		}
+	    	}
+	    	else
+	    	{
+	    		if(lane == "MID")
+	    		{
+	    			setDesiredVelocity(0,-50);
+	    		}
+	    		else if(lane == "LEFT")
+	    		{
+	    			if(getY()>192)
+	    				setDesiredVelocity(-50,-50);
+	    			else if(getY()>-192)
+	    				setDesiredVelocity(0,-50);
+	    			else
+	    				setDesiredVelocity(50,-50);
+	    		}
+	    		else if(lane == "RIGHT")
+	    		{
+	    			if(getY()>192)
+	    				setDesiredVelocity(50,-50);
+	    			else if(getY()>-192)
+	    				setDesiredVelocity(0,-50);
+	    			else
+	    				setDesiredVelocity(-50,-50);
+	    		}
+	    	}
+    	}
     }
 }

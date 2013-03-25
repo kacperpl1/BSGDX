@@ -16,29 +16,29 @@ public class GameLoopUpdateHandler{
 	public void SpawnWave()
 	{
 
-		new PracticeCruiser("red",-32, 512,"MID");
-		new PracticeCruiser("red",0, 480,"MID");
-		new PracticeCruiser("red",32, 512,"MID");
+		new Cruiser("red",-32, 512,"MID");
+		new Cruiser("red",0, 480,"MID");
+		new Cruiser("red",32, 512,"MID");
 		
-		new PracticeCruiser("red",-256, 670,"LEFT");
-		new PracticeCruiser("red",-288, 700,"LEFT");
-		new PracticeCruiser("red",-256, 700,"LEFT");
+		new Cruiser("red",-256, 670,"LEFT");
+		new Cruiser("red",-288, 700,"LEFT");
+		new Cruiser("red",-256, 700,"LEFT");
 		
-		new PracticeCruiser("red",256, 670,"RIGHT");
-		new PracticeCruiser("red",288, 700,"RIGHT");
-		new PracticeCruiser("red",256, 700,"RIGHT");
+		new Cruiser("red",256, 670,"RIGHT");
+		new Cruiser("red",288, 700,"RIGHT");
+		new Cruiser("red",256, 700,"RIGHT");
 
-		new PracticeCruiser("blue",-32, -512,"MID");
-		new PracticeCruiser("blue",0, -480,"MID");
-		new PracticeCruiser("blue",32, -512,"MID");
+		new Cruiser("blue",-32, -512,"MID");
+		new Cruiser("blue",0, -480,"MID");
+		new Cruiser("blue",32, -512,"MID");
 		
-		new PracticeCruiser("blue",-256, -670,"LEFT");
-		new PracticeCruiser("blue",-288, -700,"LEFT");
-		new PracticeCruiser("blue",-256, -700,"LEFT");
+		new Cruiser("blue",-256, -670,"LEFT");
+		new Cruiser("blue",-288, -700,"LEFT");
+		new Cruiser("blue",-256, -700,"LEFT");
 		
-		new PracticeCruiser("blue",256, -670,"RIGHT");
-		new PracticeCruiser("blue",288, -700,"RIGHT");
-		new PracticeCruiser("blue",256, -700,"RIGHT");
+		new Cruiser("blue",256, -670,"RIGHT");
+		new Cruiser("blue",288, -700,"RIGHT");
+		new Cruiser("blue",256, -700,"RIGHT");
 		
 	}
 
