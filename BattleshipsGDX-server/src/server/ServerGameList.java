@@ -1,6 +1,7 @@
 package server;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -65,9 +66,10 @@ public class ServerGameList{
 	
 	public void remove(String id){
 		synchronized(gameList) {
-			for(ServerGame game : gameList) {
-				if(game.getId().equals(id)) {
-					gameList.remove(game);
+			Iterator<ServerGame> iter = gameList.iterator();
+			while(iter.hasNext()) {
+				if(iter.next().getId().equals(id)) {
+					iter.remove();
 					break;
 				}
 			}

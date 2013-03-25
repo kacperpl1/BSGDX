@@ -1,5 +1,6 @@
 package com.battleships.network;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
@@ -49,9 +50,10 @@ public class GameList {
 		return gameList.get(index);
 	}
 	public void checkForFinishedGames(){
-		for(int i = 0; i < gameList.size(); i++){
-			if(gameList.get(i).getPlayerList().size() == 0){
-				gameList.remove(i);
+		Iterator<Game> iter = gameList.iterator();
+		while(iter.hasNext()) {
+			if(iter.next().getPlayerList().size() == 0) {
+				iter.remove();
 			}
 		}
 	}

@@ -135,6 +135,7 @@ public class BSClient implements Runnable	{
 						}
 					} else {
 						if(object instanceof HashMap) {
+							@SuppressWarnings("unchecked")
 							Map<Short, UnitData> map = (HashMap<Short, UnitData>)object;
 							try {
 								mainGameMsgQueue.put(map);

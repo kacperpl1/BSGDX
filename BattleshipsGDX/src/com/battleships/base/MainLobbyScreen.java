@@ -37,8 +37,6 @@ public class MainLobbyScreen implements Screen {
 	private String gameName = "";
 	
 	private BSClient lobbyClient;
-	protected volatile boolean queueFlag = true;
-	private Thread messenger;
 	
 	private BSPreferences prefs = new BSPreferences();
 	
@@ -64,8 +62,6 @@ public class MainLobbyScreen implements Screen {
             @Override
             public void clicked(InputEvent event,float x,float y )
             {
-            	queueFlag = false;
-            	messenger.interrupt();
             	dispose();
             	BaseGame.instance.setScreen(parentScreen);
             }
@@ -112,22 +108,6 @@ public class MainLobbyScreen implements Screen {
 		
 		stage.addActor(leftTable);
 		stage.addActor(rightTable);
-		
-		// Start thread listening for messages from BSClient
-		this.messenger = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (queueFlag) {
-                    try {
-                        String message = msgQueue.take();
-                        handleMessage(message);
-                    } catch (InterruptedException e) {
-                        //e.printStackTrace();
-                    }
-                }
-            }
-        }, "Messanger");
-		this.messenger.start();
 	}
 	
 	public void handleMessage(String message){
@@ -170,6 +150,15 @@ public class MainLobbyScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor( 0f, 0f, 0f, 1f );
         Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT );
+        
+        try {
+        	if(!msgQueue.isEmpty()) {
+	            String message = msgQueue.take();
+	            handleMessage(message);
+        	}
+        } catch (InterruptedException e) {
+            //e.printStackTrace();
+        }
         
         batch.begin();
         batch.draw( Resources.splashTexture, 0, 0, w, h );

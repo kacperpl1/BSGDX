@@ -1,6 +1,7 @@
 package server;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,22 +10,8 @@ import com.esotericsoftware.kryonet.Connection;
 public class ServerPlayerList
 {
 	private List<ServerPlayer> list = Collections.synchronizedList(new LinkedList<ServerPlayer>());
-	//protected LinkedList<ServerPlayer> list = new LinkedList<ServerPlayer>();
-	String test = "";
 	
 	public ServerPlayerList() {
-	}
-	public void advance(float elapsedTime) {
-		synchronized(list) {
-			for(int x=list.size()-1;x>=0;x--) {
-				list.get(x).advance(elapsedTime);
-				if(list.get(x).getKick()) {
-					System.out.println("LOG: " + list.get(x).getName()+" Timed Out");
-					list.remove(x);
-					System.out.println(elapsedTime);
-				}
-			}
-		}
 	}
 	public String mainLobbyToString() {
 		String info = "";
@@ -108,9 +95,10 @@ public class ServerPlayerList
 	}
 	public void remove(String id){
 		synchronized(list) {
-			for(ServerPlayer player : list) {
-				if(player.getId().equals(id)) {
-					list.remove(player);
+			Iterator<ServerPlayer> iter =  list.iterator();
+			while(iter.hasNext()) {
+				if(iter.next().getId().equals(id)) {
+					iter.remove();
 				}
 			}
 		}
