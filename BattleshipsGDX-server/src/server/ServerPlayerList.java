@@ -24,6 +24,10 @@ public class ServerPlayerList
 		}
 		return info;
 	}
+	public Iterator<ServerPlayer> iterator() {
+		return list.iterator();
+	}
+	
 	public String gameLobbyToString() {
 		String info = "";
 		synchronized(list) {

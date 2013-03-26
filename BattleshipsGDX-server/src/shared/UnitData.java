@@ -11,4 +11,5 @@ public class UnitData implements Serializable {
 	public Vector2 direction = new Vector2(0,0);
 	public String gameID = "";
 	public short unitKey = -1;
+	public int tick = 0;
 }

@@ -11,6 +11,9 @@ public class GameList {
 	public GameList(){
 	}
 	
+	public Iterator<Game> iterator() {
+		return gameList.iterator();
+	}
 	public void translateServerString(String received){
 		if(!(msg.equals(received))){
 			msg = received;

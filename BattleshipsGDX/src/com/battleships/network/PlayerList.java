@@ -12,6 +12,10 @@ public class PlayerList {
 	public PlayerList() {
 	}
 	
+	public Iterator<Player> iterator() {
+		return list.iterator();
+	}
+	
 	public void translateServerString(String received) {
 		if(!(msg.equals(received))){
 			msg = received;
@@ -28,8 +32,9 @@ public class PlayerList {
 		}
 	}
 	public void kickAll() {
-		for(int i = 0; i < list.size(); i++) {
-			list.get(i).setOffline();
+		Iterator<Player> iter = list.iterator();
+		while(iter.hasNext()) {
+			iter.next().setOffline();
 		}
 	}
 	public void checkKick() {

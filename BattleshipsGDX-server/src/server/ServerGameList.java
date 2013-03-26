@@ -16,6 +16,10 @@ public class ServerGameList{
 		return gameList.size();
 	}
 	
+	public Iterator<ServerGame> iterator() {
+		return gameList.iterator();
+	}
+	
 	public ServerGame createGame(String id, String name) {
 		ServerGame game = new ServerGame(id, name);
 		synchronized(gameList) {
@@ -57,8 +61,11 @@ public class ServerGameList{
 	public String toString(){
 		String info = "";
 		synchronized(gameList) {
-			for(int i = 0; i < gameList.size(); i++){
-				info += gameList.get(i).getId() + " " + gameList.get(i).getName() + " ";
+			Iterator<ServerGame> iter = gameList.iterator();
+			ServerGame game;
+			while(iter.hasNext()) {
+				game = iter.next();
+				info += game.getId() + " " + game.getName() + " ";
 			}
 		}
 		return info;

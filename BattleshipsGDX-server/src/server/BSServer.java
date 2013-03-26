@@ -2,7 +2,7 @@ package server;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Stack;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 import shared.Common;
@@ -89,11 +89,10 @@ class Translator extends Thread {
 	
 	public Translator(LinkedList<GameThread> gTL, UnitData unitData) {
 		gameThreadList = gTL;
-		//System.out.println(unitData.unitKey);
 		for(GameThread gThread : gameThreadList) {
 			if(gThread.getName().equals(unitData.gameID)) {
-				Stack<UnitData> msgStack = gThread.getMsgStack(unitData.unitKey);
-				msgStack.push(unitData);
+				Queue<UnitData> msgQueue = gThread.getMsgQueue(unitData.unitKey);
+				msgQueue.add(unitData);
 				break;
 			}
 		}

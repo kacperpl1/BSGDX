@@ -11,9 +11,9 @@ import com.battleships.network.Player;
 public class NetworkGameScreen extends GameScreen{
 	private BSClient lobbyClient;
 	private BlockingQueue<Map<Short, UnitData>> msgQueue;
-	private UnitData playerData;// = new UnitData();
-	private Map<Short, PlayerShip> shipMap; // = new HashMap<Integer, PlayerShip>();
-	//private UnitMap playerData = new UnitMap();
+	private UnitData playerData;
+	private Map<Short, PlayerShip> shipMap;
+	private int tick = 0;
 	
 	public NetworkGameScreen()
 	{
@@ -57,7 +57,6 @@ public class NetworkGameScreen extends GameScreen{
 				}
 			}
 			localPlayerShip = shipMap.get((short)lobbyClient.getPlayer().getSlotNumber());
-			//localPlayerShip = shipMap.get((short)3);
 
 			//send initial direction packet
 			playerData.position.set(localPlayerShip.CollisionBody.getPosition());
@@ -73,9 +72,14 @@ public class NetworkGameScreen extends GameScreen{
 		
 		if(box_accu>BOX_STEP)
 		{
+			this.tick++;
+			this.playerData.tick = this.tick;
+			lobbyClient.sendDirection(playerData);
+			System.out.println("tick on client: " + tick);
 			try {
 				if(!msgQueue.isEmpty()) {
 					Map<Short, UnitData> message = msgQueue.take();
+					System.out.println("tick from server: " + message.entrySet().iterator().next().getValue().tick);
 	                handleMessage(message);
 
 	        		GLUH.onUpdate(BOX_STEP);
@@ -87,7 +91,7 @@ public class NetworkGameScreen extends GameScreen{
 	    			
 	    			this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
 	    			this.playerData.direction.set(localPlayerDirection);
-	    			lobbyClient.sendDirection(playerData);
+	    			//lobbyClient.sendDirection(playerData);
 	    			
 	    			msgQueue.clear();
 	    			Weapon.m_w = 1182370352;
@@ -95,8 +99,8 @@ public class NetworkGameScreen extends GameScreen{
 				}
 				else
 				{
-					System.out.println("No messages");
-	    			lobbyClient.sendDirection(playerData);
+//					System.out.println("No messages");
+//	    			lobbyClient.sendDirection(playerData);
 				}
             } catch (InterruptedException e) {
                 //e.printStackTrace();
