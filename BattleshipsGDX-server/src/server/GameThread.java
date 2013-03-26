@@ -18,53 +18,33 @@ class GameThread extends Thread{
 	Map<Short, LinkedBlockingQueue<UnitData>> queueMap = new HashMap<Short, LinkedBlockingQueue<UnitData>>();
 	
 	private Map<Short, UnitData> playerShipMap = new HashMap<Short, UnitData>();
+	private Map<Short, Integer> counterMap = new HashMap<Short, Integer>();
 	
 	public GameThread(ServerGame game){
 		this.game = game;
 		this.running = true;
 		this.setName(game.getId());
 		
-		for(int i = 0; i < game.getPlayerList().size(); i++) {
-			queueMap.put(game.getPlayerList().getServerPlayer(i).getSlotNumber(), new LinkedBlockingQueue<UnitData>());
+		Iterator<ServerPlayer> iter = game.getPlayerList().iterator();
+		while(iter.hasNext()) {
+			ServerPlayer player = iter.next();
+			queueMap.put(player.getSlotNumber(), new LinkedBlockingQueue<UnitData>());
 			UnitData data = new UnitData();
 			data.gameID = this.getName();
-			data.unitKey = game.getPlayerList().getServerPlayer(i).getSlotNumber();
-			playerShipMap.put(game.getPlayerList().getServerPlayer(i).getSlotNumber(), data);
+			data.unitKey = player.getSlotNumber();
+			playerShipMap.put(player.getSlotNumber(), data);
+			
+			counterMap.put(player.getSlotNumber(), 0);
 		}
 	}
 	
 	public boolean allSync() {
 		for(Entry<Short, UnitData> entry : playerShipMap.entrySet()) {
-			if(entry.getValue().tick >= this.currentTick) {
-				//System.out.println("current: " + this.currentTick + " slot: " + entry.getValue().unitKey + " " +  entry.getValue().tick);
-				reSync(entry.getValue().tick);
-				return false;
-			}
 			if(entry.getValue().tick != this.currentTick-1) {
 				return false;
 			}
 		}
 		return true;
-	}
-	
-	public void reSync(int tick) {
-		System.out.println("resync");
-		Iterator<ServerPlayer> iter = game.getPlayerList().iterator();
-		this.currentTick = tick + 1;
-		while(iter.hasNext()) {
-			short slot = iter.next().getSlotNumber();
-			if(!queueMap.get(slot).isEmpty()) {
-				System.out.println("slot: " + slot + " tick: " + queueMap.get(slot).peek().tick + " current: " + this.currentTick + " fucked: " + tick);
-				while(queueMap.get(slot).peek().tick <= this.currentTick) {
-					UnitData message = queueMap.get(slot).poll();
-					//System.out.println("got " + message.tick + " tick from player in slot " + slot);
-					playerShipMap.get(message.unitKey).direction.set(message.direction.x,message.direction.y);
-					playerShipMap.get(message.unitKey).position.set(message.position.x,message.position.y);
-					playerShipMap.get(message.unitKey).tick = message.tick;
-				}
-			}
-		}
-		sendToAll();
 	}
 	
 	public boolean nextTick(short slot) {
@@ -91,11 +71,20 @@ class GameThread extends Thread{
 					if(!queueMap.get(slot).isEmpty()) {
 						if(nextTick(slot)) {
 							UnitData message = queueMap.get(slot).poll();
-							//System.out.println("got " + message.tick + " tick from player in slot " + slot);
-							playerShipMap.get(message.unitKey).direction.set(message.direction.x,message.direction.y);
-							playerShipMap.get(message.unitKey).position.set(message.position.x,message.position.y);
-							playerShipMap.get(message.unitKey).tick = message.tick;
-							//System.out.println("current: " + this.currentTick + " slot" + slot + ": " + message.tick);
+							if(message.tick == playerShipMap.get(message.unitKey).tick) {
+								counterMap.put(slot, counterMap.get(slot) + 1);
+								System.out.println(slot + " " + counterMap.get(slot));
+								if(counterMap.get(slot) > 3) {
+									game.getPlayerBySlot(slot).getConnection().sendUDP(playerShipMap);
+									counterMap.put(slot, 0);
+								}
+							} else {
+								counterMap.put(slot, 0);
+								playerShipMap.get(message.unitKey).direction.set(message.direction.x,message.direction.y);
+								playerShipMap.get(message.unitKey).position.set(message.position.x,message.position.y);
+								playerShipMap.get(message.unitKey).tick = message.tick;
+								System.out.println("current: " + this.currentTick + " slot" + slot + ": " + message.tick);
+							}
 						}
 					}
 				}

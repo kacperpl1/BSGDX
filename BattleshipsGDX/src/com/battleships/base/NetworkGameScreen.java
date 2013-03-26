@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import com.battleships.network.BSClient;
 import com.battleships.network.Player;
@@ -72,40 +73,45 @@ public class NetworkGameScreen extends GameScreen{
 		
 		if(box_accu>BOX_STEP)
 		{
-			this.tick++;
-			this.playerData.tick = this.tick;
-			lobbyClient.sendDirection(playerData);
-			System.out.println("tick on client: " + tick);
 			try {
-				if(!msgQueue.isEmpty()) {
-					Map<Short, UnitData> message = msgQueue.take();
-					System.out.println("tick from server: " + message.entrySet().iterator().next().getValue().tick);
-	                handleMessage(message);
+				Map<Short, UnitData> message = null;
+				for(int i = 0; i < 3; i++) {
+					message = msgQueue.poll(31, TimeUnit.MILLISECONDS);
+					if(message != null) {
+						break;
+					}
+					lobbyClient.sendDirection(playerData);
+					System.out.println(i+1);
+				}
+				if(message != null) {
+		            handleMessage(message);
 
-	        		GLUH.onUpdate(BOX_STEP);
-	        		
-	        		update();
-	        		
-	    			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
-	    			box_accu = 0;
-	    			
-	    			this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
-	    			this.playerData.direction.set(localPlayerDirection);
-	    			//lobbyClient.sendDirection(playerData);
-	    			
-	    			msgQueue.clear();
-	    			Weapon.m_w = 1182370352;
-	    			Weapon.m_z = 1352118237;
+		        	GLUH.onUpdate(BOX_STEP);
+		        	
+		        	update();
+		        	
+		    		physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
+		    		box_accu = 0;
+		    		
+		    		this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
+		    		this.playerData.direction.set(localPlayerDirection);
+		    		this.tick++;
+		    		this.playerData.tick = this.tick;
+		    		lobbyClient.sendDirection(playerData);
+		    		System.out.println("tick on client: " + tick);
+		    		
+		    		msgQueue.clear();
+		    		Weapon.m_w = 1182370352;
+		    		Weapon.m_z = 1352118237;
+				} else {
+//					System.out.println("no msg");
+					//lobbyClient.sendDirection(playerData);
 				}
-				else
-				{
-//					System.out.println("No messages");
-//	    			lobbyClient.sendDirection(playerData);
-				}
-            } catch (InterruptedException e) {
-                //e.printStackTrace();
-            	System.out.println("Connection Error!");
-            }
+				
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}	
 

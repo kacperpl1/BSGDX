@@ -136,4 +136,14 @@ class ServerGame {
 	public boolean isRunning(){
 		return running;
 	}
+	public ServerPlayer getPlayerBySlot(short slot) {
+		Iterator<ServerPlayer> iter = playerList.iterator();
+		while(iter.hasNext()) {
+			ServerPlayer player = iter.next();
+			if(player.getSlotNumber() == slot) {
+				return player;
+			}
+		}
+		return null;
+	}
 }
