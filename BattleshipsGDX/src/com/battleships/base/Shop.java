@@ -78,9 +78,14 @@ public class Shop {
 				{
 					if(inventory.size() < 6 && owner.PlayerGold > PlayerWeapon.CostData[selected_item])
 					{
-						PlayerWeapon newweapon = new PlayerWeapon(owner, selected_item);
-						owner.PlayerGold -= PlayerWeapon.CostData[selected_item];
-						inventory.add(newweapon);
+						if(BaseGame.instance.getScreen() instanceof NetworkGameScreen)
+						{
+							((NetworkGameScreen)BaseGame.instance.getScreen()).playerData.shopAction = (short) (selected_item+1);
+						}
+						else
+						{
+							owner.buyItem(selected_item);
+						}
 					}
 	        		
 				}
@@ -134,9 +139,14 @@ public class Shop {
 	        	if((inventory_grid.getX()+x) > shop_grid.getX() && (inventory_grid.getX()+x)< shop_grid.getX() + shop_grid.getWidth()
 						&& (inventory_grid.getY()+y) < (shop_grid.getY() + shop_grid.getHeight()) && (inventory_grid.getY()+y) > shop_grid.getY())
 				{
-	        		inventory.get(selected_inventory_item).Destroy();
-					owner.PlayerGold += PlayerWeapon.CostData[inventory.get(selected_inventory_item).weapon_id];
-					inventory.remove(selected_inventory_item);
+					if(BaseGame.instance.getScreen() instanceof NetworkGameScreen)
+					{
+						((NetworkGameScreen)BaseGame.instance.getScreen()).playerData.shopAction = (short) -(selected_inventory_item+1);
+					}
+					else
+					{
+		        		owner.sellItem(selected_inventory_item);
+					}
 					
 		        	itemX=shop_grid.getX()+(selected_item%4)*tileWidth;
 		        	itemY=shop_grid.getY()+shop_grid.getHeight()*0.75f-(selected_item/4)*tileWidth;

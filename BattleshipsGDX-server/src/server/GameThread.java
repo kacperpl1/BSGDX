@@ -83,6 +83,7 @@ class GameThread extends Thread{
 								playerShipMap.get(message.unitKey).direction.set(message.direction.x,message.direction.y);
 								playerShipMap.get(message.unitKey).position.set(message.position.x,message.position.y);
 								playerShipMap.get(message.unitKey).tick = message.tick;
+								playerShipMap.get(message.unitKey).shopAction = message.shopAction;
 								System.out.println("current: " + this.currentTick + " slot" + slot + ": " + message.tick);
 							}
 						}

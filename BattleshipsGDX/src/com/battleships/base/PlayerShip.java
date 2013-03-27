@@ -107,6 +107,20 @@ public class PlayerShip extends Unit {
 		deathcounter++;
 	}
 	
+	void buyItem(int itemType)
+	{
+		PlayerWeapon newweapon = new PlayerWeapon(this, itemType);
+		PlayerGold -= PlayerWeapon.CostData[itemType];
+		Inventory.add(newweapon);
+	}
+	
+	void sellItem(int slotNumber)
+	{
+		Inventory.get(slotNumber).Destroy();
+		PlayerGold += PlayerWeapon.CostData[Inventory.get(slotNumber).weapon_id];
+		Inventory.remove(slotNumber);
+	}
+	
 	void TakeDamage(int Damage, Unit Instigator)
     {
     	IncomingDamage += Damage;

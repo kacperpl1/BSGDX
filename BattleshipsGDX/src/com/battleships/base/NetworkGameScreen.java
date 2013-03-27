@@ -12,14 +12,13 @@ import com.battleships.network.Player;
 public class NetworkGameScreen extends GameScreen{
 	private BSClient lobbyClient;
 	private BlockingQueue<Map<Short, UnitData>> msgQueue;
-	private UnitData playerData;
+	protected UnitData playerData;
 	private Map<Short, PlayerShip> shipMap;
 	private int tick = 0;
 	
 	public NetworkGameScreen()
 	{
 		super();
-		
 	}
 	
 	public void handleMessage(Map<Short, UnitData> message) {
@@ -29,6 +28,11 @@ public class NetworkGameScreen extends GameScreen{
 					shipMap.get(entry.getKey()).CollisionBody.setTransform(entry.getValue().position.x,entry.getValue().position.y,0);
 				
 				shipMap.get(entry.getKey()).setDesiredVelocity(entry.getValue().direction.x, entry.getValue().direction.y);
+				
+				if(entry.getValue().shopAction>0)
+					shipMap.get(entry.getKey()).buyItem(entry.getValue().shopAction-1);
+				else if(entry.getValue().shopAction<0)
+					shipMap.get(entry.getKey()).sellItem(-entry.getValue().shopAction-1);
 			}
 		}
 	}
@@ -98,6 +102,7 @@ public class NetworkGameScreen extends GameScreen{
 		    		this.tick++;
 		    		this.playerData.tick = this.tick;
 		    		lobbyClient.sendDirection(playerData);
+		    		playerData.shopAction=0;
 		    		System.out.println("tick on client: " + tick);
 		    		
 		    		msgQueue.clear();
