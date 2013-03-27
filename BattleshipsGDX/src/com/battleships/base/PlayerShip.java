@@ -11,6 +11,7 @@ public class PlayerShip extends Unit {
 	
 	float rotationRate = 360; //degrees per second
 	Vector2 CurrentVelocity = new Vector2(0,0);
+	int PlayerGold = 200;
 	
 	public LinkedList<PlayerWeapon> Inventory = new LinkedList<PlayerWeapon>();
 	private int deathcounter;
@@ -42,24 +43,6 @@ public class PlayerShip extends Unit {
     	CollisionBody.setLinearVelocity(CurrentVelocity.x*moveSpeed/velocity*GameScreen.WORLD_TO_BOX, CurrentVelocity.y*moveSpeed/velocity*GameScreen.WORLD_TO_BOX);
         setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
     }
-	
-	void updateUnitData(UnitData data)
-	{
-//		if(this == GameScreen.localPlayerShip)
-//		{
-//			Health = data.health;
-//		}
-//		else
-//		{
-//			CollisionBody.setTransform(data.position, 0);
-//			Health = data.health;
-//			
-//			if(Math.abs(data.position.x - networkPosition.x) > GameScreen.WORLD_TO_BOX || Math.abs(data.position.y - networkPosition.y) > GameScreen.WORLD_TO_BOX)
-//				setVisualRotation(data.position.x - networkPosition.x, data.position.y - networkPosition.y);
-//			
-//			networkPosition.set(data.position);
-//		}
-	}
 	
 	void updateVelocity()
     {
@@ -123,6 +106,26 @@ public class PlayerShip extends Unit {
 		}
 		deathcounter++;
 	}
+	
+	void TakeDamage(int Damage, Unit Instigator)
+    {
+    	IncomingDamage += Damage;
+    	if(Health - Damage <= 0)
+    	{
+    		this.goldworth = 100 + (int) (this.PlayerGold * 0.2f);
+    		this.PlayerGold *= 0.8f;
+    		
+    		if(Instigator instanceof PlayerShip)
+    		{
+    			((PlayerShip)Instigator).PlayerGold += this.goldworth;
+    		}
+    		else
+    		{
+    			//TODO - handle computer kills to share gold
+    			Instigator.goldworth += this.goldworth/2;
+    		}
+    	}
+    }
 	
 	void hide()
 	{

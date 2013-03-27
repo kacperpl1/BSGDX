@@ -85,41 +85,6 @@ public abstract class Unit extends Actor {
 		AllUnits.add(this);
 	}
 	
-//	public static Unit createNewUnit(UnitData data) {
-//		String team = "";
-//		if(data.position.y > 0) {
-//			team = "red";
-//		} else {
-//			team = "blue";
-//		}
-//		Unit unit;
-//		switch(data.type) {
-//			case Common.PLAYER_SHIP : {
-//				unit = new PlayerShip(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO, data.slot);
-//				break;
-//			}
-//			case Common.CRUISER : {
-//				unit = new Cruiser(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO);
-//				break;
-//			}
-//			case Common.TOWER : {
-//				unit = new Tower(team, data.position.x*GameScreen.BOX_WORLD_TO, data.position.y*GameScreen.BOX_WORLD_TO);
-//				break;
-//			}
-//			default : {
-//				unit = null;
-//				break;
-//			}
-//		}
-//		return new Unit();
-//	}
-	
-//	void updateUnitData(UnitData data)
-//	{
-//		CollisionBody.setTransform(data.position, 0);
-//		//Health = data.health;
-//	}
-	
 	void createBody(float initialX, float initialY)
 	{ 
 		CollisionBody = bodyPool.obtain();
@@ -176,6 +141,10 @@ public abstract class Unit extends Actor {
     void TakeDamage(int Damage, Unit Instigator)
     {
     	IncomingDamage += Damage;
+    	if(Health - Damage <= 0 && Instigator instanceof PlayerShip)
+    	{
+    		((PlayerShip)Instigator).PlayerGold += this.goldworth;
+    	}
     }
 	
 	void Destroy()

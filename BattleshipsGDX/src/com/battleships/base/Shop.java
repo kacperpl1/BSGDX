@@ -76,9 +76,10 @@ public class Shop {
 	        	if((shop_grid.getX()+x) > inventory_grid.getX() && (shop_grid.getX()+x)< inventory_grid.getX() + inventory_grid.getWidth()
 						&& (shop_grid.getY()+y) < (inventory_grid.getY()+tileWidth) && (shop_grid.getY()+y) > inventory_grid.getY())
 				{
-					if(inventory.size() < 6)
+					if(inventory.size() < 6 && owner.PlayerGold > PlayerWeapon.CostData[selected_item])
 					{
 						PlayerWeapon newweapon = new PlayerWeapon(owner, selected_item);
+						owner.PlayerGold -= PlayerWeapon.CostData[selected_item];
 						inventory.add(newweapon);
 					}
 	        		
@@ -134,6 +135,7 @@ public class Shop {
 						&& (inventory_grid.getY()+y) < (shop_grid.getY() + shop_grid.getHeight()) && (inventory_grid.getY()+y) > shop_grid.getY())
 				{
 	        		inventory.get(selected_inventory_item).Destroy();
+					owner.PlayerGold += PlayerWeapon.CostData[inventory.get(selected_inventory_item).weapon_id];
 					inventory.remove(selected_inventory_item);
 					
 		        	itemX=shop_grid.getX()+(selected_item%4)*tileWidth;

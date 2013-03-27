@@ -144,7 +144,7 @@ public class GameScreen implements Screen {
 	    gl.glClearColor(0f,0f,0f,1f);
 	    
 	    font = new BitmapFont(Gdx.files.internal("data/font.fnt"),Gdx.files.internal("data/font.png"),false);
-	    font.scale(w/Gdx.graphics.getWidth());
+	    font.setScale(1);
 		
 		physicsWorld = new World(new Vector2(0, 0), true); 
 		
@@ -485,7 +485,8 @@ public class GameScreen implements Screen {
 		hudStage.draw();
 		
 		batch.begin();  
-		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), -w/2, h/2f); 
+		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), -w/2, h*0.5f); 
+		font.draw(batch, "GOLD: " + localPlayerShip.PlayerGold, -w/2, h*0.47f); 
 		batch.end();
     
 	}
