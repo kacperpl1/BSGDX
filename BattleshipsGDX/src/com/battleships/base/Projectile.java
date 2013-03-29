@@ -20,6 +20,7 @@ public class Projectile extends Actor{
 	private Sprite sprite;
 	private BalisticMoveModifier moveModifier;
 	public boolean destroyed;
+	private float stepTime;
 
 	public static ProjectilePool projectilepool = new ProjectilePool();
 	
@@ -72,10 +73,7 @@ public class Projectile extends Actor{
 				destroyed = true;
 			
 			if(percentageDone >=0.95f)
-			{
-				if(GameScreen.box_accu + pSecondsElapsed > GameScreen.BOX_STEP)
-					explode();
-				
+			{				
 				return;
 			}
 			
@@ -112,6 +110,14 @@ public class Projectile extends Actor{
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
 		moveModifier.onManagedUpdate(batch, Gdx.graphics.getDeltaTime());
+		
+		if(GameScreen.stepNow)
+		{
+			stepTime += GameScreen.BOX_STEP;
+			
+			if(stepTime > TravelTime)
+				explode();
+		}
 	}
 	
 	void Init(Unit inst, Unit targ, int dmg, int type)
@@ -129,6 +135,7 @@ public class Projectile extends Actor{
 		DistToTarget = new Vector2(HitX - sprite.getX(),HitY - sprite.getY()).len();
 		TravelTime = DistToTarget / PlayerWeapon.Speed[type];
 		destroyed = false;
+		stepTime = 0;
 		
 		Damage = dmg;
 		

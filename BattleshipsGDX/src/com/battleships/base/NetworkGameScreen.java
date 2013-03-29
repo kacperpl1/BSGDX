@@ -71,6 +71,7 @@ public class NetworkGameScreen extends GameScreen{
 	public void worldStep(float delta)
 	{
 		box_accu+=delta;
+		stepNow = false;
 		
 		if(box_accu - delta <BOX_STEP/2f && box_accu > BOX_STEP/2f)
 			update();
@@ -88,6 +89,8 @@ public class NetworkGameScreen extends GameScreen{
 					System.out.println(i+1);
 				}
 				if(message != null) {
+					stepNow = true;
+					
 		            handleMessage(message);
 
 		        	GLUH.onUpdate(BOX_STEP);

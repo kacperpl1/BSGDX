@@ -73,6 +73,7 @@ public class GameScreen implements Screen {
 	private BitmapFont font;
 	private Vector2 camOffset;
 	private Vector2 knobOffset = new Vector2();
+	static boolean stepNow;
 	static Actor miniMap;
 	static String LocalPlayerTeam;
 	
@@ -396,12 +397,15 @@ public class GameScreen implements Screen {
 	public void worldStep(float delta)
 	{
 		box_accu+=Math.min(delta, BOX_STEP);
+		stepNow = false;
 		
 		if(box_accu - delta <BOX_STEP/2f && box_accu > BOX_STEP/2f)
 			update();
 		
 		if(box_accu>BOX_STEP)
 		{
+			stepNow = true;
+			
     		GLUH.onUpdate(BOX_STEP);
     		
     		update();
