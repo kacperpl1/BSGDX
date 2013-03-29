@@ -15,6 +15,7 @@ public class NetworkGameScreen extends GameScreen{
 	protected UnitData playerData;
 	private Map<Short, PlayerShip> shipMap;
 	private int tick = 0;
+	private boolean rdyToHalfStep;
 	
 	public NetworkGameScreen()
 	{
@@ -73,8 +74,11 @@ public class NetworkGameScreen extends GameScreen{
 		box_accu+=delta;
 		stepNow = false;
 		
-		if(box_accu - delta <BOX_STEP/2f && box_accu > BOX_STEP/2f)
+		if(box_accu > BOX_STEP/2f && rdyToHalfStep)
+		{
 			update();
+			rdyToHalfStep = false;
+		}
 		
 		if(box_accu>BOX_STEP)
 		{
@@ -89,6 +93,13 @@ public class NetworkGameScreen extends GameScreen{
 					System.out.println(i+1);
 				}
 				if(message != null) {
+					
+					if(rdyToHalfStep) //what if half step wasn't done yet?
+						update();
+					else
+			    		rdyToHalfStep = true;
+					
+					
 					stepNow = true;
 					
 		            handleMessage(message);
@@ -109,8 +120,8 @@ public class NetworkGameScreen extends GameScreen{
 		    		System.out.println("tick on client: " + tick);
 		    		
 		    		msgQueue.clear();
-		    		Weapon.m_w = 1182370352;
-		    		Weapon.m_z = 1352118237;
+		    		//System.out.println("CheckRandom: "+Weapon.RNG.nextInt());
+		    		Weapon.RNG.setSeed(tick);
 				} else {
 //					System.out.println("no msg");
 					//lobbyClient.sendDirection(playerData);

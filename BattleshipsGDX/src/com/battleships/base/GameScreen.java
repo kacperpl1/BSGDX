@@ -339,7 +339,7 @@ public class GameScreen implements Screen {
 
 		    batch.setShader(shader);
 	        batch.begin();         
-	        batch.draw(m_fboRegion, -w/2, -h/2, w, h);               
+	        batch.draw(m_fboRegion, -w/2-1, -h/2-1, w+2, h+2);               
 	        batch.end();
 		    batch.setShader(null);
 	    }
@@ -378,7 +378,7 @@ public class GameScreen implements Screen {
 	{
 		for(Unit current : Unit.AllUnits)
 		{
-			current.onUpdate(BOX_STEP/2f);
+			current.onUpdate(BOX_STEP);
 		}
 		Unit current;
 		Iterator<Unit> iter = Unit.AllUnits.iterator();
@@ -415,9 +415,6 @@ public class GameScreen implements Screen {
 			localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
 			
 			box_accu = 0;
-
-			Weapon.m_w = 1182370352;
-			Weapon.m_z = 1352118237;
 		}
 	}
 

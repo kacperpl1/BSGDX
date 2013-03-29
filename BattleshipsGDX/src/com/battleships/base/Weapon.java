@@ -3,6 +3,7 @@ package com.battleships.base;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.Random;
 
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -25,24 +26,7 @@ public class Weapon {
 	int Damage;
 	int cost;
 	int weapon_id;
-	public static long m_w = 1182370352;
-	public static long m_z = 1352118237;
-	
-	static long get_random()
-	{
-	    m_z = 36969 * (m_z & 65535) + (m_z >> 16);
-	    m_w = 18000 * (m_w & 65535) + (m_w >> 16);
-	    return (m_z << 16) + m_w;  /* 32-bit result */
-	}
-	
-	static float get_frandom()
-	{
-		return ((float)(get_random()%1024))/1024f;
-	}
-	
-	static public final float get_frandom (float start, float end) {
-		return start + get_frandom() * (end - start);
-	}
+	public static Random RNG = new Random(1182370352);
 	
 	public Weapon(Unit o, int type)
 	{
@@ -104,7 +88,7 @@ public class Weapon {
 	    			Unit target;
 	    			while(Enemies.size()>0)
 	    			{
-	    				target = Enemies.get((int)(get_random()%Enemies.size()));
+	    				target = Enemies.get(RNG.nextInt(Enemies.size()));
 		    			if(target.Health<=0)
 		    			{
 		    				Enemies.remove(target);
@@ -112,8 +96,8 @@ public class Weapon {
 		    			else
 		    			{
 		    				Projectile.Launch(Owner,target,Damage, weapon_id);
-		    				FireDelayTimer = FireDelay; 
-		    				//FireDelayTimer = FireDelay * get_frandom(0.9f, 1.1f);
+		    				//FireDelayTimer = FireDelay; 
+		    				FireDelayTimer = FireDelay * (0.9f+RNG.nextFloat()/5f);
 		    				break;
 		    			}
 	    			}
