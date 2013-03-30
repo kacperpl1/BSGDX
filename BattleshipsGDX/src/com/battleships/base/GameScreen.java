@@ -214,8 +214,11 @@ public class GameScreen implements Screen {
 		
 		touchpad = new Actor(){
 	        public void draw (SpriteBatch batch, float parentAlpha) {
-        		batch.setColor(1, 1, 1, 0.5f);
-	            batch.draw(Resources.touchpadBase,getX(),getY(),getWidth(),getHeight());
+        		batch.setColor(1, 1, 1, 0.75f);
+	            batch.draw(Resources.touchpadBase,getX(),getY(),getWidth()/2,getHeight()/2,
+	            		getWidth(),getHeight(), 1, 1, (int) Math.toDegrees(-Math.atan2(knobOffset.x,knobOffset.y)), 
+	            		0, 0, 256,256, false, false);
+	            
 	            batch.draw(Resources.touchpadKnob,
 	            		getX()+getWidth()*(0.25f + knobOffset.x),
 	            		getY()+getHeight()*(0.25f + knobOffset.y),
@@ -228,10 +231,10 @@ public class GameScreen implements Screen {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 	        	knobOffset.x = (x-touchpad.getWidth()/2)/(touchpad.getWidth());
 	        	knobOffset.y = (y-touchpad.getHeight()/2)/(touchpad.getWidth());
-	        	if(knobOffset.len() > 0.3f)
+	        	if(knobOffset.len() > 0.1f)
 	        	{
-		        	knobOffset.x /= knobOffset.len()/0.3f;
-		        	knobOffset.y /= knobOffset.len()/0.3f;
+		        	knobOffset.x /= knobOffset.len()/0.1f;
+		        	knobOffset.y /= knobOffset.len()/0.1f;
 	        	}
 	        	
 	        	return true;
@@ -240,10 +243,10 @@ public class GameScreen implements Screen {
 	        public void touchDragged (InputEvent event, float x, float y, int pointer) {
 	        	knobOffset.x = (x-touchpad.getWidth()/2)/(touchpad.getWidth());
 	        	knobOffset.y = (y-touchpad.getHeight()/2)/(touchpad.getWidth());
-	        	if(knobOffset.len() > 0.3f)
+	        	if(knobOffset.len() > 0.1f)
 	        	{
-		        	knobOffset.x /= knobOffset.len()/0.3f;
-		        	knobOffset.y /= knobOffset.len()/0.3f;
+		        	knobOffset.x /= knobOffset.len()/0.1f;
+		        	knobOffset.y /= knobOffset.len()/0.1f;
 	        	}
 	    	}
 	        

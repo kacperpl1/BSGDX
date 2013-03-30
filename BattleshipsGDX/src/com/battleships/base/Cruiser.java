@@ -76,8 +76,6 @@ public class Cruiser extends Unit {
 	
 	void onUpdate(float delta)
     {
-    	Health -= IncomingDamage;
-    	IncomingDamage = 0;
     	gun.onUpdate(delta);
 		updateVelocity();
 

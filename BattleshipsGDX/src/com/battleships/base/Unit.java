@@ -36,7 +36,6 @@ public abstract class Unit extends Actor {
 	protected LinkedList<Unit> VisibleEnemies = new LinkedList<Unit>(); //used by allies
 	Actor icon;
 	protected Vector2 CurrentPosition;
-	protected int IncomingDamage;
 	static BodyPool bodyPool = new BodyPool();
 	public static LinkedList<Unit> AllUnits = new LinkedList<Unit>();
 	
@@ -137,19 +136,17 @@ public abstract class Unit extends Actor {
 	
 	void onUpdate(float delta)
 	{
-    	Health -= IncomingDamage;
-    	IncomingDamage = 0;
 		gun.onUpdate(delta);
 		updateVelocity();
 	}
 	
     void TakeDamage(int Damage, Unit Instigator)
     {
-    	IncomingDamage += Damage;
-    	if(Health - Damage <= 0 && Instigator instanceof PlayerShip)
+    	if(Health > 0 && Health - Damage <= 0 && Instigator instanceof PlayerShip)
     	{
     		((PlayerShip)Instigator).PlayerGold += this.goldworth;
     	}
+    	Health -= Damage;
     }
 	
 	void Destroy()

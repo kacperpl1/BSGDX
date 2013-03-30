@@ -101,7 +101,7 @@ public class PlayerShip extends Unit {
 		switch(deathcounter)
 		{
 			case 1: hide(); break;
-			case 10: Health = MaxHealth; IncomingDamage = 0; deathcounter = 0; break;
+			case 10: Health = MaxHealth; deathcounter = 0; break;
 			default: break;
 		}
 		deathcounter++;
@@ -123,8 +123,8 @@ public class PlayerShip extends Unit {
 	
 	void TakeDamage(int Damage, Unit Instigator)
     {
-    	IncomingDamage += Damage;
-    	if(Health - Damage <= 0)
+    	Health -= Damage;
+    	if(Health <= 0)
     	{
     		this.goldworth = 100 + (int) (this.PlayerGold * 0.2f);
     		this.PlayerGold *= 0.8f;
@@ -169,8 +169,6 @@ public class PlayerShip extends Unit {
 	
 	void onUpdate(float delta)
 	{
-    	Health -= IncomingDamage;
-    	IncomingDamage = 0;
 		for(Weapon current : Inventory)
     	{
     		current.onUpdate(delta);
