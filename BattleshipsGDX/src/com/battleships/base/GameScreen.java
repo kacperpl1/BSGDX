@@ -213,10 +213,14 @@ public class GameScreen implements Screen {
 		}
 		
 		touchpad = new Actor(){
+			int rotation = 0;
 	        public void draw (SpriteBatch batch, float parentAlpha) {
         		batch.setColor(1, 1, 1, 0.75f);
+        		if(knobOffset.len()>0)
+        			rotation = (int) Math.toDegrees(-Math.atan2(knobOffset.x,knobOffset.y));
+        		
 	            batch.draw(Resources.touchpadBase,getX(),getY(),getWidth()/2,getHeight()/2,
-	            		getWidth(),getHeight(), 1, 1, (int) Math.toDegrees(-Math.atan2(knobOffset.x,knobOffset.y)), 
+	            		getWidth(),getHeight(), 1, 1, rotation, 
 	            		0, 0, 256,256, false, false);
 	            
 	            batch.draw(Resources.touchpadKnob,
