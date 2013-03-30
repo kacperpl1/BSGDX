@@ -101,21 +101,24 @@ public abstract class Unit extends Actor {
         CollisionBody.createFixture(fixtureDef);  
         CollisionBody.getFixtureList().get(0).setUserData(this);
         
-        CurrentPosition = new Vector2(0,0);
+        CurrentPosition = new Vector2(CollisionBody.getPosition());
         this.setPosition(initialX, initialY);
 	}  
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
-		//onUpdate(Gdx.graphics.getDeltaTime());
-		
 		CurrentPosition.x = this.getX()*GameScreen.WORLD_TO_BOX;
 		CurrentPosition.y = this.getY()*GameScreen.WORLD_TO_BOX;
 		
-		CurrentPosition.lerp(CollisionBody.getPosition(),Gdx.graphics.getDeltaTime()/(GameScreen.BOX_STEP-GameScreen.box_accu+Gdx.graphics.getDeltaTime()));
-		this.setPosition(CurrentPosition.x*GameScreen.BOX_WORLD_TO, CurrentPosition.y*GameScreen.BOX_WORLD_TO);
+		if(DesiredVelocity.len()>0)
+			CurrentPosition.lerp(CollisionBody.getPosition(),Gdx.graphics.getDeltaTime()/(GameScreen.BOX_STEP-GameScreen.box_accu+Gdx.graphics.getDeltaTime()));
+		else
+			CurrentPosition.lerp(CollisionBody.getPosition(),GameScreen.BOX_STEP);
 		
 		if(team != GameScreen.LocalPlayerTeam && VisibleEnemiesCount<=0)
+		{
+			this.setPosition(CurrentPosition.x*GameScreen.BOX_WORLD_TO, CurrentPosition.y*GameScreen.BOX_WORLD_TO);
 			return;
+		}
 		
 		float widthScaled = baseSprite.getWidth()*baseSprite.getScaleX();
 		
@@ -128,6 +131,8 @@ public abstract class Unit extends Actor {
 
         batch.draw(Resources.HealthbarTextureRegion[1], 
         		getX()-widthScaled/4+1,getY()+widthScaled/4,widthScaled/2*((float)Health/(float)MaxHealth),4);
+		
+		this.setPosition(CurrentPosition.x*GameScreen.BOX_WORLD_TO, CurrentPosition.y*GameScreen.BOX_WORLD_TO);
 	}
 	
 	void onUpdate(float delta)

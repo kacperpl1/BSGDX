@@ -376,15 +376,13 @@ public class GameScreen implements Screen {
 	
 	void update()
 	{
-		for(Unit current : Unit.AllUnits)
-		{
-			current.onUpdate(BOX_STEP);
-		}
 		Unit current;
 		Iterator<Unit> iter = Unit.AllUnits.iterator();
 		while(iter.hasNext())
 		{
 			current = iter.next();
+			current.onUpdate(BOX_STEP/2);
+			
 			if(current.Health<=0)
 			{
 				current.Destroy();

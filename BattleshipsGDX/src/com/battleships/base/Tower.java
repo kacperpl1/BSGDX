@@ -18,10 +18,10 @@ public class Tower extends Unit {
     	visor = new Visor(this);
     	gun = new PlayerWeapon(this,9);
     	CollisionBody.setType(BodyType.StaticBody);
+    	this.setPosition(CollisionBody.getPosition().x*GameScreen.BOX_WORLD_TO,CollisionBody.getPosition().y*GameScreen.BOX_WORLD_TO);
 	}
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
-		this.setPosition(CollisionBody.getPosition().x*GameScreen.BOX_WORLD_TO,CollisionBody.getPosition().y*GameScreen.BOX_WORLD_TO);
 		this.setZIndex(2);
         batch.draw(baseSprite, getX()-16,getY()-64,64,128);
         
