@@ -168,7 +168,7 @@ public class GameScreen implements Screen {
 		miniMap = new Actor(){
 			Texture region = Resources.miniMapTexture;
 	        public void draw (SpriteBatch batch, float parentAlpha) {
-        		batch.setColor(1, 1, 1, 0.5f);
+        		batch.setColor(1, 1, 1, 0.75f);
 	            batch.draw(region,getX(),getY(),getWidth(),getHeight());
 	            batch.setColor(1, 1, 1, 1);
 	        }
