@@ -94,10 +94,7 @@ public class NetworkGameScreen extends GameScreen{
 				}
 				if(message != null) {
 					
-					if(rdyToHalfStep) //what if half step wasn't done yet?
-						update();
-					else
-			    		rdyToHalfStep = true;
+					rdyToHalfStep = true;
 					
 					stepNow = true;
 					

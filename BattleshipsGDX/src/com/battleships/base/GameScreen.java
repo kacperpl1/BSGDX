@@ -49,8 +49,8 @@ public class GameScreen implements Screen {
 	static World physicsWorld; 
 	static final float BOX_STEP=1f/10f;
 	static float box_accu=0;
-    static final int BOX_VELOCITY_ITERATIONS=6;  
-    static final int BOX_POSITION_ITERATIONS=2;  
+    static final int BOX_VELOCITY_ITERATIONS=1;  
+    static final int BOX_POSITION_ITERATIONS=1;  
     static final float WORLD_TO_BOX=0.01f;  
     static final float BOX_WORLD_TO=100.0f; 
     static boolean debug_mode=false;
@@ -388,7 +388,7 @@ public class GameScreen implements Screen {
 		while(iter.hasNext())
 		{
 			current = iter.next();
-			current.onUpdate(BOX_STEP/2);
+			current.onUpdate(BOX_STEP);
 			
 			if(current.Health<=0)
 			{
