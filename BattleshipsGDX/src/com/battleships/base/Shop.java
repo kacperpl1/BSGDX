@@ -117,7 +117,7 @@ public class Shop {
 		
 		inventory_grid.addListener(new InputListener() {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-	        	if(inventory.size()==0)
+	        	if((int)(x)/tileWidth >= inventory.size() || inventory.size()==0)
 	        		return false;
 	        	
 	        	selected_inventory_item = (int)(x)/tileWidth;
