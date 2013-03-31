@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 
 public class Shop {
 
@@ -29,9 +30,21 @@ public class Shop {
 		
 		shop_toggle_button = new Actor(){
 	        public void draw (SpriteBatch batch, float parentAlpha) {
-        		batch.setColor(1, 1, 1, 0.75f);
-	            batch.draw(Resources.shopToggleTexture,getX(),getY(),getWidth(),getHeight());
-	            batch.setColor(1, 1, 1, 1);
+	        	if(GameScreen.LocalPlayerTeam == "blue" && GameScreen.localPlayerShip.getY() < -700
+	        			|| GameScreen.LocalPlayerTeam == "red" && GameScreen.localPlayerShip.getY() > 700)
+	        	{
+	        		this.setTouchable(Touchable.enabled);
+	        		batch.setColor(1, 1, 1, 0.75f);
+	        		batch.draw(Resources.shopToggleTexture,getX(),getY(),getWidth(),getHeight());
+	        		batch.setColor(1, 1, 1, 1);
+	        	}
+	        	else
+	        	{
+	        		this.setTouchable(Touchable.disabled);
+		        	shop_grid.setVisible(shop_toggle);
+		    		inventory_grid.setVisible(shop_toggle);
+		    		shop_toggle = false;
+	        	}
 	        }
 		};
 		shop_toggle_button.setBounds(0, GameScreen.h*0.45f+GameScreen.centerOffsetY, tileWidth, tileWidth);

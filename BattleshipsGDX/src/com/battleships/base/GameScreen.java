@@ -199,17 +199,17 @@ public class GameScreen implements Screen {
 	        	gameStage.getCamera().update();
 	        }
 		});
-		if(w>h)
-			miniMap.setBounds(w*0.76f, h-w*0.24f, w*0.23f, w*0.23f);
+		miniMap.setBounds(w-h*0.4f, h*0.6f, h*0.4f, h*0.4f);
 		
 		miniMap.toFront();
 		hudStage.addActor(miniMap);
 		
-		float knobsize = w*0.25f;
+		float knobsize = h*0.4f;
 		if(w<h)
 		{
-			knobsize = w*0.5f;
+			knobsize = w*0.6f;
 			centerOffsetY = (int)(w*0.25f);
+			miniMap.setBounds(0, w*0.1f, w*0.4f, w*0.4f);
 		}
 		
 		touchpad = new Actor(){
@@ -259,10 +259,7 @@ public class GameScreen implements Screen {
 	        }
 		});
 		
-		if(w>h)
-			touchpad.setBounds(w-knobsize,0, knobsize, knobsize);
-		else
-			touchpad.setBounds(knobsize/2,0, knobsize, knobsize);
+		touchpad.setBounds(w-knobsize,0, knobsize, knobsize);
 		hudStage.addActor(touchpad);
 		
 		loadPlayers();
@@ -437,7 +434,7 @@ public class GameScreen implements Screen {
 			if(camToggle && localPlayerShip.Health>0)
 			gameStage.getCamera().position.set(
 					MathUtils.clamp(localPlayerShip.getX(), -1024+w/2, 1024-w/2), 
-					MathUtils.clamp(localPlayerShip.getY()-centerOffsetY, -1024-h/2, 1024+h/2), 0);
+					MathUtils.clamp(localPlayerShip.getY()-centerOffsetY, -1024+h/2, 1024-h/2), 0);
 			gameStage.getCamera().update();
 		}
 		else
