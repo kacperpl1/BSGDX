@@ -113,7 +113,7 @@ public class Projectile extends Actor{
 		
 		if(GameScreen.stepNow)
 		{
-			stepTime += GameScreen.BOX_STEP/2;
+			stepTime += GameScreen.BOX_STEP;
 			
 			if(stepTime > TravelTime)
 				explode();

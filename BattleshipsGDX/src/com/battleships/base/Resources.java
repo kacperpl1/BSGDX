@@ -35,7 +35,7 @@ public class Resources {
         splashTexture = new Texture( "data/splash.png" );
         splashTexture.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 
-		mapTexture = new Texture(Gdx.files.internal("data/TilemapLow.png"));
+		mapTexture = new Texture(Gdx.files.internal("data/Map.jpg"));
 		mapTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		miniMapTexture = new Texture(Gdx.files.internal("data/minimap.png"));
