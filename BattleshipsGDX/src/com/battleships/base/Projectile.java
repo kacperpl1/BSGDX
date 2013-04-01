@@ -69,9 +69,6 @@ public class Projectile extends Actor{
 			this.timer += pSecondsElapsed;
 			final float percentageDone = this.timer/this.Duration;
 			
-			if(Target.Health <=0)
-				destroyed = true;
-			
 			if(percentageDone >=0.95f)
 			{				
 				return;
@@ -109,10 +106,17 @@ public class Projectile extends Actor{
 	}
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
-		moveModifier.onManagedUpdate(batch, Gdx.graphics.getDeltaTime());
+		if(GameScreen.box_accu < GameScreen.BOX_STEP)
+			moveModifier.onManagedUpdate(batch, Gdx.graphics.getDeltaTime());
+		else
+	        batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, Projectile.this.getRotation());
+			
 		
 		if(GameScreen.stepNow)
 		{
+			if(Target.Health <=0)
+				destroyed = true;
+			
 			stepTime += GameScreen.BOX_STEP;
 			
 			if(stepTime > TravelTime)
