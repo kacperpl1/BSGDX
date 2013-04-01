@@ -138,6 +138,10 @@ public class PlayerShip extends Unit {
     			//TODO - handle computer kills to share gold
     			Instigator.goldworth += this.goldworth/2;
     		}
+    		if(team == "red")
+    			GameScreen.BlueFrags++;
+    		else
+    			GameScreen.RedFrags++;
     	}
     }
 	

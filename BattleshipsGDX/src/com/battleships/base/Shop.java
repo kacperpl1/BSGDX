@@ -47,7 +47,7 @@ public class Shop {
 	        	}
 	        }
 		};
-		shop_toggle_button.setBounds(0, GameScreen.h*0.45f+GameScreen.centerOffsetY, tileWidth, tileWidth);
+		shop_toggle_button.setBounds(0, GameScreen.h*0.45f, tileWidth, tileWidth);
 
 		shop_toggle_button.addListener(new InputListener() {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -105,7 +105,7 @@ public class Shop {
 	        }
 		});
 		
-		shop_grid.setBounds(GameScreen.w/2-tileWidth*2, GameScreen.h/2-tileWidth*2+GameScreen.centerOffsetY, 
+		shop_grid.setBounds(GameScreen.w/2-tileWidth*2, GameScreen.h/2-tileWidth*2, 
 				tileWidth*4, tileWidth*4);
     	shop_grid.setVisible(shop_toggle);
     	
@@ -126,7 +126,7 @@ public class Shop {
         }
 	};
 		inventory_grid.setVisible(shop_toggle);
-		inventory_grid.setBounds(shop_grid.getX()-shop_grid.getWidth()/4,tileWidth+GameScreen.centerOffsetY,tileWidth*6,tileWidth);
+		inventory_grid.setBounds(shop_grid.getX()-shop_grid.getWidth()/4,tileWidth,tileWidth*6,tileWidth);
 		
 		inventory_grid.addListener(new InputListener() {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -56,6 +57,7 @@ public class GameScreen implements Screen {
     static boolean debug_mode=false;
     
 	private SpriteBatch batch;
+	private BitmapFont font;
 	private SpriteBatch fontBatch;
 	private ShaderProgram shader;
 	static OrthographicCamera camera;
@@ -71,12 +73,15 @@ public class GameScreen implements Screen {
 	private Actor Map;
 	private ActorPositionComparator ActorComparator;
 	protected Vector2 localPlayerDirection;
-	private BitmapFont font;
 	private Vector2 camOffset;
 	private Vector2 knobOffset = new Vector2();
+	private Shop weaponShop;
 	static boolean stepNow;
 	static Actor miniMap;
 	static String LocalPlayerTeam;
+	
+	static int BlueFrags = 0;
+	static int RedFrags = 0;
 	
 	public void loadMapData()
 	{
@@ -265,7 +270,7 @@ public class GameScreen implements Screen {
 		loadPlayers();
 		
 		localPlayerDirection = new Vector2();
-		new Shop(localPlayerShip);
+		weaponShop = new Shop(localPlayerShip);
 		
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera(w, h);
@@ -488,8 +493,33 @@ public class GameScreen implements Screen {
 		hudStage.draw();
 		
 		fontBatch.begin();  
+		font.setColor(Color.WHITE);
 		font.draw(fontBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), -Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2); 
-		font.draw(fontBatch, "GOLD: " + localPlayerShip.PlayerGold, -Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2 - font.getLineHeight()); 
+		font.setColor(1,0.9f,0,1);
+		font.draw(fontBatch, localPlayerShip.PlayerGold+"$", -font.getBounds(localPlayerShip.PlayerGold+".").width/2, Gdx.graphics.getHeight()/2 - font.getLineHeight()); 
+		
+		font.setColor(Color.BLUE);
+		font.draw(fontBatch, BlueFrags+" ", -font.getBounds(BlueFrags+" ").width, Gdx.graphics.getHeight()/2);
+		font.setColor(Color.WHITE);
+		font.draw(fontBatch, ":", 0, Gdx.graphics.getHeight()/2); 
+		font.setColor(Color.RED);
+		font.draw(fontBatch, " "+RedFrags, font.getSpaceWidth(), Gdx.graphics.getHeight()/2); 
+		
+		if(weaponShop.shop_toggle)
+		{
+			float lineScale = Gdx.graphics.getHeight()/480f;
+			font.setColor(Color.WHITE);
+			font.draw(fontBatch, "PRICE:", -64, Gdx.graphics.getHeight()/2 - font.getLineHeight()*3*lineScale); 
+			font.draw(fontBatch, "DAMAGE:", -64, Gdx.graphics.getHeight()/2 - font.getLineHeight()*4*lineScale); 
+			font.draw(fontBatch, "COOLDOWN:", -64, Gdx.graphics.getHeight()/2 - font.getLineHeight()*5*lineScale); 
+			font.draw(fontBatch, "RANGE:", -64, Gdx.graphics.getHeight()/2 - font.getLineHeight()*6*lineScale); 
+			
+			font.setColor(Color.RED);
+			font.draw(fontBatch, PlayerWeapon.CostData[weaponShop.selected_item]+"$", 64-font.getBounds(PlayerWeapon.CostData[weaponShop.selected_item]+"&").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*3*lineScale); 
+			font.draw(fontBatch, PlayerWeapon.DamageData[weaponShop.selected_item]+"J", 64-font.getBounds(PlayerWeapon.DamageData[weaponShop.selected_item]+"J").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*4*lineScale); 
+			font.draw(fontBatch, PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s", 64-font.getBounds(PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*5*lineScale); 
+			font.draw(fontBatch, PlayerWeapon.RangeData[weaponShop.selected_item]+"yd", 64-font.getBounds(PlayerWeapon.RangeData[weaponShop.selected_item]+"yd").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*6*lineScale); 
+		}
 		fontBatch.end();
 	}
 
