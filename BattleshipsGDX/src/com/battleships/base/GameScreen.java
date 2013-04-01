@@ -56,6 +56,7 @@ public class GameScreen implements Screen {
     static boolean debug_mode=false;
     
 	private SpriteBatch batch;
+	private SpriteBatch fontBatch;
 	private ShaderProgram shader;
 	static OrthographicCamera camera;
     
@@ -123,7 +124,6 @@ public class GameScreen implements Screen {
 	{
 			LocalPlayerTeam = "blue";
 			localPlayerShip = new PlayerShip("blue", 0f,-768f, 3);
-			System.out.println("wtf");
 	}
 	
 	public GameScreen() {	
@@ -146,16 +146,16 @@ public class GameScreen implements Screen {
 	    
 	    font = new BitmapFont(Gdx.files.internal("data/font.fnt"),Gdx.files.internal("data/font.png"),false);
 	    font.setScale(1);
+	    fontBatch = new SpriteBatch();
+	    fontBatch.setProjectionMatrix(new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()).combined);
 		
 		physicsWorld = new World(new Vector2(0, 0), true); 
 		
 		ActorComparator = new ActorPositionComparator();
 
-		
 		hudStage = new Stage(w,h,true);
 		gameStage = new Stage(w,h,true);
 		Gdx.input.setInputProcessor(hudStage);
-		
 		
 		Map = new Actor(){
 			Texture region = Resources.mapTexture;
@@ -487,35 +487,24 @@ public class GameScreen implements Screen {
 		hudStage.act(Gdx.graphics.getDeltaTime());
 		hudStage.draw();
 		
-		batch.begin();  
-		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), -w/2, h*0.5f); 
-		font.draw(batch, "GOLD: " + localPlayerShip.PlayerGold, -w/2, h*0.47f); 
-		batch.end();
-    
+		fontBatch.begin();  
+		font.draw(fontBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), -Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2); 
+		font.draw(fontBatch, "GOLD: " + localPlayerShip.PlayerGold, -Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2 - font.getLineHeight()); 
+		fontBatch.end();
 	}
 
 	@Override
-	public void resize(int width, int height) {
-		//hudStage.setViewport(width, height, true);
-	}
+	public void resize(int width, int height) {}
 
 	@Override
-	public void pause() {
-	}
+	public void pause() {}
 
 	@Override
-	public void resume() {
-	}
+	public void resume() {}
 
 	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void hide() {}
 
 	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void show() {}
 }
