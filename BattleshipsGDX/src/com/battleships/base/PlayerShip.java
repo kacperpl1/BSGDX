@@ -20,7 +20,7 @@ public class PlayerShip extends Unit {
     {
 		super(Team, InitialX, InitialY);
     	moveSpeed = 150;
-    	MaxHealth = 2500;
+    	MaxHealth = 500;
     	Health = MaxHealth;
     	switch(slot) {
 			case 0 : colorSprite.setColor(com.badlogic.gdx.graphics.Color.MAGENTA); break;
@@ -33,8 +33,7 @@ public class PlayerShip extends Unit {
     	}
     	visor = new Visor(this);
     	setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
-    	Inventory.add(new PlayerWeapon(this, 8));
-    	Inventory.add(new PlayerWeapon(this, 8));
+    	Inventory.add(new PlayerWeapon(this, 2));
     }
 	
 	void setVelocity()

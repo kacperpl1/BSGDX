@@ -94,7 +94,7 @@ public class NetworkGameScreen extends GameScreen{
 				}
 				if(message != null) {
 					
-					rdyToHalfStep = true;
+					//rdyToHalfStep = true;
 					
 					stepNow = true;
 					

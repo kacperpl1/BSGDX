@@ -16,7 +16,7 @@ public class Tower extends Unit {
     	MaxHealth = 5000;
     	Health = MaxHealth;
     	visor = new Visor(this);
-    	gun = new PlayerWeapon(this,9);
+    	gun = new TowerCannon(this);
     	CollisionBody.setType(BodyType.StaticBody);
     	this.setPosition(CollisionBody.getPosition().x*GameScreen.BOX_WORLD_TO,CollisionBody.getPosition().y*GameScreen.BOX_WORLD_TO);
 	}
@@ -31,5 +31,18 @@ public class Tower extends Unit {
         		getX()-16+1,getY()+32,32*((float)Health/(float)MaxHealth),4);
         
 		onUpdate(Gdx.graphics.getDeltaTime());
+	}
+	
+	private class TowerCannon extends Weapon {	
+	public TowerCannon(Unit o) {
+			super(o, 1);
+			// TODO Auto-generated constructor stub
+		}	
+		void defaultProperties()
+		{
+			FireDelay = 1;
+			Range = 1200/6;
+			Damage = 50;
+		}
 	}
 }

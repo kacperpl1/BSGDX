@@ -390,7 +390,7 @@ public class GameScreen implements Screen {
 		while(iter.hasNext())
 		{
 			current = iter.next();
-			current.onUpdate(BOX_STEP);
+			current.onUpdate(BOX_STEP/2);
 			
 			if(current.Health<=0)
 			{

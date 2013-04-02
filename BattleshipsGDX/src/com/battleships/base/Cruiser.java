@@ -15,13 +15,15 @@ public class Cruiser extends Unit {
 	private String lane;
 	private Unit Target = null;
 	private Vector2 vecToTarget = new Vector2(0,0);
+	private PlayerShip lastPlayerAttacker = null;
+	private float lastPlayerAttack = 0;
 	
 	Cruiser(String Team, float InitialX, float InitialY, String Lane)
     {
 		super(Team, InitialX, InitialY);
 		lane = Lane;
     	baseSprite.setScale(0.75f);
-    	MaxHealth = 250;
+    	MaxHealth = 500;
     	Health = MaxHealth;
     	visor = new Visor(this);
     	gun = new Weapon(this,0);
@@ -59,7 +61,17 @@ public class Cruiser extends Unit {
 	
     void TakeDamage(int Damage, Unit Instigator)
     {
-    	super.TakeDamage(Damage, Instigator);
+    	if(Instigator instanceof PlayerShip)
+    	{
+    		lastPlayerAttacker = ((PlayerShip)Instigator);
+    		lastPlayerAttack = 1;
+    	}
+
+    	if(Health > 0 && Health - Damage <= 0 && lastPlayerAttacker != null)
+    	{
+    		lastPlayerAttacker.PlayerGold += this.goldworth;
+    	}
+    	Health -= Damage;
     	
     	if(gun.Enemies.size()==0 && Target == null)
     	{
@@ -76,6 +88,11 @@ public class Cruiser extends Unit {
 	
 	void onUpdate(float delta)
     {
+		if(lastPlayerAttack>0)
+			lastPlayerAttack -= delta;
+		else
+			lastPlayerAttacker = null;
+		
     	gun.onUpdate(delta);
 		updateVelocity();
 
