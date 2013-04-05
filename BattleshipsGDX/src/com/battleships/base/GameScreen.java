@@ -39,7 +39,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 
-public class GameScreen implements Screen {
+public strictfp class GameScreen implements Screen {
 	static Stage hudStage;
 	static Stage gameStage;
 	private Actor touchpad;
@@ -155,7 +155,7 @@ public class GameScreen implements Screen {
 	    fontBatch = new SpriteBatch();
 	    fontBatch.setProjectionMatrix(new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()).combined);
 		
-		physicsWorld = new World(new Vector2(0, 0), true); 
+		physicsWorld = new World(new Vector2(0, 0), false); 
 		physicsWorld.setAutoClearForces(false);
 		physicsWorld.setContinuousPhysics(false);
 		physicsWorld.setWarmStarting(true);
@@ -399,9 +399,9 @@ public class GameScreen implements Screen {
 			current.onUpdate(BOX_STEP);
 			checksum += current.CollisionBody.getPosition().x + current.CollisionBody.getPosition().y;
 			
-			//current.CollisionBody.setTransform(
-			//		Math.round(current.CollisionBody.getPosition().x*BOX_WORLD_TO)*WORLD_TO_BOX,
-			//		Math.round(current.CollisionBody.getPosition().y*BOX_WORLD_TO)*WORLD_TO_BOX, 0);
+			current.CollisionBody.setTransform(
+					Math.round(current.CollisionBody.getPosition().x*BOX_WORLD_TO)*WORLD_TO_BOX,
+					Math.round(current.CollisionBody.getPosition().y*BOX_WORLD_TO)*WORLD_TO_BOX, 0);
 			
 			if(current.Health<=0)
 			{
