@@ -52,8 +52,8 @@ public class GameScreen implements Screen {
 	static float box_accu=0;
     static final int BOX_VELOCITY_ITERATIONS=1;  
     static final int BOX_POSITION_ITERATIONS=1;  
-    static final float WORLD_TO_BOX=0.01f;  
-    static final float BOX_WORLD_TO=100.0f; 
+    static final float WORLD_TO_BOX=1f/1024f;  
+    static final float BOX_WORLD_TO=1024f; 
     static boolean debug_mode=false;
     
 	private SpriteBatch batch;
@@ -155,7 +155,7 @@ public class GameScreen implements Screen {
 	    fontBatch = new SpriteBatch();
 	    fontBatch.setProjectionMatrix(new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()).combined);
 		
-		physicsWorld = new World(new Vector2(0, 0), false); 
+		physicsWorld = new World(new Vector2(0, 0), true); 
 		physicsWorld.setAutoClearForces(false);
 		physicsWorld.setContinuousPhysics(false);
 		physicsWorld.setWarmStarting(true);
