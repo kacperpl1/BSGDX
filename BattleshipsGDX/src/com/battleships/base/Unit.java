@@ -20,13 +20,18 @@ public abstract class Unit extends Actor {
 	
 	String team;
 	public static String lastSpawnTeam;
-    short Health = 1000;
+	short MaxHealth = 1000;
+    float Health = MaxHealth;
     Sprite baseSprite;
 	Sprite colorSprite;
-	short MaxHealth = 1000;
 	int moveSpeed = 50;
 	int goldworth = 50;
 	Body CollisionBody;
+	
+	final static short CATEGORY_WORLD = 0x0001;  	// 0000000000000001 in binary
+	final static short CATEGORY_UNIT = 0x0002;		// 0000000000000010 in binary
+	final static short CATEGORY_PLAYER = 0x0004;	// 0000000000000010 in binary
+	final static short CATEGORY_BLOCKER = 0x0008;	// 0000000000000100 in binary
 	
 	Vector2 DesiredVelocity = new Vector2(0,0);
 	
@@ -97,6 +102,7 @@ public abstract class Unit extends Actor {
         fixtureDef.density = 1.0f;  
         fixtureDef.friction = 0.0f;  
         fixtureDef.restitution = 0.0f;
+        fixtureDef.filter.categoryBits = CATEGORY_UNIT;
         CollisionBody.createFixture(fixtureDef);  
         CollisionBody.getFixtureList().get(0).setUserData(this);
         

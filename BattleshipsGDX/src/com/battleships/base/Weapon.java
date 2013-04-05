@@ -78,7 +78,7 @@ public class Weapon {
 		Enemies.clear();
 	};
 	
-    void onUpdate(float Delta){
+    strictfp void onUpdate(float Delta){
     	if(FireDelayTimer>0)
     		FireDelayTimer -= Delta;
     	else if(FireDelayTimer<=0)

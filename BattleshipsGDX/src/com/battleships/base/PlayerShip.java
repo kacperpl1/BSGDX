@@ -1,19 +1,22 @@
 package com.battleships.base;
 
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Filter;
 
 public class PlayerShip extends Unit {
 	
 	float rotationRate = 360; //degrees per second
 	Vector2 CurrentVelocity = new Vector2(0,0);
 	int PlayerGold = 200;
+	float HealthRegen = 10;
 	
-	public LinkedList<PlayerWeapon> Inventory = new LinkedList<PlayerWeapon>();
+	public Map<Integer,PlayerWeapon> Inventory = new HashMap<Integer,PlayerWeapon>();
 	private int deathcounter;
 	
 	PlayerShip(String Team, float InitialX, float InitialY, int slot)
@@ -33,7 +36,11 @@ public class PlayerShip extends Unit {
     	}
     	visor = new Visor(this);
     	setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
-    	Inventory.add(new PlayerWeapon(this, 2));
+    	Inventory.put(0,new PlayerWeapon(this, 2));
+
+    	Filter masking = new Filter();
+    	masking.categoryBits = CATEGORY_PLAYER;
+    	CollisionBody.getFixtureList().get(0).setFilterData(masking);
     }
 	
 	void setVelocity()
@@ -108,9 +115,18 @@ public class PlayerShip extends Unit {
 	
 	void buyItem(int itemType)
 	{
+		int slotNumber = 0;
+		for(int i=0; i<6; i++)
+		{
+			if(!Inventory.containsKey(i))
+			{
+				slotNumber = i;
+				break;
+			}
+		}
 		PlayerWeapon newweapon = new PlayerWeapon(this, itemType);
 		PlayerGold -= PlayerWeapon.CostData[itemType];
-		Inventory.add(newweapon);
+		Inventory.put(slotNumber,newweapon);
 	}
 	
 	void sellItem(int slotNumber)
@@ -172,9 +188,13 @@ public class PlayerShip extends Unit {
 	
 	void onUpdate(float delta)
 	{
-		for(Weapon current : Inventory)
-    	{
-    		current.onUpdate(delta);
-    	}
+		if(Health < MaxHealth)
+			Health += HealthRegen * delta;
+		
+		for(int i=0; i<6; i++)
+		{
+			if(Inventory.containsKey(i))
+				Inventory.get(i).onUpdate(delta);
+		}
 	}
 }

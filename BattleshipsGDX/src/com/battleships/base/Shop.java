@@ -1,6 +1,6 @@
 package com.battleships.base;
 
-import java.util.LinkedList;
+import java.util.Map;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -17,7 +17,7 @@ public class Shop {
 	
 	int selected_inventory_item;
 	PlayerShip owner;
-	LinkedList<PlayerWeapon> inventory;
+	Map<Integer,PlayerWeapon> inventory;
 	private Actor shop_toggle_button;
 	private Actor shop_grid;
 	private int tileWidth = GameScreen.h/10;
@@ -116,12 +116,11 @@ public class Shop {
         public void draw (SpriteBatch batch, float parentAlpha) {
     		batch.setColor(1, 1, 1, 0.75f);
             batch.draw(Resources.inventoryGridTexture, getX(),getY(),getWidth(),getHeight());
-            int index = 0;
-            for(PlayerWeapon current : inventory)
-            {
-            	batch.draw(Resources.ItemTextureRegion[current.weapon_id], getX()+index*tileWidth,getY(),tileWidth,tileWidth);
-            	index++;
-            }            
+            for(int i=0; i<6; i++)
+    		{
+    			if(inventory.containsKey(i))
+    				batch.draw(Resources.ItemTextureRegion[inventory.get(i).weapon_id], getX()+i*tileWidth,getY(),tileWidth,tileWidth);
+    		}         
             batch.setColor(1, 1, 1, 1);
         }
 	};

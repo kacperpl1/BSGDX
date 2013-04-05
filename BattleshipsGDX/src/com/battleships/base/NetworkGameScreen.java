@@ -15,7 +15,6 @@ public class NetworkGameScreen extends GameScreen{
 	protected UnitData playerData;
 	private Map<Short, PlayerShip> shipMap;
 	private int tick = 0;
-	private boolean rdyToHalfStep;
 	
 	public NetworkGameScreen()
 	{
@@ -74,12 +73,6 @@ public class NetworkGameScreen extends GameScreen{
 		box_accu+=delta;
 		stepNow = false;
 		
-		if(box_accu > BOX_STEP/2f && rdyToHalfStep)
-		{
-			update();
-			rdyToHalfStep = false;
-		}
-		
 		if(box_accu>BOX_STEP)
 		{
 			try {
@@ -90,11 +83,9 @@ public class NetworkGameScreen extends GameScreen{
 						break;
 					}
 					lobbyClient.sendDirection(playerData);
-					System.out.println(i+1);
+					//System.out.println(i+1);
 				}
 				if(message != null) {
-					
-					//rdyToHalfStep = true;
 					
 					stepNow = true;
 					

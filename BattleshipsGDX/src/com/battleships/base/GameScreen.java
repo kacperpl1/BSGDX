@@ -106,6 +106,7 @@ public class GameScreen implements Screen {
 		        fixtureDef.density = 1.0f;  
 		        fixtureDef.friction = 0.0f;  
 		        fixtureDef.restitution = 0.0f;
+		        fixtureDef.filter.categoryBits = Unit.CATEGORY_UNIT;
 		        WorldCollisionBody.createFixture(fixtureDef);  
 			}
 	    }
@@ -155,6 +156,9 @@ public class GameScreen implements Screen {
 	    fontBatch.setProjectionMatrix(new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()).combined);
 		
 		physicsWorld = new World(new Vector2(0, 0), true); 
+		physicsWorld.setAutoClearForces(false);
+		physicsWorld.setContinuousPhysics(false);
+		physicsWorld.setWarmStarting(true);
 		
 		ActorComparator = new ActorPositionComparator();
 
@@ -383,14 +387,21 @@ public class GameScreen implements Screen {
 	 
 	}
 	
-	void update()
+	strictfp void update()
 	{
+		float checksum = 0;
 		Unit current;
 		Iterator<Unit> iter = Unit.AllUnits.iterator();
 		while(iter.hasNext())
 		{
 			current = iter.next();
-			current.onUpdate(BOX_STEP/2);
+			
+			current.onUpdate(BOX_STEP);
+			checksum += current.CollisionBody.getPosition().x + current.CollisionBody.getPosition().y;
+			
+			//current.CollisionBody.setTransform(
+			//		Math.round(current.CollisionBody.getPosition().x*BOX_WORLD_TO)*WORLD_TO_BOX,
+			//		Math.round(current.CollisionBody.getPosition().y*BOX_WORLD_TO)*WORLD_TO_BOX, 0);
 			
 			if(current.Health<=0)
 			{
@@ -399,15 +410,13 @@ public class GameScreen implements Screen {
 					iter.remove();
 			}
 		}
+		System.out.println("Checksum: "+ checksum + " | " + Unit.AllUnits.size());
 	}
 	
 	public void worldStep(float delta)
 	{
 		box_accu+=Math.min(delta, BOX_STEP);
 		stepNow = false;
-		
-		if(box_accu - delta <BOX_STEP/2f && box_accu > BOX_STEP/2f)
-			update();
 		
 		if(box_accu>BOX_STEP)
 		{
@@ -477,7 +486,6 @@ public class GameScreen implements Screen {
 
 	    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		gameStage.act(Gdx.graphics.getDeltaTime());
 		gameStage.draw();		
 
 		renderFow(); 
@@ -488,8 +496,6 @@ public class GameScreen implements Screen {
 			debugMatrix.scale(BOX_WORLD_TO, BOX_WORLD_TO, 1);
 	        debugRenderer.render(physicsWorld, debugMatrix); 
 		}
-		
-		hudStage.act(Gdx.graphics.getDeltaTime());
 		hudStage.draw();
 		
 		fontBatch.begin();  
