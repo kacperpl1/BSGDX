@@ -93,8 +93,6 @@ public class NetworkGameScreen extends GameScreen{
 
 		        	GLUH.onUpdate(BOX_STEP);
 		        	
-		        	update();
-		        	
 		    		physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
 		    		box_accu = 0;
 		    		

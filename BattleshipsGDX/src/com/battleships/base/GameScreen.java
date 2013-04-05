@@ -387,32 +387,6 @@ public class GameScreen implements Screen {
 	 
 	}
 	
-	void update()
-	{
-		float checksum = 0;
-		Unit current;
-		Iterator<Unit> iter = Unit.AllUnits.iterator();
-		while(iter.hasNext())
-		{
-			current = iter.next();
-			
-			current.onUpdate(BOX_STEP);
-			checksum += current.CollisionBody.getPosition().x + current.CollisionBody.getPosition().y;
-			
-			current.CollisionBody.setTransform(
-					Math.round(current.CollisionBody.getPosition().x*BOX_WORLD_TO)*WORLD_TO_BOX,
-					Math.round(current.CollisionBody.getPosition().y*BOX_WORLD_TO)*WORLD_TO_BOX, 0);
-			
-			if(current.Health<=0)
-			{
-				current.Destroy();
-				if(!(current instanceof PlayerShip))
-					iter.remove();
-			}
-		}
-		System.out.println("Checksum: "+ checksum + " | " + Unit.AllUnits.size());
-	}
-	
 	public void worldStep(float delta)
 	{
 		box_accu+=Math.min(delta, BOX_STEP);
@@ -423,8 +397,6 @@ public class GameScreen implements Screen {
 			stepNow = true;
 			
     		GLUH.onUpdate(BOX_STEP);
-    		
-    		update();
     		
 			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);
 			

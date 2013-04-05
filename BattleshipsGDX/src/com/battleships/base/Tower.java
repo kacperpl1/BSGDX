@@ -21,6 +21,15 @@ public class Tower extends Unit {
 	}
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
+		if(GameScreen.stepNow)
+		{
+			onUpdate(GameScreen.BOX_STEP);
+		
+			if(Health<=0)
+			{
+				Destroy();
+			}
+		}
 		this.setZIndex(2);
         batch.draw(baseSprite, getX()-16,getY()-64,64,128);
         

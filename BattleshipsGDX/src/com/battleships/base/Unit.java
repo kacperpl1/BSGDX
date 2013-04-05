@@ -42,7 +42,6 @@ public abstract class Unit extends Actor {
 	Actor icon;
 	protected Vector2 CurrentPosition;
 	static BodyPool bodyPool = new BodyPool();
-	public static LinkedList<Unit> AllUnits = new LinkedList<Unit>();
 	
 	Unit(String Team, float InitialX, float InitialY)
 	{
@@ -86,7 +85,6 @@ public abstract class Unit extends Actor {
 	        }
 		};
 		GameScreen.hudStage.addActor(icon);
-		AllUnits.add(this);
 	}
 	
 	void createBody(float initialX, float initialY)
@@ -110,7 +108,17 @@ public abstract class Unit extends Actor {
         this.setPosition(initialX, initialY);
 	}  
 	
-	public void draw (SpriteBatch batch, float parentAlpha) {
+	public void draw(SpriteBatch batch, float parentAlpha) {
+		if(GameScreen.stepNow)
+		{
+			onUpdate(GameScreen.BOX_STEP);
+		
+			if(Health<=0)
+			{
+				Destroy();
+			}
+		}
+		
 		CurrentPosition.x = this.getX()*GameScreen.WORLD_TO_BOX;
 		CurrentPosition.y = this.getY()*GameScreen.WORLD_TO_BOX;
 		

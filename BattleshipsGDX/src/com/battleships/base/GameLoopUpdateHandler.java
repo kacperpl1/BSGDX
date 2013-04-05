@@ -39,11 +39,11 @@ public class GameLoopUpdateHandler{
 		new Cruiser("blue",256, -670,"RIGHT");
 		new Cruiser("blue",288, -700,"RIGHT");
 		new Cruiser("blue",256, -700,"RIGHT");
-		
 	}
 
-	public void onUpdate(float pSecondsElapsed) {
-		WaveCounter += pSecondsElapsed;
+	public void onUpdate(float delta) {
+		WaveCounter += delta;
+			
 		if(WaveCounter>WaveDelay)
 		{
 			Visor current;
