@@ -123,7 +123,7 @@ public class Projectile extends Actor{
 		}
 	}
 	
-	strictfp void Init(Unit inst, Unit targ, int dmg, int type)
+	void Init(Unit inst, Unit targ, int dmg, int type)
 	{   
 		sprite.setRegion(Resources.ProjectileTextureRegion[type]);
 		this.setVisible(true); 	

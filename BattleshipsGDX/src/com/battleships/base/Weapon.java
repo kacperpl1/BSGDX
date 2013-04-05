@@ -74,7 +74,7 @@ public class Weapon {
 		Owner.CollisionBody.destroyFixture(SensorFixture);
 	}
 	
-    strictfp void onUpdate(float Delta){
+    void onUpdate(float Delta){
     	if(FireDelayTimer>0)
     		FireDelayTimer -= Delta;
     	else if(FireDelayTimer<=0)

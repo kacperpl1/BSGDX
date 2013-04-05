@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import com.battleships.network.BSClient;
 import com.battleships.network.Player;
 
-public strictfp class NetworkGameScreen extends GameScreen{
+public class NetworkGameScreen extends GameScreen{
 	private BSClient lobbyClient;
 	private BlockingQueue<Map<Short, UnitData>> msgQueue;
 	protected UnitData playerData;

@@ -39,7 +39,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 
-public strictfp class GameScreen implements Screen {
+public class GameScreen implements Screen {
 	static Stage hudStage;
 	static Stage gameStage;
 	private Actor touchpad;
@@ -387,7 +387,7 @@ public strictfp class GameScreen implements Screen {
 	 
 	}
 	
-	strictfp void update()
+	void update()
 	{
 		float checksum = 0;
 		Unit current;
