@@ -156,7 +156,7 @@ public class GameScreen implements Screen {
 	    fontBatch.setProjectionMatrix(new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()).combined);
 		
 		physicsWorld = new World(new Vector2(0, 0), true); 
-		physicsWorld.setAutoClearForces(false);
+		physicsWorld.setAutoClearForces(true);
 		physicsWorld.setContinuousPhysics(false);
 		physicsWorld.setWarmStarting(true);
 		
