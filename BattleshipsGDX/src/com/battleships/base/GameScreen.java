@@ -424,6 +424,12 @@ public class GameScreen implements Screen {
 			physicsWorld.destroyBody(current);
 		}
 		Unit.unitSpawnNumber = 0;
+		Iterator<Visor> iter = Visor.VisorList.iterator();
+		while(iter.hasNext())
+		{
+			iter.next();
+			iter.remove();
+		}
 	}
 	
 	class ActorPositionComparator implements Comparator<Actor>{
