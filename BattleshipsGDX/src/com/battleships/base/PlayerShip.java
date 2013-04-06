@@ -7,13 +7,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Filter;
 
 public class PlayerShip extends Unit {
 	
 	float rotationRate = 360; //degrees per second
 	Vector2 CurrentVelocity = new Vector2(0,0);
-	int PlayerGold = 200;
+	int PlayerGold = 20000;
 	float HealthRegen = 10;
 	
 	public Map<Integer,PlayerWeapon> Inventory = new HashMap<Integer,PlayerWeapon>();
@@ -37,10 +36,7 @@ public class PlayerShip extends Unit {
     	visor = new Visor(this);
     	setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
     	Inventory.put(0,new PlayerWeapon(this, 2));
-
-    	Filter masking = new Filter();
-    	masking.categoryBits = CATEGORY_PLAYER;
-    	CollisionBody.getFixtureList().get(0).setFilterData(masking);
+    	CollisionBody.setSleepingAllowed(false);
     }
 	
 	void setVelocity()

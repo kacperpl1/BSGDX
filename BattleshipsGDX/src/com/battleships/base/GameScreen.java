@@ -106,7 +106,6 @@ public class GameScreen implements Screen {
 		        fixtureDef.density = 1.0f;  
 		        fixtureDef.friction = 0.0f;  
 		        fixtureDef.restitution = 0.0f;
-		        fixtureDef.filter.categoryBits = Unit.CATEGORY_UNIT;
 		        WorldCollisionBody.createFixture(fixtureDef);  
 			}
 	    }
@@ -124,6 +123,9 @@ public class GameScreen implements Screen {
 					new Tower("red",current.x-1024+16,-current.y+1024+32);
 				}
 			}
+			
+		new Citadel("blue",0,-900);
+		new Citadel("red",0,900);
 	}
 	
 	public void loadPlayers()

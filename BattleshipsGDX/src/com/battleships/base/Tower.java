@@ -33,10 +33,13 @@ public class Tower extends Unit {
 		this.setZIndex(2);
         batch.draw(baseSprite, getX()-16,getY()-64,64,128);
         
-        batch.draw(Resources.HealthbarTextureRegion[0], 
-        		getX()-16,getY()+32,32,4);
-        batch.draw(Resources.HealthbarTextureRegion[1], 
-        		getX()-16+1,getY()+32,32*((float)Health/(float)MaxHealth),4);
+        if(Health>0)
+        {
+        	batch.draw(Resources.HealthbarTextureRegion[0], 
+        			getX()-16,getY()+32,32,4);
+        	batch.draw(Resources.HealthbarTextureRegion[1], 
+        			getX()-16+1,getY()+32,32*((float)Health/(float)MaxHealth),4);
+        }
 	}
 	
 	private class TowerCannon extends Weapon {	

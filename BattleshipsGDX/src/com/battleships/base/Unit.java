@@ -28,11 +28,6 @@ public abstract class Unit extends Actor {
 	int goldworth = 50;
 	Body CollisionBody;
 	
-	final static short CATEGORY_WORLD = 0x0001;  	// 0000000000000001 in binary
-	final static short CATEGORY_UNIT = 0x0002;		// 0000000000000010 in binary
-	final static short CATEGORY_PLAYER = 0x0004;	// 0000000000000010 in binary
-	final static short CATEGORY_BLOCKER = 0x0008;	// 0000000000000100 in binary
-	
 	Vector2 DesiredVelocity = new Vector2(0,0);
 	
 	Weapon gun = null;
@@ -94,13 +89,12 @@ public abstract class Unit extends Actor {
 		CollisionBody.setTransform(initialX*GameScreen.WORLD_TO_BOX,initialY*GameScreen.WORLD_TO_BOX, 0);
 		
 		CircleShape dynamicCircle = new CircleShape();  
-        dynamicCircle.setRadius(16f*GameScreen.WORLD_TO_BOX);  
+        dynamicCircle.setRadius(20f*GameScreen.WORLD_TO_BOX);  
         FixtureDef fixtureDef = new FixtureDef();  
         fixtureDef.shape = dynamicCircle;  
         fixtureDef.density = 1.0f;  
         fixtureDef.friction = 0.0f;  
         fixtureDef.restitution = 0.0f;
-        fixtureDef.filter.categoryBits = CATEGORY_UNIT;
         CollisionBody.createFixture(fixtureDef);  
         CollisionBody.getFixtureList().get(0).setUserData(this);
         
@@ -116,6 +110,7 @@ public abstract class Unit extends Actor {
 			if(Health<=0)
 			{
 				Destroy();
+				return;
 			}
 		}
 		
@@ -139,12 +134,16 @@ public abstract class Unit extends Actor {
         batch.setColor(colorSprite.getColor());
         batch.draw(colorSprite, getX()-widthScaled/2,getY()-widthScaled/2,widthScaled,widthScaled);
         batch.setColor(Color.WHITE);
-        batch.draw(Resources.HealthbarTextureRegion[0], 
-        		getX()-widthScaled/4,getY()+widthScaled/4,widthScaled/2,4);
-
-        batch.draw(Resources.HealthbarTextureRegion[1], 
-        		getX()-widthScaled/4+1,getY()+widthScaled/4,widthScaled/2*((float)Health/(float)MaxHealth),4);
-		
+        
+        if(Health>0)
+        {
+	        batch.draw(Resources.HealthbarTextureRegion[0], 
+	        		getX()-widthScaled/4,getY()+widthScaled/4,widthScaled/2,4);
+	
+	        batch.draw(Resources.HealthbarTextureRegion[1], 
+	        		getX()-widthScaled/4+1,getY()+widthScaled/4,widthScaled/2*((float)Health/(float)MaxHealth),4);
+        }
+        
 		this.setPosition(CurrentPosition.x*GameScreen.BOX_WORLD_TO, CurrentPosition.y*GameScreen.BOX_WORLD_TO);
 	}
 	
