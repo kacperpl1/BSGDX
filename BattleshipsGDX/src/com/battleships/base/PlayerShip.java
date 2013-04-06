@@ -100,6 +100,10 @@ public class PlayerShip extends Unit {
 			super.draw(batch, parentAlpha);	
 			updateVelocity();
 		}
+		else if(GameScreen.stepNow)
+		{
+			Destroy();
+		}
 	}
 	
 	void Destroy()
