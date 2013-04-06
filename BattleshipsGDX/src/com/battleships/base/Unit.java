@@ -89,7 +89,7 @@ public abstract class Unit extends Actor {
 		CollisionBody.setTransform(initialX*GameScreen.WORLD_TO_BOX,initialY*GameScreen.WORLD_TO_BOX, 0);
 		
 		CircleShape dynamicCircle = new CircleShape();  
-        dynamicCircle.setRadius(20f*GameScreen.WORLD_TO_BOX);  
+        dynamicCircle.setRadius(16f*GameScreen.WORLD_TO_BOX);  
         FixtureDef fixtureDef = new FixtureDef();  
         fixtureDef.shape = dynamicCircle;  
         fixtureDef.density = 1.0f;  

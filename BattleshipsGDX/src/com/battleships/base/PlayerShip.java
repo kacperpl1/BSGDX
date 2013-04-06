@@ -12,7 +12,7 @@ public class PlayerShip extends Unit {
 	
 	float rotationRate = 360; //degrees per second
 	Vector2 CurrentVelocity = new Vector2(0,0);
-	int PlayerGold = 20000;
+	int PlayerGold = 200;
 	float HealthRegen = 10;
 	
 	public Map<Integer,PlayerWeapon> Inventory = new HashMap<Integer,PlayerWeapon>();
