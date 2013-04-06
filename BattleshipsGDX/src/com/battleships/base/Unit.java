@@ -15,11 +15,10 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public abstract class Unit extends Actor {
-	private static long unitSpawnNumber = 0;
+	static long unitSpawnNumber = 0;
 	final long unitID = unitSpawnNumber;
 	
 	String team;
-	public static String lastSpawnTeam;
 	short MaxHealth = 1000;
     float Health = MaxHealth;
     Sprite baseSprite;

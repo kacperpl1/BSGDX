@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -47,7 +48,7 @@ public class GameScreen implements Screen {
 	protected GameLoopUpdateHandler GLUH;
 	private Box2DDebugRenderer debugRenderer;
 	
-	static World physicsWorld; 
+	static World physicsWorld = null; 
 	static final float BOX_STEP=1f/10f;
 	static float box_accu=0;
     static final int BOX_VELOCITY_ITERATIONS=1;  
@@ -157,14 +158,25 @@ public class GameScreen implements Screen {
 	    fontBatch = new SpriteBatch();
 	    fontBatch.setProjectionMatrix(new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()).combined);
 		
-		physicsWorld = new World(new Vector2(0, 0), true); 
+	    if(physicsWorld == null)
+	    physicsWorld = new World(new Vector2(0, 0), true); 
 		physicsWorld.setAutoClearForces(true);
 		physicsWorld.setContinuousPhysics(false);
 		physicsWorld.setWarmStarting(true);
 		
 		ActorComparator = new ActorPositionComparator();
 
-		hudStage = new Stage(w,h,true);
+		hudStage = new Stage(w,h,true){
+			@Override
+			   public boolean keyDown(int keycode) {
+			        if(keycode == Keys.BACK || keycode == Keys.ESCAPE){	
+						BaseGame.instance.getScreen().dispose();		        	
+			        	BaseGame.instance.setScreen(new MenuScreen());
+			        	return true;
+			        }
+			        return super.keyDown(keycode);
+			   }
+		};
 		gameStage = new Stage(w,h,true);
 		Gdx.input.setInputProcessor(hudStage);
 		
@@ -273,6 +285,22 @@ public class GameScreen implements Screen {
 		touchpad.setBounds(w-knobsize,0, knobsize, knobsize);
 		hudStage.addActor(touchpad);
 		
+		Actor debugToggle = new Actor(){
+	        /*public void draw (SpriteBatch batch, float parentAlpha) {
+	            batch.draw(Resources.iconTexture,getX(),getY(),getWidth(),getHeight());
+	        }*/
+		};
+		debugToggle.setTouchable(Touchable.enabled);
+		debugToggle.addListener(new InputListener() {
+	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+	        	debug_mode = !debug_mode;
+	        	return true;
+	        }
+		});
+		
+		debugToggle.setBounds(0,h*0.9f, w*0.1f, h*0.1f);
+		hudStage.addActor(debugToggle);
+		
 		loadPlayers();
 		
 		localPlayerDirection = new Vector2();
@@ -364,7 +392,21 @@ public class GameScreen implements Screen {
 	public void dispose() {
 		hudStage.dispose();
 		gameStage.dispose();
-		physicsWorld.dispose();
+		Unit.bodyPool.clear();
+		
+		Body current;
+		int bodies = physicsWorld.getBodyCount();
+		for(int i=0; i<bodies; i++)
+		{
+			current = physicsWorld.getBodies().next();
+			int fixtures = current.getFixtureList().size();
+			for(int j=0; j<fixtures; j++)
+			{
+				current.destroyFixture(current.getFixtureList().get(0));
+			}
+			physicsWorld.destroyBody(current);
+		}
+		Unit.unitSpawnNumber = 0;
 	}
 	
 	class ActorPositionComparator implements Comparator<Actor>{
@@ -398,7 +440,8 @@ public class GameScreen implements Screen {
 		{
 			stepNow = true;
 			
-    		GLUH.onUpdate(BOX_STEP);
+			if(!debug_mode)
+				GLUH.onUpdate(BOX_STEP);
     		
 			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);
 			

@@ -19,6 +19,7 @@ public class Citadel extends Unit {
 		{
 			if(Health<=0)
 			{
+				BaseGame.instance.getScreen().dispose();
 				BaseGame.instance.setScreen(new MenuScreen());
 			}
 		}
