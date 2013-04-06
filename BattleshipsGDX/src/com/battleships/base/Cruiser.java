@@ -102,7 +102,8 @@ public class Cruiser extends Unit {
     	}
     	else if (Target != null)
     	{
-    		vecToTarget.set(Target.getX() - this.getX(), Target.getY() - this.getY());
+    		vecToTarget.set((Target.CollisionBody.getPosition().x - this.CollisionBody.getPosition().x)*GameScreen.BOX_WORLD_TO, 
+    				(Target.CollisionBody.getPosition().y - this.CollisionBody.getPosition().y)*GameScreen.BOX_WORLD_TO);
     		if(Target.Health <= 0 || vecToTarget.len() > gun.Range*3)
     		{
     			Target = null;
