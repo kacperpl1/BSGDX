@@ -14,6 +14,7 @@ public class Tower extends Unit {
 			baseSprite.setRegion(Resources.TowerTextureRegion[1]);
     	MaxHealth = 5000;
     	Health = MaxHealth;
+    	goldworth = 500;
     	visor = new Visor(this);
     	gun = new TowerCannon(this);
     	CollisionBody.setType(BodyType.StaticBody);

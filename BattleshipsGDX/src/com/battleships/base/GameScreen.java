@@ -237,18 +237,50 @@ public class GameScreen implements Screen {
 		
 		touchpad = new Actor(){
 			int rotation = 0;
+			int desiredRotation =0;
+			Vector2 offset = new Vector2();
+			
 	        public void draw (SpriteBatch batch, float parentAlpha) {
+	        	offset.set(localPlayerDirection);
+	        	if(offset.len() > 0.1f)
+	        	{
+	        		offset.x /= offset.len()/0.1f;
+	        		offset.y /= offset.len()/0.1f;
+	        	}
+	        	
         		batch.setColor(1, 1, 1, 0.75f);
-        		if(knobOffset.len()>0)
-        			rotation = (int) Math.toDegrees(-Math.atan2(knobOffset.x,knobOffset.y));
+        		if(offset.len()>0)
+        		{
+        			desiredRotation = (int) Math.toDegrees(-Math.atan2(offset.x,offset.y));
+	        		float DeltaAngle = (float) (desiredRotation-rotation);
+	        		if(Math.abs(DeltaAngle)>180)
+            		{
+            			if(DeltaAngle >0)
+            			{
+            				DeltaAngle -= 360;
+            			}
+            			else
+            			{
+            				DeltaAngle += 360;    				
+            			}
+            		}
+        			if(DeltaAngle>0)
+        			{
+        				rotation += Math.min(Gdx.graphics.getDeltaTime() * 180,DeltaAngle);
+        			}
+        			else
+        			{
+        				rotation += Math.max(Gdx.graphics.getDeltaTime() * -180,DeltaAngle);
+        			}
+        		}
         		
 	            batch.draw(Resources.touchpadBase,getX(),getY(),getWidth()/2,getHeight()/2,
 	            		getWidth(),getHeight(), 1, 1, rotation, 
 	            		0, 0, 256,256, false, false);
 	            
 	            batch.draw(Resources.touchpadKnob,
-	            		getX()+getWidth()*(0.25f + knobOffset.x),
-	            		getY()+getHeight()*(0.25f + knobOffset.y),
+	            		getX()+getWidth()*(0.25f + offset.x),
+	            		getY()+getHeight()*(0.25f + offset.y),
 	            		getWidth()/2,getHeight()/2);
 	            batch.setColor(1, 1, 1, 1);
 	        }
@@ -258,23 +290,12 @@ public class GameScreen implements Screen {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 	        	knobOffset.x = (x-touchpad.getWidth()/2)/(touchpad.getWidth());
 	        	knobOffset.y = (y-touchpad.getHeight()/2)/(touchpad.getWidth());
-	        	if(knobOffset.len() > 0.1f)
-	        	{
-		        	knobOffset.x /= knobOffset.len()/0.1f;
-		        	knobOffset.y /= knobOffset.len()/0.1f;
-	        	}
-	        	
 	        	return true;
 	        }
 	        
 	        public void touchDragged (InputEvent event, float x, float y, int pointer) {
 	        	knobOffset.x = (x-touchpad.getWidth()/2)/(touchpad.getWidth());
 	        	knobOffset.y = (y-touchpad.getHeight()/2)/(touchpad.getWidth());
-	        	if(knobOffset.len() > 0.1f)
-	        	{
-		        	knobOffset.x /= knobOffset.len()/0.1f;
-		        	knobOffset.y /= knobOffset.len()/0.1f;
-	        	}
 	    	}
 	        
 	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -285,11 +306,7 @@ public class GameScreen implements Screen {
 		touchpad.setBounds(w-knobsize,0, knobsize, knobsize);
 		hudStage.addActor(touchpad);
 		
-		Actor debugToggle = new Actor(){
-	        /*public void draw (SpriteBatch batch, float parentAlpha) {
-	            batch.draw(Resources.iconTexture,getX(),getY(),getWidth(),getHeight());
-	        }*/
-		};
+		Actor debugToggle = new Actor();
 		debugToggle.setTouchable(Touchable.enabled);
 		debugToggle.addListener(new InputListener() {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
