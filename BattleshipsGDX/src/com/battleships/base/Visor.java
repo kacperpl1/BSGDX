@@ -46,8 +46,8 @@ public class Visor {
 	
 	public void draw(SpriteBatch batch) {
 		if(Owner.Health>0)
-			batch.draw(visionArea, -GameScreen.camera.position.x+Owner.getX()-256*visionArea.getScaleX(),
-				-GameScreen.camera.position.y+Owner.getY()-768*visionArea.getScaleX(), 
+			batch.draw(visionArea, -GameScreen.camera.position.x+Owner.CurrentPosition.x-256*visionArea.getScaleX(),
+				-GameScreen.camera.position.y+Owner.CurrentPosition.y-768*visionArea.getScaleX(), 
 				1024*visionArea.getScaleX(), 1024*visionArea.getScaleX());
 	}
 }

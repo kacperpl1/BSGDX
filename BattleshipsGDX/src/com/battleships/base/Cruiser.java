@@ -7,7 +7,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 
-public class Cruiser extends Unit {
+public strictfp class Cruiser extends Unit {
 	
 	Vector2 networkPosition = new Vector2(0,0);
 	private Body BlockerBody;
@@ -102,8 +102,7 @@ public class Cruiser extends Unit {
     	}
     	else if (Target != null)
     	{
-    		vecToTarget.set((Target.CollisionBody.getPosition().x - this.CollisionBody.getPosition().x)*GameScreen.BOX_WORLD_TO, 
-    				(Target.CollisionBody.getPosition().y - this.CollisionBody.getPosition().y)*GameScreen.BOX_WORLD_TO);
+    		vecToTarget.set(Target.getX() - this.getX(), Target.getY() - this.getY());
     		if(Target.Health <= 0 || vecToTarget.len() > gun.Range*3)
     		{
     			Target = null;

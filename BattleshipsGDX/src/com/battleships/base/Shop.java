@@ -89,7 +89,7 @@ public class Shop {
 	        	if((shop_grid.getX()+x) > inventory_grid.getX() && (shop_grid.getX()+x)< inventory_grid.getX() + inventory_grid.getWidth()
 						&& (shop_grid.getY()+y) < (inventory_grid.getY()+tileWidth) && (shop_grid.getY()+y) > inventory_grid.getY())
 				{
-					if(inventory.size() < 6 && owner.PlayerGold > PlayerWeapon.CostData[selected_item])
+					if(inventory.size() < 6 && owner.PlayerGold >= PlayerWeapon.CostData[selected_item])
 					{
 						if(BaseGame.instance.getScreen() instanceof NetworkGameScreen)
 						{

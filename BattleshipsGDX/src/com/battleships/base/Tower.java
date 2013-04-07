@@ -18,7 +18,7 @@ public class Tower extends Unit {
     	visor = new Visor(this);
     	gun = new TowerCannon(this);
     	CollisionBody.setType(BodyType.StaticBody);
-    	this.setPosition(CollisionBody.getPosition().x*GameScreen.BOX_WORLD_TO,CollisionBody.getPosition().y*GameScreen.BOX_WORLD_TO);
+    	this.setPosition(CollisionBody.getPosition().x*GameScreen.BOX_TO_WORLD,CollisionBody.getPosition().y*GameScreen.BOX_TO_WORLD);
 	}
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
@@ -31,11 +31,11 @@ public class Tower extends Unit {
 				Destroy();
 			}
 		}
-		this.setZIndex(2);
-        batch.draw(baseSprite, getX()-16,getY()-64,64,128);
         
         if(Health>0)
         {
+            batch.draw(baseSprite, getX()-16,getY()-64,64,128);
+            
         	batch.draw(Resources.HealthbarTextureRegion[0], 
         			getX()-16,getY()+32,32,4);
         	batch.draw(Resources.HealthbarTextureRegion[1], 

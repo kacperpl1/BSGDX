@@ -56,13 +56,13 @@ public class NetworkGameScreen extends GameScreen{
 			
 			for(Player player : lobbyClient.getGame().getPlayerList() ) {
 				if(player.getSlotNumber() < 3) {
-					shipMap.put((short)player.getSlotNumber(), new PlayerShip("red", 0, 768, player.getSlotNumber()));
+					shipMap.put((short)player.getSlotNumber(), new PlayerShip("red", -64 + 64*player.getSlotNumber(), 768, player.getSlotNumber()));
 				} else {
-					shipMap.put((short)player.getSlotNumber(), new PlayerShip("blue", 0, -768, player.getSlotNumber()));
+					shipMap.put((short)player.getSlotNumber(), new PlayerShip("blue", -256 + 64*player.getSlotNumber(), -768, player.getSlotNumber()));
 				}
 			}
 			localPlayerShip = shipMap.get((short)lobbyClient.getPlayer().getSlotNumber());
-
+				
 			//send initial direction packet
 			playerData.position.set(localPlayerShip.CollisionBody.getPosition());
 			lobbyClient.sendDirection(playerData);
@@ -106,7 +106,7 @@ public class NetworkGameScreen extends GameScreen{
 		    		
 		    		msgQueue.clear();
 		    		//System.out.println("CheckRandom: "+Weapon.RNG.nextInt());
-		    		Weapon.RNG.setSeed(tick);
+		    		//Weapon.RNG.setSeed(tick);
 				} else {
 //					System.out.println("no msg");
 					//lobbyClient.sendDirection(playerData);

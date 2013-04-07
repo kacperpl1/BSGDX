@@ -14,13 +14,13 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public abstract class Unit extends Actor {
+public strictfp abstract class Unit extends Actor {
 	static long unitSpawnNumber = 0;
 	final long unitID = unitSpawnNumber;
 	
 	String team;
 	short MaxHealth = 1000;
-    float Health = MaxHealth;
+    short Health = MaxHealth;
     Sprite baseSprite;
 	Sprite colorSprite;
 	int moveSpeed = 50;
@@ -68,13 +68,13 @@ public abstract class Unit extends Actor {
 		icon = new Actor(){
 			float scale = GameScreen.miniMap.getWidth()/2048;
 	        public void draw (SpriteBatch batch, float parentAlpha) {
-	    		if(team != GameScreen.LocalPlayerTeam && VisibleEnemiesCount<=0 && !(Unit.this instanceof Tower) || Health <= 0 )
+	    		if(team != GameScreen.LocalPlayerTeam && VisibleEnemiesCount<=0 && !(Unit.this instanceof Tower || Unit.this instanceof Citadel) || Health <= 0 )
 	    			return;
 	    		
         		batch.setColor(colorSprite.getColor());
 	            batch.draw(Resources.iconTexture,
-	            		GameScreen.miniMap.getX() + GameScreen.miniMap.getWidth()/2 + Unit.this.getX()*scale -2,
-	            		GameScreen.miniMap.getY() + GameScreen.miniMap.getHeight()/2 + Unit.this.getY()*scale -2,4,4);
+	            		GameScreen.miniMap.getX() + GameScreen.miniMap.getWidth()/2 + Unit.this.CurrentPosition.x*scale -2,
+	            		GameScreen.miniMap.getY() + GameScreen.miniMap.getHeight()/2 + Unit.this.CurrentPosition.y*scale -2,4,4);
 	            batch.setColor(Color.WHITE);
 	        }
 		};
@@ -97,13 +97,15 @@ public abstract class Unit extends Actor {
         CollisionBody.createFixture(fixtureDef);  
         CollisionBody.getFixtureList().get(0).setUserData(this);
         
-        CurrentPosition = new Vector2(CollisionBody.getPosition());
+        CurrentPosition = new Vector2(CollisionBody.getPosition().x*GameScreen.BOX_TO_WORLD,CollisionBody.getPosition().y*GameScreen.BOX_TO_WORLD);
         this.setPosition(initialX, initialY);
 	}  
 	
 	public void draw(SpriteBatch batch, float parentAlpha) {
+		
 		if(GameScreen.stepNow)
 		{
+			this.setPosition(CollisionBody.getPosition().x*GameScreen.BOX_TO_WORLD, CollisionBody.getPosition().y*GameScreen.BOX_TO_WORLD);
 			onUpdate(GameScreen.BOX_STEP);
 		
 			if(Health<=0)
@@ -112,38 +114,31 @@ public abstract class Unit extends Actor {
 				return;
 			}
 		}
-		
-		CurrentPosition.x = this.getX()*GameScreen.WORLD_TO_BOX;
-		CurrentPosition.y = this.getY()*GameScreen.WORLD_TO_BOX;
-		
-		if(DesiredVelocity.len()>0)
-			CurrentPosition.lerp(CollisionBody.getPosition(),Gdx.graphics.getDeltaTime()/(GameScreen.BOX_STEP-GameScreen.box_accu+Gdx.graphics.getDeltaTime()));
-		else
-			CurrentPosition.lerp(CollisionBody.getPosition(),GameScreen.BOX_STEP);
-		
-		if(team != GameScreen.LocalPlayerTeam && VisibleEnemiesCount<=0)
+		if(team == GameScreen.LocalPlayerTeam || VisibleEnemiesCount>0 && Health>0)
 		{
-			this.setPosition(CurrentPosition.x*GameScreen.BOX_WORLD_TO, CurrentPosition.y*GameScreen.BOX_WORLD_TO);
-			return;
+		
+			float widthScaled = baseSprite.getWidth()*baseSprite.getScaleX();
+			
+	        batch.draw(baseSprite, CurrentPosition.x-widthScaled/2,CurrentPosition.y-widthScaled/2,widthScaled,widthScaled);
+	        batch.setColor(colorSprite.getColor());
+	        batch.draw(colorSprite, CurrentPosition.x-widthScaled/2,CurrentPosition.y-widthScaled/2,widthScaled,widthScaled);
+	        batch.setColor(Color.WHITE);
+	        
+	        batch.draw(Resources.HealthbarTextureRegion[0], CurrentPosition.x-widthScaled/4,CurrentPosition.y+widthScaled/4,widthScaled/2,4);
+		
+		    batch.draw(Resources.HealthbarTextureRegion[1], CurrentPosition.x-widthScaled/4+1,CurrentPosition.y+widthScaled/4,widthScaled/2*((float)Health/(float)MaxHealth),4);
 		}
 		
-		float widthScaled = baseSprite.getWidth()*baseSprite.getScaleX();
-		
-        batch.draw(baseSprite, getX()-widthScaled/2,getY()-widthScaled/2,widthScaled,widthScaled);
-        batch.setColor(colorSprite.getColor());
-        batch.draw(colorSprite, getX()-widthScaled/2,getY()-widthScaled/2,widthScaled,widthScaled);
-        batch.setColor(Color.WHITE);
-        
-        if(Health>0)
-        {
-	        batch.draw(Resources.HealthbarTextureRegion[0], 
-	        		getX()-widthScaled/4,getY()+widthScaled/4,widthScaled/2,4);
+		if(DesiredVelocity.len()>0)
+			lerp(Gdx.graphics.getDeltaTime()/(GameScreen.BOX_STEP-GameScreen.box_accu+Gdx.graphics.getDeltaTime()));
+		else
+			lerp(GameScreen.BOX_STEP);
+	}
 	
-	        batch.draw(Resources.HealthbarTextureRegion[1], 
-	        		getX()-widthScaled/4+1,getY()+widthScaled/4,widthScaled/2*((float)Health/(float)MaxHealth),4);
-        }
-        
-		this.setPosition(CurrentPosition.x*GameScreen.BOX_WORLD_TO, CurrentPosition.y*GameScreen.BOX_WORLD_TO);
+	public void lerp (float alpha) {
+		final float invAlpha = 1.0f - alpha;
+		CurrentPosition.x = (CurrentPosition.x * invAlpha) + (getX() * alpha);
+		CurrentPosition.y = (CurrentPosition.y * invAlpha) + (getY() * alpha);
 	}
 	
 	void onUpdate(float delta)

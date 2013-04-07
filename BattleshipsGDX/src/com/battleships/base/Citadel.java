@@ -11,7 +11,7 @@ public class Citadel extends Unit {
     	Health = MaxHealth;
     	visor = new Visor(this);
     	CollisionBody.setType(BodyType.StaticBody);
-    	this.setPosition(CollisionBody.getPosition().x*GameScreen.BOX_WORLD_TO,CollisionBody.getPosition().y*GameScreen.BOX_WORLD_TO);
+    	this.setPosition(CollisionBody.getPosition().x*GameScreen.BOX_TO_WORLD,CollisionBody.getPosition().y*GameScreen.BOX_TO_WORLD);
 	}
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {

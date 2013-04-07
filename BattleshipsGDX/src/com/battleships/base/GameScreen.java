@@ -53,8 +53,8 @@ public class GameScreen implements Screen {
 	static float box_accu=0;
     static final int BOX_VELOCITY_ITERATIONS=1;  
     static final int BOX_POSITION_ITERATIONS=1;  
-    static final float WORLD_TO_BOX=1f/1024f;  
-    static final float BOX_WORLD_TO=1024f; 
+    static final float WORLD_TO_BOX=0.010f;
+    static final float BOX_TO_WORLD=100.0f;
     static boolean debug_mode=false;
     
 	private SpriteBatch batch;
@@ -434,7 +434,7 @@ public class GameScreen implements Screen {
 	
 	class ActorPositionComparator implements Comparator<Actor>{
 		 
-	    public int compare(Actor emp1, Actor emp2){ 
+	    public strictfp int compare(Actor emp1, Actor emp2){ 
 	    	if(emp1 instanceof Projectile && emp2 instanceof Projectile)
 	    		return 0;
 	    		
@@ -444,12 +444,18 @@ public class GameScreen implements Screen {
 	    	if(emp2 instanceof Projectile)
 	    		return -1;
 	    	
-	        if(emp1.getY() < emp2.getY())
-	        	return 1;
-	        else if(emp1.getY() > emp2.getY())
-	        	return -1;
-	        else
-	        	return 0;
+	    	if(emp1.getY() < emp2.getY())
+		        return 1;
+		    else if(emp1.getY() > emp2.getY())
+		        return -1;
+		    else if(emp1 instanceof Unit && emp2 instanceof Unit)
+		    {
+		    	if(((Unit)emp1).unitID < ((Unit)emp2).unitID)
+		    		return 1;
+		    	else
+		    		return -1;
+		    }
+		    else   	return 0;
 	    }
 	 
 	}
@@ -487,8 +493,8 @@ public class GameScreen implements Screen {
 
 			if(camToggle && localPlayerShip.Health>0)
 			gameStage.getCamera().position.set(
-					MathUtils.clamp(localPlayerShip.getX(), -1024+w/2, 1024-w/2), 
-					MathUtils.clamp(localPlayerShip.getY()-centerOffsetY, -1024+h/2, 1024-h/2), 0);
+					MathUtils.clamp(localPlayerShip.CurrentPosition.x, -1024+w/2, 1024-w/2), 
+					MathUtils.clamp(localPlayerShip.CurrentPosition.y-centerOffsetY, -1024+h/2, 1024-h/2), 0);
 			gameStage.getCamera().update();
 		}
 		else
@@ -518,7 +524,9 @@ public class GameScreen implements Screen {
 		
 		worldStep(delta);
 		
-		gameStage.getRoot().getChildren().sort(ActorComparator);
+		if(stepNow)
+			gameStage.getRoot().getChildren().sort(ActorComparator);
+		
 		Map.toBack();		
 
 	    camera.position.set(gameStage.getCamera().position);
@@ -526,14 +534,13 @@ public class GameScreen implements Screen {
 
 	    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		gameStage.draw();		
-
+		gameStage.draw();
 		renderFow(); 
 
 		if(debug_mode)
 		{
 			Matrix4 debugMatrix = gameStage.getCamera().combined.cpy();
-			debugMatrix.scale(BOX_WORLD_TO, BOX_WORLD_TO, 1);
+			debugMatrix.scale(BOX_TO_WORLD, BOX_TO_WORLD, 1);
 	        debugRenderer.render(physicsWorld, debugMatrix); 
 		}
 		hudStage.draw();

@@ -8,12 +8,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
-public class PlayerShip extends Unit {
+public strictfp class PlayerShip extends Unit {
 	
 	float rotationRate = 360; //degrees per second
 	Vector2 CurrentVelocity = new Vector2(0,0);
 	int PlayerGold = 200;
-	float HealthRegen = 10;
+	short HealthRegen = 10;
 	
 	public Map<Integer,PlayerWeapon> Inventory = new HashMap<Integer,PlayerWeapon>();
 	private int deathcounter;
@@ -34,8 +34,12 @@ public class PlayerShip extends Unit {
 			default : break;
     	}
     	visor = new Visor(this);
+    	if(team == "red")
+    		CurrentVelocity.set(0, -1);
+		else
+    		CurrentVelocity.set(0, 1);
     	setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
-    	Inventory.put(0,new PlayerWeapon(this, 2));
+    	Inventory.put(0,new PlayerWeapon(this, 5));
     	CollisionBody.setSleepingAllowed(false);
     }
 	

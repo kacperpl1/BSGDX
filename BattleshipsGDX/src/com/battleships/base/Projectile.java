@@ -6,10 +6,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public class Projectile extends Actor{
+public strictfp class Projectile extends Actor{
 	Unit Instigator;
 	Unit Target;
-	float DistToTarget;
 	int Damage;
 	float HitX;
 	float HitY;
@@ -135,10 +134,7 @@ public class Projectile extends Actor{
 		LaunchX = Instigator.getX();
 		LaunchY = Instigator.getY();
 		sprite.setPosition(Instigator.getX(), Instigator.getY());
-		DistToTarget = new Vector2(
-				Target.CollisionBody.getPosition().x - Instigator.CollisionBody.getPosition().x,
-				Target.CollisionBody.getPosition().y - Instigator.CollisionBody.getPosition().y).len() * GameScreen.BOX_WORLD_TO;
-		TravelTime = DistToTarget / PlayerWeapon.Speed[type];
+		TravelTime = new Vector2(HitX-LaunchX,HitY-LaunchY).len() / PlayerWeapon.Speed[type];
 		destroyed = false;
 		stepTime = 0;
 		
