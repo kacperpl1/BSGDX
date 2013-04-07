@@ -111,7 +111,10 @@ public strictfp class PlayerShip extends Unit {
 		switch(deathcounter)
 		{
 			case 1: hide(); break;
-			case 10: Health = MaxHealth; deathcounter = 0; break;
+			case 10: 
+				Health = MaxHealth; deathcounter = 0; 
+				CurrentPosition.set(getX(),getY()); 
+				break;
 			default: break;
 		}
 		deathcounter++;

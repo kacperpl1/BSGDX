@@ -430,6 +430,8 @@ public class GameScreen implements Screen {
 			iter.next();
 			iter.remove();
 		}
+		BlueFrags=0;
+		RedFrags=0;
 	}
 	
 	class ActorPositionComparator implements Comparator<Actor>{
