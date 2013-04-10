@@ -1,5 +1,6 @@
 package com.battleships.base;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,7 +19,7 @@ public class NetworkGameScreen extends GameScreen{
 	private volatile int serverTick = 0;
 	private Thread messenger;
 	private Map<Integer, Map<Short, UnitData>> serverDataBuffer;
-	private Map<Integer, UnitData> playerDataBuffer;
+	private ArrayList<UnitData> playerDataBuffer;
 	private short slot;
 	
 	public NetworkGameScreen()
@@ -26,7 +27,7 @@ public class NetworkGameScreen extends GameScreen{
 		super();
 	}
 	
-	public void handleMessage(Map<Short, UnitData> message) {
+	public void updatePlayers(Map<Short, UnitData> message) {
 		for(Entry<Short, UnitData> entry : message.entrySet()) {
 			if(shipMap.containsKey(entry.getKey())) {
 				if(shipMap.get(entry.getKey()) != localPlayerShip)
@@ -74,7 +75,14 @@ public class NetworkGameScreen extends GameScreen{
 		lobbyClient.sendDirection(playerData);
 		
 		serverDataBuffer = new HashMap<Integer, Map<Short, UnitData>>();
-		playerDataBuffer = new HashMap<Integer, UnitData>();
+		playerDataBuffer = new ArrayList<UnitData>();
+		UnitData auxData = new UnitData();
+    	auxData.position.set(localPlayerShip.CollisionBody.getPosition());
+    	auxData.tick = this.tick;
+    	auxData.shopAction = 0;
+    	auxData.gameID = this.playerData.gameID;
+    	auxData.unitKey = this.playerData.unitKey;
+		this.playerDataBuffer.add(auxData);
 		
 		this.messenger = new Thread(new Runnable() {
 	        @Override
@@ -92,10 +100,10 @@ public class NetworkGameScreen extends GameScreen{
 	                			}
 	                			break;
 	                		} else {
-	                			if(playerDataBuffer.get(serverTick) != null) {
-	                				System.out.println("resend " + serverTick);
+	                			if(playerDataBuffer.size() > serverTick+1) {
+	                				System.out.println("send " + (serverTick+1) + " " + playerDataBuffer.get(serverTick+1).tick);
 			        				synchronized(playerDataBuffer) {
-			        					lobbyClient.sendDirection(playerDataBuffer.get(serverTick));
+			        					lobbyClient.sendDirection(playerDataBuffer.get(serverTick+1));
 			        				}
 	                			}
 	                		}
@@ -125,20 +133,26 @@ public class NetworkGameScreen extends GameScreen{
 			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1; 
 			    	this.playerData.shopAction=0;
-			    	this.playerDataBuffer.put(tick, playerData);
-			    	lobbyClient.sendDirection(playerData);
+			    	UnitData auxData = new UnitData();
+			    	auxData.position.set(localPlayerShip.CollisionBody.getPosition());
+			    	auxData.direction.set(localPlayerDirection);
+			    	auxData.tick = this.tick + 1;
+			    	auxData.shopAction = 0;
+			    	auxData.gameID = this.playerData.gameID;
+			    	auxData.unitKey = this.playerData.unitKey;
+			    	this.playerDataBuffer.add(auxData);
 		    	}
 				this.tick++;
 		    	System.out.println("#tick on client: " + tick);
 		    	
 		    	Weapon.RNG.setSeed(tick);
-			}
+			} else
 			if(this.serverDataBuffer.get(tick-2) != null) {
 				
 				stepNow = true;
 				synchronized(serverDataBuffer){
-			        handleMessage(this.serverDataBuffer.get(tick-2));
-			        System.out.println("render tick: " + this.serverDataBuffer.get(tick-2).entrySet().iterator().next().getValue().tick);
+			        updatePlayers(this.serverDataBuffer.get(tick-2));
+			        System.out.println("render tick: " + this.serverDataBuffer.get(tick-2).get(slot).tick);
 			        this.serverDataBuffer.remove(tick-2);
 				}
 				GLUH.onUpdate(BOX_STEP);
@@ -151,8 +165,14 @@ public class NetworkGameScreen extends GameScreen{
 			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1;
 			    	this.playerData.shopAction=0;
-			    	this.playerDataBuffer.put(tick, playerData);
-			    	lobbyClient.sendDirection(playerData);
+			    	UnitData auxData = new UnitData();
+			    	auxData.position.set(localPlayerShip.CollisionBody.getPosition());
+			    	auxData.direction.set(localPlayerDirection);
+			    	auxData.tick = this.tick + 1;
+			    	auxData.shopAction = 0;
+			    	auxData.gameID = this.playerData.gameID;
+			    	auxData.unitKey = this.playerData.unitKey;
+			    	this.playerDataBuffer.add(auxData);
 				}
 				this.tick++;
 				System.out.println("tick on client: " + tick);
