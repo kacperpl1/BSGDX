@@ -169,7 +169,8 @@ public class GameScreen implements Screen {
 		hudStage = new Stage(w,h,true){
 			@Override
 			   public boolean keyDown(int keycode) {
-			        if(keycode == Keys.BACK || keycode == Keys.ESCAPE){	
+			        if(keycode == Keys.BACK || keycode == Keys.ESCAPE){
+			        	
 						BaseGame.instance.getScreen().dispose();		        	
 			        	BaseGame.instance.setScreen(new MenuScreen());
 			        	return true;

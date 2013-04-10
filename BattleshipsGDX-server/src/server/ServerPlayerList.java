@@ -171,4 +171,7 @@ class ServerPlayer {
 	public boolean isInGame() {
 		return this.inGame;
 	}
+	public void disconnect() {
+		this.connection.close();
+	}
 }

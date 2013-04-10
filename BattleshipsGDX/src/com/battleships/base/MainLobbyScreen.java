@@ -94,6 +94,8 @@ public class MainLobbyScreen implements Screen {
             }
         } );
 		
+		playerListTable.clear();
+		gameListTable.clear();
 		setLayout();
 		
 		leftTable.add(playerListLabel);

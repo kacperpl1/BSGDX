@@ -76,12 +76,10 @@ public class BSClient implements Runnable	{
 							// and send it to parent activity
 							case 1 : {
 								gameList.translateServerString(reply.text);
-								
 								String list = "1 ";
 								for(int i = 0; i < gameList.size(); i++){
 									list += gameList.getGame(i).getName() + " " + gameList.getGame(i).getId() + " ";
 								}
-								
 								try {
 									mainLobbyMsgQueue.put(list);
 								} catch (InterruptedException e) {
@@ -288,7 +286,9 @@ public class BSClient implements Runnable	{
 		this.gameFlag = false;
 		gameList.reset();
 		playerList.reset();
+		this.gameList.getGameById(this.gameId).removePlayer(clientPlayer);
 		clientPlayer.isOffline();
+		mainLobbyMsgQueue.clear();
 		client.close();
 	}
 	public void start()	{
