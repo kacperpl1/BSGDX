@@ -30,11 +30,10 @@ public class NetworkGameScreen extends GameScreen{
 	public void updatePlayers(Map<Short, UnitData> message) {
 		for(Entry<Short, UnitData> entry : message.entrySet()) {
 			if(shipMap.containsKey(entry.getKey())) {
-				if(shipMap.get(entry.getKey()) != localPlayerShip)
-					shipMap.get(entry.getKey()).CollisionBody.setTransform(entry.getValue().position.x,entry.getValue().position.y,0);
-				
 				shipMap.get(entry.getKey()).setDesiredVelocity(entry.getValue().direction.x, entry.getValue().direction.y);
-				
+				System.out.println("DesiredVelocity "+entry.getValue().direction);
+						//+ "\nCurrentVelocity "+shipMap.get(entry.getKey()).CurrentVelocity
+						//+ "\nCurrentPosition "+shipMap.get(entry.getKey()).CollisionBody.getPosition());
 				if(entry.getValue().shopAction>0)
 					shipMap.get(entry.getKey()).buyItem(entry.getValue().shopAction-1);
 				else if(entry.getValue().shopAction<0)
@@ -94,14 +93,14 @@ public class NetworkGameScreen extends GameScreen{
 	                		message = msgQueue.poll(10, TimeUnit.MILLISECONDS);
 	                		if(message != null) {
 	                			serverTick = message.get(slot).tick;
-	                			System.out.println("got " + serverTick + " from server");
+	                			//System.out.println("got " + serverTick + " from server");
 	                			synchronized(serverDataBuffer) {
 	                				serverDataBuffer.put(serverTick, message);
 	                			}
 	                			break;
 	                		} else {
 	                			if(playerDataBuffer.size() > serverTick+1) {
-	                				System.out.println("send " + (serverTick+1) + " " + playerDataBuffer.get(serverTick+1).tick);
+	                				//System.out.println("send " + (serverTick+1) + " " + playerDataBuffer.get(serverTick+1).tick);
 			        				synchronized(playerDataBuffer) {
 			        					lobbyClient.sendDirection(playerDataBuffer.get(serverTick+1));
 			        				}
@@ -111,7 +110,7 @@ public class NetworkGameScreen extends GameScreen{
 	                	}
 	                	
 	                } catch (InterruptedException e) {
-	                    System.out.println("Messanger interrupted");
+	                    //System.out.println("Messanger interrupted");
 	                }
 	            }
 	        }
@@ -132,18 +131,18 @@ public class NetworkGameScreen extends GameScreen{
 			    	this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
 			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1; 
-			    	this.playerData.shopAction=0;
 			    	UnitData auxData = new UnitData();
 			    	auxData.position.set(localPlayerShip.CollisionBody.getPosition());
 			    	auxData.direction.set(localPlayerDirection);
 			    	auxData.tick = this.tick + 1;
-			    	auxData.shopAction = 0;
+			    	auxData.shopAction = this.playerData.shopAction;
 			    	auxData.gameID = this.playerData.gameID;
 			    	auxData.unitKey = this.playerData.unitKey;
 			    	this.playerDataBuffer.add(auxData);
+			    	this.playerData.shopAction=0;
 		    	}
 				this.tick++;
-		    	System.out.println("#tick on client: " + tick);
+		    	//System.out.println("#tick on client: " + tick);
 		    	
 		    	Weapon.RNG.setSeed(tick);
 			} else
@@ -164,18 +163,18 @@ public class NetworkGameScreen extends GameScreen{
 			    	this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
 			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1;
-			    	this.playerData.shopAction=0;
 			    	UnitData auxData = new UnitData();
 			    	auxData.position.set(localPlayerShip.CollisionBody.getPosition());
 			    	auxData.direction.set(localPlayerDirection);
 			    	auxData.tick = this.tick + 1;
-			    	auxData.shopAction = 0;
+			    	auxData.shopAction = this.playerData.shopAction;
 			    	auxData.gameID = this.playerData.gameID;
 			    	auxData.unitKey = this.playerData.unitKey;
 			    	this.playerDataBuffer.add(auxData);
+			    	this.playerData.shopAction=0;
 				}
 				this.tick++;
-				System.out.println("tick on client: " + tick);
+				//System.out.println("tick on client: " + tick);
 				
 				Weapon.RNG.setSeed(tick);
 			} 

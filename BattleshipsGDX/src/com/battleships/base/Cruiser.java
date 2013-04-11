@@ -52,7 +52,7 @@ public strictfp class Cruiser extends Unit {
     	float velocity = DesiredVelocity.len();
     	if(velocity > 1)
     	{
-    		CollisionBody.setLinearVelocity(DesiredVelocity.x*moveSpeed/velocity*GameScreen.WORLD_TO_BOX, DesiredVelocity.y*moveSpeed/velocity*GameScreen.WORLD_TO_BOX);
+    		CollisionBody.setLinearVelocity(DesiredVelocity.x*moveSpeed/velocity, DesiredVelocity.y*moveSpeed/velocity);
         	setVisualRotation(DesiredVelocity.x, DesiredVelocity.y);
     	}
     	else

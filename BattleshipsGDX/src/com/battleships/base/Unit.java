@@ -23,7 +23,7 @@ public strictfp abstract class Unit extends Actor {
     short Health = MaxHealth;
     Sprite baseSprite;
 	Sprite colorSprite;
-	int moveSpeed = 50;
+	float moveSpeed = 50 * GameScreen.WORLD_TO_BOX;
 	int goldworth = 50;
 	Body CollisionBody;
 	
