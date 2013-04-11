@@ -132,7 +132,7 @@ public class NetworkGameScreen extends GameScreen{
 			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1; 
 			    	UnitData auxData = new UnitData();
-			    	auxData.position.set(localPlayerShip.CollisionBody.getPosition());
+			    	auxData.position.set(this.playerData.position);
 			    	auxData.direction.set(localPlayerDirection);
 			    	auxData.tick = this.tick + 1;
 			    	auxData.shopAction = this.playerData.shopAction;
@@ -164,7 +164,7 @@ public class NetworkGameScreen extends GameScreen{
 			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1;
 			    	UnitData auxData = new UnitData();
-			    	auxData.position.set(localPlayerShip.CollisionBody.getPosition());
+			    	auxData.position.set(this.playerData.position);
 			    	auxData.direction.set(localPlayerDirection);
 			    	auxData.tick = this.tick + 1;
 			    	auxData.shopAction = this.playerData.shopAction;
