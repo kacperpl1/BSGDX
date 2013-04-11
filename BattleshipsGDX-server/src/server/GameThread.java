@@ -19,8 +19,8 @@ public class GameThread extends Thread{
 	Map<Short, LinkedBlockingQueue<UnitData>> queueMap = new HashMap<Short, LinkedBlockingQueue<UnitData>>();
 	
 	private Map<Short, UnitData> playerShipMap = new HashMap<Short, UnitData>();
-	private Map<Short, Integer> counterMap = new HashMap<Short, Integer>();
 	private ArrayList<Thread> playerThreadArray = new ArrayList<Thread>();
+	private Map<Short, UnitData> auxShipMap = new HashMap<Short, UnitData>();
 	
 	public GameThread(ServerGame game){
 		this.game = game;
@@ -34,8 +34,7 @@ public class GameThread extends Thread{
 			data.gameID = this.getName();
 			data.unitKey = player.getSlotNumber();
 			playerShipMap.put(player.getSlotNumber(), data);
-			
-			counterMap.put(player.getSlotNumber(), 0);
+			auxShipMap.put(player.getSlotNumber(), data);
 		}
 	}
 	
@@ -44,6 +43,14 @@ public class GameThread extends Thread{
 			if(entry.getValue().tick != this.currentTick-1) {
 				return false;
 			}
+		}
+		for(Entry<Short, UnitData> entry : playerShipMap.entrySet()) {
+			UnitData auxData = new UnitData();
+			auxData.direction.set(entry.getValue().direction);
+			auxData.position.set(entry.getValue().position);
+			auxData.tick = entry.getValue().tick;
+			auxData.shopAction = entry.getValue().shopAction;
+			auxShipMap.put(entry.getKey(), auxData);
 		}
 		return true;
 	}
@@ -98,7 +105,7 @@ public class GameThread extends Thread{
 				short slot = iter.next().getSlotNumber();
 				
 				if(!isSync(slot)) {
-					Thread aux = new PlayerThread(slot, currentTick, queueMap, playerShipMap, game);
+					Thread aux = new PlayerThread(slot, currentTick, queueMap, playerShipMap, auxShipMap, game);
 					aux.start();
 					playerThreadArray.add(aux);
 				}
@@ -135,12 +142,14 @@ class PlayerThread extends Thread {
 	private int currentTick = 0;
 	private Map<Short, LinkedBlockingQueue<UnitData>> queueMap;
 	private Map<Short, UnitData> playerShipMap;
+	private Map<Short, UnitData> auxShipMap;
 	private ServerGame game;
 	
-	public PlayerThread(short slot, int currentTick, Map<Short, LinkedBlockingQueue<UnitData>> queueMap, Map<Short, UnitData> playerShipMap, ServerGame game) {
+	public PlayerThread(short slot, int currentTick, Map<Short, LinkedBlockingQueue<UnitData>> queueMap, Map<Short, UnitData> playerShipMap, Map<Short, UnitData> auxShipMap, ServerGame game) {
 		this.slot = slot;
 		this.queueMap = queueMap;
 		this.playerShipMap = playerShipMap;
+		this.auxShipMap = auxShipMap;
 		this.game = game;
 		this.currentTick = currentTick;
 	}
@@ -166,9 +175,9 @@ class PlayerThread extends Thread {
 				try {
 					UnitData message = queueMap.get(slot).poll(30, TimeUnit.MILLISECONDS);
 					if(message != null) {
-						System.out.println(slot + " ! " + message.tick);
+						//System.out.println(slot + " ! " + message.tick);
 						if(message.tick == playerShipMap.get(slot).tick) {
-							game.getPlayerBySlot(slot).getConnection().sendUDP(playerShipMap);
+							game.getPlayerBySlot(slot).getConnection().sendUDP(auxShipMap);
 						} else {
 							if(message.tick == this.currentTick-1) {
 								playerShipMap.get(slot).direction.set(message.direction.x,message.direction.y);

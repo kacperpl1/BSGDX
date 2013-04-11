@@ -31,7 +31,7 @@ public class NetworkGameScreen extends GameScreen{
 		for(Entry<Short, UnitData> entry : message.entrySet()) {
 			if(shipMap.containsKey(entry.getKey())) {
 				shipMap.get(entry.getKey()).setDesiredVelocity(entry.getValue().direction.x, entry.getValue().direction.y);
-				System.out.println("DesiredVelocity "+entry.getValue().direction);
+				System.out.println("slot" + entry.getKey() + " tick " + entry.getValue().tick + " DesiredVelocity "+entry.getValue().direction);
 						//+ "\nCurrentVelocity "+shipMap.get(entry.getKey()).CurrentVelocity
 						//+ "\nCurrentPosition "+shipMap.get(entry.getKey()).CollisionBody.getPosition());
 				if(entry.getValue().shopAction>0)
@@ -76,7 +76,7 @@ public class NetworkGameScreen extends GameScreen{
 		serverDataBuffer = new HashMap<Integer, Map<Short, UnitData>>();
 		playerDataBuffer = new ArrayList<UnitData>();
 		UnitData auxData = new UnitData();
-    	auxData.position.set(localPlayerShip.CollisionBody.getPosition());
+    	auxData.position.set(this.playerData.position);
     	auxData.tick = this.tick;
     	auxData.shopAction = 0;
     	auxData.gameID = this.playerData.gameID;
@@ -133,8 +133,8 @@ public class NetworkGameScreen extends GameScreen{
 			    	this.playerData.tick = this.tick + 1; 
 			    	UnitData auxData = new UnitData();
 			    	auxData.position.set(this.playerData.position);
-			    	auxData.direction.set(localPlayerDirection);
-			    	auxData.tick = this.tick + 1;
+			    	auxData.direction.set(this.playerData.direction);
+			    	auxData.tick = this.playerData.tick;
 			    	auxData.shopAction = this.playerData.shopAction;
 			    	auxData.gameID = this.playerData.gameID;
 			    	auxData.unitKey = this.playerData.unitKey;
@@ -165,8 +165,8 @@ public class NetworkGameScreen extends GameScreen{
 			    	this.playerData.tick = this.tick + 1;
 			    	UnitData auxData = new UnitData();
 			    	auxData.position.set(this.playerData.position);
-			    	auxData.direction.set(localPlayerDirection);
-			    	auxData.tick = this.tick + 1;
+			    	auxData.direction.set(this.playerData.direction);
+			    	auxData.tick = this.playerData.tick;
 			    	auxData.shopAction = this.playerData.shopAction;
 			    	auxData.gameID = this.playerData.gameID;
 			    	auxData.unitKey = this.playerData.unitKey;
