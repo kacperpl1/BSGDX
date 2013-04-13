@@ -44,84 +44,88 @@ public strictfp class PlayerShip extends Unit {
     	CollisionBody.setSleepingAllowed(false);
     }
 
-	void updateVelocity()
+    
+    void setDesiredVelocity(float X, float Y)
     {
+    	DesiredVelocity.set(X,Y);
+
     	if(DesiredVelocity.len()<=0)
     	{
     		CollisionBody.setLinearVelocity(0, 0);
     		return;
     	}
     	
-		if(GameScreen.stepNow)
+    	float CurrentAngle = (float) Math.toDegrees(MathUtils.atan2(CurrentVelocity.x, CurrentVelocity.y));
+		float DesiredAngle = (float) Math.toDegrees(MathUtils.atan2(DesiredVelocity.x, DesiredVelocity.y));
+		float DeltaAngle = (float) (DesiredAngle-CurrentAngle);
+		if(Math.abs(DeltaAngle) < rotationRate * GameScreen.BOX_STEP)
 		{
-	    	float CurrentAngle = (float) Math.toDegrees(MathUtils.atan2(CurrentVelocity.x, CurrentVelocity.y));
-			float DesiredAngle = (float) Math.toDegrees(MathUtils.atan2(DesiredVelocity.x, DesiredVelocity.y));
-			float DeltaAngle = (float) (DesiredAngle-CurrentAngle);
-			if(Math.abs(DeltaAngle) < rotationRate * GameScreen.BOX_STEP)
-			{
-		        CurrentVelocity.set(DesiredVelocity);
-			}
-			else
-			{
-	    		if(Math.abs(DeltaAngle)>180)
-	    		{
-	    			if(DeltaAngle >0)
-	    			{
-	    				DeltaAngle -= 360;
-	    			}
-	    			else
-	    			{
-	    				DeltaAngle += 360;    				
-	    			}
-	    		}
-				float TempAngle;
-				if(DeltaAngle>0)
-				{
-					TempAngle = CurrentAngle + (rotationRate * GameScreen.BOX_STEP);
-				}
-				else
-				{
-					TempAngle = CurrentAngle - (rotationRate * GameScreen.BOX_STEP);
-				}
-		        CurrentVelocity.set((float)Math.sin(Math.toRadians(TempAngle)), (float)Math.cos(Math.toRadians(TempAngle)));
-			}
-			CollisionBody.setLinearVelocity(CurrentVelocity.x*moveSpeed/CurrentVelocity.len(), CurrentVelocity.y*moveSpeed/CurrentVelocity.len());
+	        CurrentVelocity.set(DesiredVelocity);
 		}
 		else
 		{
-			float CurrentAngle = (float) Math.toDegrees(MathUtils.atan2(VisualVelocity.x, VisualVelocity.y));
-			float DesiredAngle = (float) Math.toDegrees(MathUtils.atan2(DesiredVelocity.x, DesiredVelocity.y));
-			float DeltaAngle = (float) (DesiredAngle-CurrentAngle);
-			if(Math.abs(DeltaAngle) < rotationRate * Gdx.graphics.getDeltaTime())
+    		if(Math.abs(DeltaAngle)>180)
+    		{
+    			if(DeltaAngle >0)
+    			{
+    				DeltaAngle -= 360;
+    			}
+    			else
+    			{
+    				DeltaAngle += 360;    				
+    			}
+    		}
+			float TempAngle;
+			if(DeltaAngle>0)
 			{
-				VisualVelocity.set(DesiredVelocity);
+				TempAngle = CurrentAngle + (rotationRate * GameScreen.BOX_STEP);
 			}
 			else
 			{
-	    		if(Math.abs(DeltaAngle)>180)
-	    		{
-	    			if(DeltaAngle >0)
-	    			{
-	    				DeltaAngle -= 360;
-	    			}
-	    			else
-	    			{
-	    				DeltaAngle += 360;    				
-	    			}
-	    		}
-				float TempAngle;
-				if(DeltaAngle>0)
+				TempAngle = CurrentAngle - (rotationRate * GameScreen.BOX_STEP);
+			}
+	        CurrentVelocity.set((float)Math.sin(Math.toRadians(TempAngle)), (float)Math.cos(Math.toRadians(TempAngle)));
+		}
+		CollisionBody.setLinearVelocity(CurrentVelocity.x*moveSpeed/CurrentVelocity.len(), CurrentVelocity.y*moveSpeed/CurrentVelocity.len());
+    }
+
+	void updateVelocity()
+    {
+    	if(DesiredVelocity.len()<=0)
+    		return;
+    	
+		float CurrentAngle = (float) Math.toDegrees(MathUtils.atan2(VisualVelocity.x, VisualVelocity.y));
+		float DesiredAngle = (float) Math.toDegrees(MathUtils.atan2(DesiredVelocity.x, DesiredVelocity.y));
+		float DeltaAngle = (float) (DesiredAngle-CurrentAngle);
+		if(Math.abs(DeltaAngle) < rotationRate * Gdx.graphics.getDeltaTime())
+		{
+			VisualVelocity.set(DesiredVelocity);
+		}
+		else
+		{
+			if(Math.abs(DeltaAngle)>180)
+			{
+				if(DeltaAngle >0)
 				{
-					TempAngle = CurrentAngle + (rotationRate * Gdx.graphics.getDeltaTime());
+					DeltaAngle -= 360;
 				}
 				else
 				{
-					TempAngle = CurrentAngle - (rotationRate * Gdx.graphics.getDeltaTime());
+					DeltaAngle += 360;    				
 				}
-				VisualVelocity.set((float)Math.sin(Math.toRadians(TempAngle)), (float)Math.cos(Math.toRadians(TempAngle)));
 			}
-			setVisualRotation(VisualVelocity.x, VisualVelocity.y);
+			float TempAngle;
+			if(DeltaAngle>0)
+			{
+				TempAngle = CurrentAngle + (rotationRate * Gdx.graphics.getDeltaTime());
+			}
+			else
+			{
+				TempAngle = CurrentAngle - (rotationRate * Gdx.graphics.getDeltaTime());
+			}
+			VisualVelocity.set((float)Math.sin(Math.toRadians(TempAngle)), (float)Math.cos(Math.toRadians(TempAngle)));
 		}
+		setVisualRotation(VisualVelocity.x, VisualVelocity.y);
     }
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
