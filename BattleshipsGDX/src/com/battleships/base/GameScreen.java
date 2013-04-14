@@ -477,7 +477,7 @@ public class GameScreen implements Screen {
     		
 			physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS);
 			
-			localPlayerShip.setDesiredVelocity(localPlayerDirection.x, localPlayerDirection.y);
+			localPlayerShip.setDesiredVelocity(localPlayerDirection);
 			
 			box_accu = 0;
 		}

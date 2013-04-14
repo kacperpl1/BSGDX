@@ -128,11 +128,13 @@ public strictfp abstract class Unit extends Actor {
 		
 		    batch.draw(Resources.HealthbarTextureRegion[1], CurrentPosition.x-widthScaled/4+1,CurrentPosition.y+widthScaled/4,widthScaled/2*((float)Health/(float)MaxHealth),4);
 		}
-		
-		if(DesiredVelocity.len()>0)
-			lerp(Gdx.graphics.getDeltaTime()/(GameScreen.BOX_STEP-GameScreen.box_accu+Gdx.graphics.getDeltaTime()));
-		else
-			lerp(GameScreen.BOX_STEP);
+		if(GameScreen.box_accu < GameScreen.BOX_STEP * 2)
+		{
+			if(DesiredVelocity.len()>0)
+				lerp(Gdx.graphics.getDeltaTime()/(GameScreen.BOX_STEP-GameScreen.box_accu+Gdx.graphics.getDeltaTime()));
+			else
+				lerp(GameScreen.BOX_STEP);
+		}
 	}
 	
 	public void lerp (float alpha) {

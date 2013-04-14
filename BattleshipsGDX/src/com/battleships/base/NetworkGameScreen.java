@@ -30,10 +30,8 @@ public class NetworkGameScreen extends GameScreen{
 	public void updatePlayers(Map<Short, UnitData> message) {
 		for(Entry<Short, UnitData> entry : message.entrySet()) {
 			if(shipMap.containsKey(entry.getKey())) {
-				shipMap.get(entry.getKey()).setDesiredVelocity(entry.getValue().direction.x, entry.getValue().direction.y);
-				System.out.println("slot" + entry.getKey() + " tick " + entry.getValue().tick + " DesiredVelocity "+entry.getValue().direction);
-						//+ "\nCurrentVelocity "+shipMap.get(entry.getKey()).CurrentVelocity
-						//+ "\nCurrentPosition "+shipMap.get(entry.getKey()).CollisionBody.getPosition());
+				if(shipMap.get(entry.getKey()) != localPlayerShip)
+					shipMap.get(entry.getKey()).setDesiredVelocity(entry.getValue().direction);
 				if(entry.getValue().shopAction>0)
 					shipMap.get(entry.getKey()).buyItem(entry.getValue().shopAction-1);
 				else if(entry.getValue().shopAction<0)
@@ -103,6 +101,7 @@ public class NetworkGameScreen extends GameScreen{
 	                				//System.out.println("send " + (serverTick+1) + " " + playerDataBuffer.get(serverTick+1).tick);
 			        				synchronized(playerDataBuffer) {
 			        					lobbyClient.sendDirection(playerDataBuffer.get(serverTick+1));
+			        					//System.out.println("ERROR2");
 			        				}
 	                			}
 	                		}
@@ -124,7 +123,7 @@ public class NetworkGameScreen extends GameScreen{
 		stepNow = false;
 		
 		if(box_accu>BOX_STEP) {
-			if(tick < 2) {
+			if(tick < 1) {
 				box_accu = 0;
 		    	
 				synchronized(playerDataBuffer) {
@@ -146,13 +145,13 @@ public class NetworkGameScreen extends GameScreen{
 		    	
 		    	Weapon.RNG.setSeed(tick);
 			} else
-			if(this.serverDataBuffer.get(tick-2) != null) {
+			if(this.serverDataBuffer.get(tick) != null) {
 				
 				stepNow = true;
 				synchronized(serverDataBuffer){
-			        updatePlayers(this.serverDataBuffer.get(tick-2));
-			        System.out.println("render tick: " + this.serverDataBuffer.get(tick-2).get(slot).tick);
-			        this.serverDataBuffer.remove(tick-2);
+			        updatePlayers(this.serverDataBuffer.get(tick));
+			        //System.out.println("render tick: " + this.serverDataBuffer.get(tick-1).get(slot).tick);
+			        this.serverDataBuffer.remove(tick);
 				}
 				GLUH.onUpdate(BOX_STEP);
 				
@@ -161,6 +160,8 @@ public class NetworkGameScreen extends GameScreen{
 				box_accu = 0;
 				synchronized(this.playerDataBuffer) {
 			    	this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
+			    	
+			    	localPlayerShip.setDesiredVelocity(localPlayerDirection);
 			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1;
 			    	UnitData auxData = new UnitData();
@@ -177,7 +178,11 @@ public class NetworkGameScreen extends GameScreen{
 				//System.out.println("tick on client: " + tick);
 				
 				Weapon.RNG.setSeed(tick);
-			} 
+			}
+			else
+			{
+				//System.out.println("ERROR");
+			}
 		}
 	}	
 	public void dispose() {

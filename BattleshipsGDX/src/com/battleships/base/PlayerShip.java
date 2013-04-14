@@ -45,9 +45,9 @@ public strictfp class PlayerShip extends Unit {
     }
 
     
-    void setDesiredVelocity(float X, float Y)
+    void setDesiredVelocity(Vector2 input)
     {
-    	DesiredVelocity.set(X,Y);
+    	DesiredVelocity.set(input);
 
     	if(DesiredVelocity.len()<=0)
     	{
