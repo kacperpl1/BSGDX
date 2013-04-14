@@ -40,7 +40,7 @@ public strictfp class PlayerShip extends Unit {
 		else
     		CurrentVelocity.set(0, 1);
     	setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
-    	Inventory.put(0,new PlayerWeapon(this, 5));
+    	Inventory.put(0,new PlayerWeapon(this, 2));
     	CollisionBody.setSleepingAllowed(false);
     }
 
