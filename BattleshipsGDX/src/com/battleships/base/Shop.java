@@ -114,14 +114,12 @@ public class Shop {
     	
 		inventory_grid = new Actor(){
         public void draw (SpriteBatch batch, float parentAlpha) {
-    		batch.setColor(1, 1, 1, 0.75f);
             batch.draw(Resources.inventoryGridTexture, getX(),getY(),getWidth(),getHeight());
             for(int i=0; i<6; i++)
     		{
     			if(inventory.containsKey(i))
     				batch.draw(Resources.ItemTextureRegion[inventory.get(i).weapon_id], getX()+i*tileWidth,getY(),tileWidth,tileWidth);
     		}         
-            batch.setColor(1, 1, 1, 1);
         }
 	};
 		inventory_grid.setVisible(shop_toggle);
