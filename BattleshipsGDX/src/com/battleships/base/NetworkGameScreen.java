@@ -122,7 +122,7 @@ public class NetworkGameScreen extends GameScreen{
 		
 		if(box_accu>BOX_STEP) {
 			if(tick < 2) {
-				box_accu = 0;
+				box_accu -= BOX_STEP;
 		    	
 				synchronized(playerDataBuffer) {
 			    	this.playerData.tick = this.tick + 1; 
@@ -145,7 +145,8 @@ public class NetworkGameScreen extends GameScreen{
 				
 				physicsWorld.step(BOX_STEP, BOX_VELOCITY_ITERATIONS, BOX_POSITION_ITERATIONS); 
 				
-				box_accu = 0;
+				box_accu -= BOX_STEP;
+				
 				synchronized(this.playerDataBuffer) {
 			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1;

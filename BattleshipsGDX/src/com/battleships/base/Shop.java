@@ -30,23 +30,14 @@ public class Shop {
 		
 		shop_toggle_button = new Actor(){
 	        public void draw (SpriteBatch batch, float parentAlpha) {
-	        	if(GameScreen.LocalPlayerTeam == "blue" && GameScreen.localPlayerShip.getY() < -700
-	        			|| GameScreen.LocalPlayerTeam == "red" && GameScreen.localPlayerShip.getY() > 700)
-	        	{
 	        		this.setTouchable(Touchable.enabled);
-	        		batch.setColor(1, 1, 1, 0.75f);
+	        		if(GameScreen.localPlayerShip.getY() > -650 && GameScreen.localPlayerShip.getY() < 650)
+	        			batch.setColor(1, 1, 1, 0.25f);
+	        		
 	        		batch.draw(Resources.shopToggleTexture,getX(),getY(),getWidth(),getHeight());
 	        		batch.setColor(1, 1, 1, 1);
 	        		inventory_grid.toFront();
 	            	shop_grid.toFront();
-	        	}
-	        	else
-	        	{
-	        		this.setTouchable(Touchable.disabled);
-		        	shop_grid.setVisible(shop_toggle);
-		    		inventory_grid.setVisible(shop_toggle);
-		    		shop_toggle = false;
-	        	}
 	        }
 		};
 		shop_toggle_button.setBounds(0, GameScreen.h*0.45f, tileWidth, tileWidth);
@@ -73,10 +64,15 @@ public class Shop {
 		};
 		
 		shop_grid.addListener(new InputListener() {
-	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {        	
+	        	
 	        	selected_item = ((int)(x)/tileWidth)%4 +(3-(((int)(y)/tileWidth)%4))*4;
 	        	itemX=shop_grid.getX()+(selected_item%4)*tileWidth;
 	        	itemY=shop_grid.getY()+shop_grid.getHeight()*0.75f-(selected_item/4)*tileWidth;
+	        	
+	        	if(GameScreen.localPlayerShip.getY() > -650 && GameScreen.localPlayerShip.getY() < 650)
+	        		return false;	
+	        	else
 	                return true;
 	        }
 	        
@@ -130,7 +126,8 @@ public class Shop {
 		
 		inventory_grid.addListener(new InputListener() {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-	        	if(!inventory.containsKey((int)(x)/tileWidth))
+
+	        	if(GameScreen.localPlayerShip.getY() > -650 && GameScreen.localPlayerShip.getY() < 650 || !inventory.containsKey((int)(x)/tileWidth))
 	        		return false;
 	        	
 	        	selected_inventory_item = (int)(x)/tileWidth;

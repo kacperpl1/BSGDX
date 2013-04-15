@@ -92,8 +92,8 @@ public strictfp class Weapon {
 		    			else
 		    			{
 		    				Projectile.Launch(Owner,target,Damage, weapon_id);
-		    				FireDelayTimer = FireDelay; 
-		    				//FireDelayTimer += FireDelay * (0.9f+RNG.nextFloat()/5f);
+		    				//FireDelayTimer = FireDelay; 
+		    				FireDelayTimer += FireDelay * (0.9f+RNG.nextFloat()/5f);
 		    				break;
 		    			}
 	    			}
