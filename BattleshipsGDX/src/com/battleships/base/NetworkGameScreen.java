@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import com.badlogic.gdx.math.Vector2;
 import com.battleships.network.BSClient;
 import com.battleships.network.Player;
 
@@ -21,6 +22,7 @@ public class NetworkGameScreen extends GameScreen{
 	private Map<Integer, Map<Short, UnitData>> serverDataBuffer;
 	private ArrayList<UnitData> playerDataBuffer;
 	private short slot;
+	Vector2 tempDirection = new Vector2();
 	
 	public NetworkGameScreen()
 	{
@@ -89,7 +91,6 @@ public class NetworkGameScreen extends GameScreen{
 	                		message = msgQueue.poll(50, TimeUnit.MILLISECONDS);
 	                		if(message != null) {
 	                			serverTick = message.get(slot).tick;
-	                			//System.out.println("got " + serverTick + " from server");
 	                			synchronized(serverDataBuffer) {
 	                				serverDataBuffer.put(serverTick, message);
 	                			}
@@ -99,7 +100,6 @@ public class NetworkGameScreen extends GameScreen{
 	                				System.out.println("send " + (serverTick+1));
 			        				synchronized(playerDataBuffer) {
 			        					lobbyClient.sendDirection(playerDataBuffer.get(serverTick+1));
-			        					//System.out.println("ERROR2");
 			        				}
 	                			}
 	                		}
@@ -121,33 +121,25 @@ public class NetworkGameScreen extends GameScreen{
 		stepNow = false;
 		
 		if(box_accu>BOX_STEP) {
-			if(tick < 1) {
+			if(tick < 2) {
 				box_accu = 0;
 		    	
 				synchronized(playerDataBuffer) {
-			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1; 
 			    	UnitData auxData = new UnitData();
-			    	auxData.direction.set(this.playerData.direction);
 			    	auxData.tick = this.playerData.tick;
-			    	auxData.shopAction = this.playerData.shopAction;
 			    	auxData.gameID = this.playerData.gameID;
 			    	auxData.unitKey = this.playerData.unitKey;
 			    	this.playerDataBuffer.add(auxData);
-			    	this.playerData.shopAction=0;
 		    	}
 				this.tick++;
-		    	//System.out.println("#tick on client: " + tick);
-		    	
-		    	Weapon.RNG.setSeed(tick);
 			} else
-			if(this.serverDataBuffer.get(tick) != null) {
+			if(this.serverDataBuffer.get(tick-1) != null) {
 				
 				stepNow = true;
 				synchronized(serverDataBuffer){
-			        updatePlayers(this.serverDataBuffer.get(tick));
-			        //System.out.println("render tick: " + this.serverDataBuffer.get(tick-1).get(slot).tick);
-			        this.serverDataBuffer.remove(tick);
+			        updatePlayers(this.serverDataBuffer.get(tick-1));
+			        this.serverDataBuffer.remove(tick-1);
 				}
 				GLUH.onUpdate(BOX_STEP);
 				
@@ -155,8 +147,6 @@ public class NetworkGameScreen extends GameScreen{
 				
 				box_accu = 0;
 				synchronized(this.playerDataBuffer) {
-			    	
-			    	localPlayerShip.setDesiredVelocity(localPlayerDirection);
 			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1;
 			    	UnitData auxData = new UnitData();
@@ -169,13 +159,14 @@ public class NetworkGameScreen extends GameScreen{
 			    	this.playerData.shopAction=0;
 				}
 				this.tick++;
-				//System.out.println("tick on client: " + tick);
-				
 				Weapon.RNG.setSeed(tick);
+				
+		    	localPlayerShip.setDesiredVelocity(tempDirection);
+		    	tempDirection.set(localPlayerDirection);
 			}
 			else
 			{
-				//System.out.println("ERROR");
+				System.out.println("tick: "+tick+" ERROR");
 			}
 		}
 	}	

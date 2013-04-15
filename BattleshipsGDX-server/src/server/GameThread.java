@@ -132,7 +132,7 @@ public class GameThread extends Thread{
 				}
 			}
 			if(allSync()) {
-				System.out.println("all sync " + (this.currentTick - 1));
+				//System.out.println("all sync " + (this.currentTick - 1));
 				sendToAll();
 				this.currentTick++;
 			}
