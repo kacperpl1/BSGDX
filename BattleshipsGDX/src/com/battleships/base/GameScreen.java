@@ -74,7 +74,6 @@ public class GameScreen implements Screen {
 	private Actor Map;
 	private ActorPositionComparator ActorComparator;
 	protected Vector2 localPlayerDirection;
-	private Vector2 camOffset;
 	private Vector2 knobOffset = new Vector2();
 	private Shop weaponShop;
 	static boolean stepNow;
@@ -211,9 +210,9 @@ public class GameScreen implements Screen {
 	        	camToggle = false;
 	    	}
 	        
-	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+	        /*public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 	        	camToggle = true;
-	        }
+	        }*/
 	        
 	        void setCamPos(float x, float y)
 	        {
@@ -252,6 +251,7 @@ public class GameScreen implements Screen {
         		batch.setColor(1, 1, 1, 0.75f);
         		if(offset.len()>0)
         		{
+    	        	camToggle = true;
         			desiredRotation = (int) Math.toDegrees(-Math.atan2(offset.x,offset.y));
 	        		float DeltaAngle = (float) (desiredRotation-rotation);
 	        		if(Math.abs(DeltaAngle)>180)
@@ -487,43 +487,16 @@ public class GameScreen implements Screen {
 	public void render(float delta) {
 		localPlayerDirection.set(knobOffset);
 		
-		if(BaseGame.gamepad == null)
-		{
-			if( Gdx.input.isKeyPressed( Input.Keys.UP ) || Gdx.input.isKeyPressed( Input.Keys.W ) ) localPlayerDirection.y = 1;
-			else if( Gdx.input.isKeyPressed( Input.Keys.DOWN ) || Gdx.input.isKeyPressed( Input.Keys.S ) ) localPlayerDirection.y = -1;
-			if( Gdx.input.isKeyPressed( Input.Keys.LEFT ) || Gdx.input.isKeyPressed( Input.Keys.A ) ) localPlayerDirection.x = -1;
-			else if( Gdx.input.isKeyPressed( Input.Keys.RIGHT ) || Gdx.input.isKeyPressed( Input.Keys.D ) ) localPlayerDirection.x = 1;
+		if( Gdx.input.isKeyPressed( Input.Keys.UP ) || Gdx.input.isKeyPressed( Input.Keys.W ) ) localPlayerDirection.y = 1;
+		else if( Gdx.input.isKeyPressed( Input.Keys.DOWN ) || Gdx.input.isKeyPressed( Input.Keys.S ) ) localPlayerDirection.y = -1;
+		if( Gdx.input.isKeyPressed( Input.Keys.LEFT ) || Gdx.input.isKeyPressed( Input.Keys.A ) ) localPlayerDirection.x = -1;
+		else if( Gdx.input.isKeyPressed( Input.Keys.RIGHT ) || Gdx.input.isKeyPressed( Input.Keys.D ) ) localPlayerDirection.x = 1;
 
-			if(camToggle && localPlayerShip.Health>0)
-			gameStage.getCamera().position.set(
-					MathUtils.clamp(localPlayerShip.CurrentPosition.x, -1024+w/2, 1024-w/2), 
-					MathUtils.clamp(localPlayerShip.CurrentPosition.y-centerOffsetY, -1024+h/2, 1024-h/2), 0);
-			gameStage.getCamera().update();
-		}
-		else
-		{
-			if(Math.abs(BaseGame.gamepad.getAxis(1))>0.1f)
-			{
-				localPlayerDirection.x = BaseGame.gamepad.getAxis(1);
-				camOffset.set(camOffset.x*0.9f, camOffset.y*0.9f);
-			}
-			if(Math.abs(BaseGame.gamepad.getAxis(0))>0.1f)
-			{
-				localPlayerDirection.y = -BaseGame.gamepad.getAxis(0);
-				camOffset.set(camOffset.x*0.9f, camOffset.y*0.9f);
-			}
-
-			if(Math.abs(BaseGame.gamepad.getAxis(3))>0.1f)
-				camOffset.x += BaseGame.gamepad.getAxis(3) * delta * 512;
-
-			if(Math.abs(BaseGame.gamepad.getAxis(2))>0.1f)
-				camOffset.y -= BaseGame.gamepad.getAxis(2) * delta * 512;
-
-			gameStage.getCamera().position.set(
-				MathUtils.clamp(localPlayerShip.getX() + camOffset.x,-1024+w/2, 1024-w/2), 
-				MathUtils.clamp(localPlayerShip.getY() + camOffset.y,-1024+h/2, 1024-h/2), 0);
-			gameStage.getCamera().update();
-		}
+		if(camToggle && localPlayerShip.Health>0)
+		gameStage.getCamera().position.set(
+				MathUtils.clamp(localPlayerShip.CurrentPosition.x, -1024+w/2, 1024-w/2), 
+				MathUtils.clamp(localPlayerShip.CurrentPosition.y-centerOffsetY, -1024+h/2, 1024-h/2), 0);
+		gameStage.getCamera().update();
 		
 		worldStep(delta);
 		

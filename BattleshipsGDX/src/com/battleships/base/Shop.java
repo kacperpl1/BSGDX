@@ -37,6 +37,8 @@ public class Shop {
 	        		batch.setColor(1, 1, 1, 0.75f);
 	        		batch.draw(Resources.shopToggleTexture,getX(),getY(),getWidth(),getHeight());
 	        		batch.setColor(1, 1, 1, 1);
+	        		inventory_grid.toFront();
+	            	shop_grid.toFront();
 	        	}
 	        	else
 	        	{
@@ -66,6 +68,7 @@ public class Shop {
 	            batch.draw(Resources.shopGridTexture,getX(),getY(),getWidth(),getHeight());
 	            batch.setColor(1, 1, 1, 1);
 	            batch.draw(Resources.ItemTextureRegion[selected_item],itemX,itemY,tileWidth,tileWidth);
+	            this.toFront();
 	        }
 		};
 		
