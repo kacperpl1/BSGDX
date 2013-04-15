@@ -147,7 +147,7 @@ class ServerGame {
 		return null;
 	}
 	public void dropPlayer(short slot) {
-		//removePlayer(getPlayerBySlot(slot));
 		getPlayerBySlot(slot).disconnect();
+		removePlayer(getPlayerBySlot(slot));
 	}
 }

@@ -88,7 +88,7 @@ public class NetworkGameScreen extends GameScreen{
 	                try {
 	                	Map<Short, UnitData> message = null;
 	                	for(int i = 0; i < 10; i++) {
-	                		message = msgQueue.poll(10, TimeUnit.MILLISECONDS);
+	                		message = msgQueue.poll(50, TimeUnit.MILLISECONDS);
 	                		if(message != null) {
 	                			serverTick = message.get(slot).tick;
 	                			//System.out.println("got " + serverTick + " from server");

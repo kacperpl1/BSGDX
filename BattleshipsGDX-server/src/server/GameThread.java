@@ -77,10 +77,9 @@ public class GameThread extends Thread{
 	}
 	
 	public void dropPlayer(short slot) {
-		System.out.println(game.getPlayerList().size());
 		game.dropPlayer(slot);
+		this.playerShipMap.remove(slot);
 		System.out.println("player " + slot + " dropped");
-		System.out.println(game.getPlayerList().size());
 	}
 	
 	public boolean allFinished() {
@@ -94,9 +93,32 @@ public class GameThread extends Thread{
 		return true;
 	}
 	
+	public boolean playersAreConnected() {
+		if(game.getPlayerList().size() > 0) {
+			Iterator<ServerPlayer> iter = game.getPlayerList().iterator();
+			while(iter.hasNext()) {
+				if(iter.next().getConnection().isConnected()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}	
+	
+	public void checkDisc() {
+		Iterator<ServerPlayer> iter = game.getPlayerList().iterator();
+		while(iter.hasNext()) {
+			ServerPlayer aux = iter.next();
+			if(!aux.getConnection().isConnected()) {
+				dropPlayer(aux.getSlotNumber());
+			}
+		}
+	}
+	
 	public void run(){
 		System.out.println("game " + game.getName() + " started");
 		while(playersAreConnected()){
+			checkDisc();
 			Iterator<ServerPlayer> iter = game.getPlayerList().iterator();
 			while(!allFinished()) {
 				// Wait for all playerThreads to finish
@@ -123,17 +145,6 @@ public class GameThread extends Thread{
 		return this.queueMap.get(slot);
 	}
 	
-	public boolean playersAreConnected() {
-		if(game.getPlayerList().size() > 0) {
-			Iterator<ServerPlayer> iter = game.getPlayerList().iterator();
-			while(iter.hasNext()) {
-				if(iter.next().getConnection().isConnected()) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}	
 }
 
 class PlayerThread extends Thread {
@@ -177,6 +188,7 @@ class PlayerThread extends Thread {
 					if(message != null) {
 						//System.out.println(slot + " ! " + message.tick);
 						if(message.tick == playerShipMap.get(slot).tick) {
+							//System.out.println("resend to " + slot);
 							game.getPlayerBySlot(slot).getConnection().sendUDP(auxShipMap);
 						} else {
 							if(message.tick == this.currentTick-1) {
