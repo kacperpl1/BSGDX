@@ -47,7 +47,6 @@ public class GameThread extends Thread{
 		for(Entry<Short, UnitData> entry : playerShipMap.entrySet()) {
 			UnitData auxData = new UnitData();
 			auxData.direction.set(entry.getValue().direction);
-			auxData.position.set(entry.getValue().position);
 			auxData.tick = entry.getValue().tick;
 			auxData.shopAction = entry.getValue().shopAction;
 			auxShipMap.put(entry.getKey(), auxData);
@@ -193,7 +192,6 @@ class PlayerThread extends Thread {
 						} else {
 							if(message.tick == this.currentTick-1) {
 								playerShipMap.get(slot).direction.set(message.direction.x,message.direction.y);
-								playerShipMap.get(slot).position.set(message.position.x,message.position.y);
 								playerShipMap.get(slot).tick = message.tick;
 								playerShipMap.get(slot).shopAction = message.shopAction;
 								break;

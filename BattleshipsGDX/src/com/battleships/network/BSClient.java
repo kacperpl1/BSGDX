@@ -286,7 +286,9 @@ public class BSClient implements Runnable	{
 		this.gameFlag = false;
 		gameList.reset();
 		playerList.reset();
-		this.gameList.getGameById(this.gameId).removePlayer(clientPlayer);
+		if(this.gameList.getGameById(this.gameId) != null) {
+			this.gameList.getGameById(this.gameId).removePlayer(clientPlayer);
+		}
 		clientPlayer.isOffline();
 		mainLobbyMsgQueue.clear();
 		client.close();

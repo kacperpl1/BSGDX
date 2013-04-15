@@ -68,13 +68,11 @@ public class NetworkGameScreen extends GameScreen{
 		localPlayerShip = shipMap.get((short)lobbyClient.getPlayer().getSlotNumber());
 			
 		//send initial direction packet
-		playerData.position.set(localPlayerShip.CollisionBody.getPosition());
 		lobbyClient.sendDirection(playerData);
 		
 		serverDataBuffer = new HashMap<Integer, Map<Short, UnitData>>();
 		playerDataBuffer = new ArrayList<UnitData>();
 		UnitData auxData = new UnitData();
-    	auxData.position.set(this.playerData.position);
     	auxData.tick = this.tick;
     	auxData.shopAction = 0;
     	auxData.gameID = this.playerData.gameID;
@@ -87,7 +85,7 @@ public class NetworkGameScreen extends GameScreen{
 	            while (true) {
 	                try {
 	                	Map<Short, UnitData> message = null;
-	                	for(int i = 0; i < 10; i++) {
+	                	for(int i = 0; i < 5; i++) {
 	                		message = msgQueue.poll(50, TimeUnit.MILLISECONDS);
 	                		if(message != null) {
 	                			serverTick = message.get(slot).tick;
@@ -98,7 +96,7 @@ public class NetworkGameScreen extends GameScreen{
 	                			break;
 	                		} else {
 	                			if(playerDataBuffer.size() > serverTick+1) {
-	                				//System.out.println("send " + (serverTick+1) + " " + playerDataBuffer.get(serverTick+1).tick);
+	                				System.out.println("send " + (serverTick+1));
 			        				synchronized(playerDataBuffer) {
 			        					lobbyClient.sendDirection(playerDataBuffer.get(serverTick+1));
 			        					//System.out.println("ERROR2");
@@ -127,11 +125,9 @@ public class NetworkGameScreen extends GameScreen{
 				box_accu = 0;
 		    	
 				synchronized(playerDataBuffer) {
-			    	this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
 			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1; 
 			    	UnitData auxData = new UnitData();
-			    	auxData.position.set(this.playerData.position);
 			    	auxData.direction.set(this.playerData.direction);
 			    	auxData.tick = this.playerData.tick;
 			    	auxData.shopAction = this.playerData.shopAction;
@@ -159,13 +155,11 @@ public class NetworkGameScreen extends GameScreen{
 				
 				box_accu = 0;
 				synchronized(this.playerDataBuffer) {
-			    	this.playerData.position.set(localPlayerShip.CollisionBody.getPosition());
 			    	
 			    	localPlayerShip.setDesiredVelocity(localPlayerDirection);
 			    	this.playerData.direction.set(localPlayerDirection);
 			    	this.playerData.tick = this.tick + 1;
 			    	UnitData auxData = new UnitData();
-			    	auxData.position.set(this.playerData.position);
 			    	auxData.direction.set(this.playerData.direction);
 			    	auxData.tick = this.playerData.tick;
 			    	auxData.shopAction = this.playerData.shopAction;
