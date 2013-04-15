@@ -114,7 +114,7 @@ public class Shop {
     	
 		inventory_grid = new Actor(){
         public void draw (SpriteBatch batch, float parentAlpha) {
-            batch.draw(Resources.inventoryGridTexture, getX(),getY(),getWidth(),getHeight());
+            batch.draw(Resources.inventoryGridTexture, getX()-tileWidth,getY()-tileWidth,getWidth()+2*tileWidth,getHeight()+2*tileWidth);
             for(int i=0; i<6; i++)
     		{
     			if(inventory.containsKey(i))

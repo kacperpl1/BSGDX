@@ -572,9 +572,9 @@ public class GameScreen implements Screen {
 			
 			font.setColor(Color.RED);
 			font.draw(fontBatch, PlayerWeapon.CostData[weaponShop.selected_item]+"$", 64-font.getBounds(PlayerWeapon.CostData[weaponShop.selected_item]+"&").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*3*lineScale); 
-			font.draw(fontBatch, PlayerWeapon.DamageData[weaponShop.selected_item]+"J", 64-font.getBounds(PlayerWeapon.DamageData[weaponShop.selected_item]+"J").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*4*lineScale); 
+			font.draw(fontBatch, PlayerWeapon.DamageData[weaponShop.selected_item]+"", 64-font.getBounds(PlayerWeapon.DamageData[weaponShop.selected_item]+"").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*4*lineScale); 
 			font.draw(fontBatch, PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s", 64-font.getBounds(PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*5*lineScale); 
-			font.draw(fontBatch, PlayerWeapon.RangeData[weaponShop.selected_item]+"yd", 64-font.getBounds(PlayerWeapon.RangeData[weaponShop.selected_item]+"yd").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*6*lineScale); 
+			font.draw(fontBatch, PlayerWeapon.RangeData[weaponShop.selected_item]+"m", 64-font.getBounds(PlayerWeapon.RangeData[weaponShop.selected_item]+"m").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*6*lineScale); 
 		}
 		fontBatch.end();
 	}
