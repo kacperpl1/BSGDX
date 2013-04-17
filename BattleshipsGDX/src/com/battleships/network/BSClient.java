@@ -188,7 +188,7 @@ public class BSClient implements Runnable	{
 		try{
 			ResponseMessage req = new ResponseMessage();
 			req.text = "1 " + game.getId() + " " + game.getName() + " " + this.clientPlayer.getId();
-			client.sendUDP(req);
+			client.sendTCP(req);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to create a game");
@@ -203,7 +203,7 @@ public class BSClient implements Runnable	{
 		try{
 			ResponseMessage req = new ResponseMessage();
 			req.text = "3 " + gameId + " " + this.clientPlayer.getId();
-			client.sendUDP(req);
+			client.sendTCP(req);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to join game");
@@ -215,7 +215,7 @@ public class BSClient implements Runnable	{
 			ResponseMessage req = new ResponseMessage();
 			req.text = "2 " + this.clientPlayer.getGameId() + " " + this.clientPlayer.getId() + " " + slotNumber;
 			clientPlayer.takeSlot(slotNumber);
-			client.sendUDP(req);
+			client.sendTCP(req);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to take slot");
@@ -227,7 +227,7 @@ public class BSClient implements Runnable	{
 			this.gameId = "";
 			ResponseMessage req = new ResponseMessage();
 			req.text = "4 " + this.clientPlayer.getGameId() + " " + this.clientPlayer.getId();
-			client.sendUDP(req);
+			client.sendTCP(req);
 			gameList.getGameById(this.clientPlayer.getGameId()).getPlayerList().clear();
 			this.clientPlayer.leaveGame();
 			this.clientPlayer.setHost(false);
@@ -242,7 +242,7 @@ public class BSClient implements Runnable	{
 		try{
 			ResponseMessage req = new ResponseMessage();
 			req.text = "5 " + this.clientPlayer.getGameId() + " " + this.clientPlayer.getId() + " " + this.clientPlayer.isReady();
-			client.sendUDP(req);
+			client.sendTCP(req);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to ready/unready");
@@ -253,15 +253,11 @@ public class BSClient implements Runnable	{
 		try{
 			ResponseMessage req = new ResponseMessage();
 			req.text = "6 " + this.clientPlayer.getGameId();
-			client.sendUDP(req);
+			client.sendTCP(req);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("Failed to start game");
 		}
-	}
-	// Send position update to gameThread
-	public void move(UnitData unitData) {
-		client.sendUDP(unitData);
 	}
 	// Send player directory to gameThread
 	public void sendDirection(UnitData unitData) {

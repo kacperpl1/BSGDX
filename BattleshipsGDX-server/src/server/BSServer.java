@@ -230,35 +230,35 @@ class Translator extends Thread {
 	public void sendPlayerList() {
 		reply.text = "0 " + playerList.mainLobbyToString();
 		for(int i = 0; i < playerList.size(); i++){
-			playerList.getServerPlayer(i).getConnection().sendUDP(reply);
+			playerList.getServerPlayer(i).getConnection().sendTCP(reply);
 		}
 	}
 	
 	public void sendGameList() {
 		reply.text = "1 " + gameList.toString();
 		for(int i = 0; i < playerList.size(); i++){
-			playerList.getServerPlayer(i).getConnection().sendUDP(reply);
+			playerList.getServerPlayer(i).getConnection().sendTCP(reply);
 		}
 	}
 	
 	public void sendSlotList(ServerGame sGame) {
 		reply.text = "2 " + sGame.getPlayerList().slotListToString();
 		for(int i = 0; i < sGame.getPlayerList().size(); i++){
-			sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
+			sGame.getPlayerList().getServerPlayer(i).getConnection().sendTCP(reply);
 		}
 	}
 	
 	public void sendInGamePlayerList(ServerGame sGame) {
 		reply.text = "3 " + sGame.getPlayerList().gameLobbyToString();
 		for(int i = 0; i < sGame.getPlayerList().size(); i++){
-			sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
+			sGame.getPlayerList().getServerPlayer(i).getConnection().sendTCP(reply);
 		}
 	}
 	
 	public void sendReadyList(ServerGame sGame, String uId, String ready) {
 		reply.text = "5 " + uId + " " + ready;
 		for(int i = 0; i < sGame.getPlayerList().size(); i++){
-			sGame.getPlayerList().getServerPlayer(i).getConnection().sendUDP(reply);
+			sGame.getPlayerList().getServerPlayer(i).getConnection().sendTCP(reply);
 		}
 	}
 	
