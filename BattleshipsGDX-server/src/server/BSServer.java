@@ -101,11 +101,11 @@ class Translator extends Thread {
 	public synchronized void run() {
 		StringTokenizer part = new StringTokenizer(message);
 		
-		switch(part.nextToken()) {
+		switch(Integer.parseInt(part.nextToken())) {
 			// First keep alive packet from client:
 			// add client to playerList and send new 
 			// playerLists and gameList to all alive clients
-			case "0" : {
+			case 0 : {
 				String uId = part.nextToken();
 				String uName = part.nextToken();
 				if(!playerList.exists(uId)){
@@ -129,7 +129,7 @@ class Translator extends Thread {
 			// Request to create game:
 			// create game on server and send updated
 			// playerList and gameList to all alive clients
-			case "1" : {
+			case 1 : {
 				String gId = part.nextToken();
 				String gName = part.nextToken();
 				String uId = part.nextToken();
@@ -148,7 +148,7 @@ class Translator extends Thread {
 			}
 			// Take slot and send list of players who
 			// took slots in game
-			case "2" : {
+			case 2 : {
 				String gId = part.nextToken();
 				String uId = part.nextToken();
 				String slotNumber = part.nextToken();
@@ -162,7 +162,7 @@ class Translator extends Thread {
 				break;
 			}
 			// Join game and send list of players in this game
-			case "3" : {
+			case 3 : {
 				String gId = part.nextToken();
 				String uId = part.nextToken();
 				
@@ -178,7 +178,7 @@ class Translator extends Thread {
 				break;
 			}
 			// Leave game and send list of players in this game
-			case "4" : {
+			case 4 : {
 				String gId = part.nextToken();
 				String uId = part.nextToken();
 				
@@ -201,7 +201,7 @@ class Translator extends Thread {
 				break;
 			}
 			// Get ready/unready and send information to clients in game
-			case "5" : {
+			case 5 : {
 				String gId = part.nextToken();
 				String uId = part.nextToken();
 				String ready = part.nextToken();
@@ -213,7 +213,7 @@ class Translator extends Thread {
 				break;
 			}
 			// Start game
-			case "6" : {
+			case 6 : {
 				String gId = part.nextToken();
 				
 				runGameThread(gId);
