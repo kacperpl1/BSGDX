@@ -106,6 +106,7 @@ public class GameScreen implements Screen {
 		        fixtureDef.density = 1.0f;  
 		        fixtureDef.friction = 0.0f;  
 		        fixtureDef.restitution = 0.0f;
+		        fixtureDef.filter.categoryBits = Unit.CATEGORY_OTHER;
 		        WorldCollisionBody.createFixture(fixtureDef);  
 			}
 	    }

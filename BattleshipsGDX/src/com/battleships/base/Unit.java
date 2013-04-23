@@ -37,6 +37,9 @@ public strictfp abstract class Unit extends Actor {
 	protected Vector2 CurrentPosition;
 	static BodyPool bodyPool = new BodyPool();
 	
+	final static short CATEGORY_PLAYER = 0x0001;  // 0000000000000001 in binary
+	final static short CATEGORY_OTHER = 0x0002; // 0000000000000010 in binary
+	
 	Unit(String Team, float InitialX, float InitialY)
 	{
 		unitSpawnNumber++;
@@ -84,14 +87,24 @@ public strictfp abstract class Unit extends Actor {
 	void createBody(float initialX, float initialY)
 	{ 
 		CollisionBody = bodyPool.obtain();
-    	CollisionBody.setType(BodyType.DynamicBody);
+		CollisionBody.setType(BodyType.DynamicBody);			
 		CollisionBody.setTransform(initialX*GameScreen.WORLD_TO_BOX,initialY*GameScreen.WORLD_TO_BOX, 0);
 		
 		CircleShape dynamicCircle = new CircleShape();  
         dynamicCircle.setRadius(16f*GameScreen.WORLD_TO_BOX);  
         FixtureDef fixtureDef = new FixtureDef();  
         fixtureDef.shape = dynamicCircle;  
-        fixtureDef.density = 1.0f;  
+        if(this instanceof PlayerShip)
+        {
+        	fixtureDef.density = 1.0f;  
+        	fixtureDef.filter.categoryBits = CATEGORY_PLAYER;
+        	fixtureDef.filter.maskBits = CATEGORY_OTHER;
+        }
+        else
+        {
+        	fixtureDef.density = Integer.MAX_VALUE;
+        	fixtureDef.filter.categoryBits = CATEGORY_OTHER;
+        }
         fixtureDef.friction = 0.0f;  
         fixtureDef.restitution = 0.0f;
         CollisionBody.createFixture(fixtureDef);  

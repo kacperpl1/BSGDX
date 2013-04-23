@@ -1,16 +1,11 @@
 package com.battleships.base;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 
 public strictfp class Cruiser extends Unit {
 	
 	Vector2 networkPosition = new Vector2(0,0);
-	private Body BlockerBody;
 
 	private String lane;
 	private Unit Target = null;
@@ -27,28 +22,9 @@ public strictfp class Cruiser extends Unit {
     	Health = MaxHealth;
     	visor = new Visor(this);
     	gun = new Weapon(this,0);
-    	createBlocker();
-    	CollisionBody.getFixtureList().get(0).setSensor(true);
     }	
 	
-	void createBlocker()
-	{ 
-		BlockerBody = bodyPool.obtain();
-		BlockerBody.setType(BodyType.StaticBody);
-		BlockerBody.setTransform(CollisionBody.getPosition(), 0);
-		
-		CircleShape dynamicCircle = new CircleShape();  
-        dynamicCircle.setRadius(16f*GameScreen.WORLD_TO_BOX);  
-        FixtureDef fixtureDef = new FixtureDef();  
-        fixtureDef.shape = dynamicCircle;  
-        fixtureDef.density = 1.0f;  
-        fixtureDef.friction = 0.0f;  
-        fixtureDef.restitution = 0.0f;
-        BlockerBody.createFixture(fixtureDef);
-	} 
-	
 	void updateVelocity(){
-		BlockerBody.setTransform(CollisionBody.getPosition(), 0);
     	float velocity = DesiredVelocity.len();
     	if(velocity > 1)
     	{
@@ -78,13 +54,6 @@ public strictfp class Cruiser extends Unit {
     		Target = Instigator;
     	}
     }
-	
-	void Destroy()
-	{
-		super.Destroy();
-		BlockerBody.destroyFixture(BlockerBody.getFixtureList().get(0));
-		bodyPool.free(BlockerBody);
-	}
 	
 	void onUpdate(float delta)
     {

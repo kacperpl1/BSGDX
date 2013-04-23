@@ -38,6 +38,7 @@ public class Visor {
         fixtureDef.friction = 0.0f;  
         fixtureDef.restitution = 0.0f;
         fixtureDef.isSensor = true;
+    	fixtureDef.filter.categoryBits = Unit.CATEGORY_OTHER;
 		
 	    SensorFixture = Owner.CollisionBody.createFixture(fixtureDef);
 	    SensorFixture.setUserData(this);

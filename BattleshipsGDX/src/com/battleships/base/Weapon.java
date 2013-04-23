@@ -58,10 +58,11 @@ public strictfp class Weapon {
         dynamicCircle.setRadius(Range*GameScreen.WORLD_TO_BOX);  
         FixtureDef fixtureDef = new FixtureDef();  
         fixtureDef.shape = dynamicCircle;  
-        fixtureDef.density = 1.0f;  
+        fixtureDef.density = 0.0f;  
         fixtureDef.friction = 0.0f;  
         fixtureDef.restitution = 0.0f;
         fixtureDef.isSensor = true;
+    	fixtureDef.filter.categoryBits = Unit.CATEGORY_OTHER;
 		
 	    SensorFixture = Owner.CollisionBody.createFixture(fixtureDef);
 	    SensorFixture.setUserData(this);

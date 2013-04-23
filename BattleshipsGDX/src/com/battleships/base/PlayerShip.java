@@ -87,7 +87,7 @@ public strictfp class PlayerShip extends Unit {
 	        CurrentVelocity.set((float)Math.sin(Math.toRadians(TempAngle)), (float)Math.cos(Math.toRadians(TempAngle)));
 		}
 		CollisionBody.setLinearVelocity(CurrentVelocity.x*moveSpeed/CurrentVelocity.len(), CurrentVelocity.y*moveSpeed/CurrentVelocity.len());
-    }
+	}
 
 	void updateVelocity()
     {
