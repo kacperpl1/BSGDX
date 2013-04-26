@@ -160,10 +160,15 @@ public class NetworkGameScreen extends GameScreen{
 			    	this.playerData.shopAction=0;
 				}
 				this.tick++;
+		    	
+		    	//System.out.println("checksum: "+Unit.checksum + " checkHealth: "+Unit.checkHealth + " RNG: " + Weapon.RNG.nextInt());
+		    	
 				Weapon.RNG.setSeed(tick);
 				
 		    	localPlayerShip.setDesiredVelocity(tempDirection);
 		    	tempDirection.set(localPlayerDirection);
+		    	//Unit.checksum=0;
+		    	//Unit.checkHealth=0;
 			}
 			else
 			{

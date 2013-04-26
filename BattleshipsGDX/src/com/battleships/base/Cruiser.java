@@ -57,6 +57,9 @@ public strictfp class Cruiser extends Unit {
 	
 	void onUpdate(float delta)
     {
+		//checksum += Math.abs(this.getX()) + Math.abs(this.getY());
+		//checkHealth += Health;
+		
 		if(lastPlayerAttack>0)
 			lastPlayerAttack -= delta;
 		else

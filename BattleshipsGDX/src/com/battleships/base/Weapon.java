@@ -1,5 +1,6 @@
 package com.battleships.base;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Random;
@@ -127,7 +128,7 @@ public strictfp class Weapon {
                 	if(!((Weapon)x1.getUserData()).Owner.team.equals(((Unit)(x2.getUserData())).team))
                 	{
                 		((Weapon)x1.getUserData()).Enemies.add(((Unit)(x2.getUserData())));
-                		//Collections.sort(((Weapon)x1.getUserData()).Enemies,EnemySorter);
+                		Collections.sort(((Weapon)x1.getUserData()).Enemies,EnemySorter);
                 	}
                 }
                 if(x1.getUserData() instanceof Unit && x2.getUserData() instanceof Weapon)
@@ -135,32 +136,32 @@ public strictfp class Weapon {
                 	if(!((Weapon)x2.getUserData()).Owner.team.equals(((Unit)(x1.getUserData())).team))
                 	{
                 		((Weapon)x2.getUserData()).Enemies.add(((Unit)(x1.getUserData())));
-                		//Collections.sort(((Weapon)x2.getUserData()).Enemies,EnemySorter);
+                		Collections.sort(((Weapon)x2.getUserData()).Enemies,EnemySorter);
                 	}
                 }
-                if(x2.getUserData() instanceof Unit && x1.getUserData() instanceof Visor && ((Visor)(x1.getUserData())).Owner.team== GameScreen.LocalPlayerTeam)
+                if(x2.getUserData() instanceof Unit && x1.getUserData() instanceof Visor)
                 {
                 	Visor current = ((Visor)x1.getUserData());
                 	Unit target = ((Unit)(x2.getUserData()));
-                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam))
+                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam) && current.Owner.team.equals(GameScreen.LocalPlayerTeam))
                 	{
                 		if(!current.Owner.VisibleEnemies.contains(target))
                 		{
                 			current.Owner.VisibleEnemies.add(target);
-                			target.VisibleEnemiesCount++;
+                			target.VisibleEnemies.add(current.Owner);
                 		}
                 	}
                 }  
-                if(x1.getUserData() instanceof Unit && x2.getUserData() instanceof Visor && ((Visor)(x2.getUserData())).Owner.team== GameScreen.LocalPlayerTeam)
+                if(x1.getUserData() instanceof Unit && x2.getUserData() instanceof Visor)
                 {
                 	Visor current = ((Visor)x2.getUserData());
                 	Unit target = ((Unit)(x1.getUserData()));
-                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam))
+                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam) && current.Owner.team.equals(GameScreen.LocalPlayerTeam))
                 	{
                 		if(!current.Owner.VisibleEnemies.contains(target))
                 		{
                 			current.Owner.VisibleEnemies.add(target);
-                			target.VisibleEnemiesCount++;
+                			target.VisibleEnemies.add(current.Owner);
                 		}
                 	}
                 }         
@@ -186,16 +187,12 @@ public strictfp class Weapon {
                 {
                 	Visor current = ((Visor)x1.getUserData());
                 	Unit target = ((Unit)(x2.getUserData()));
-                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam))
+                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam) && current.Owner.team.equals(GameScreen.LocalPlayerTeam))
                 	{
                 		if(current.Owner.VisibleEnemies.contains(target))
                 		{
                 			current.Owner.VisibleEnemies.remove(target);
-                			target.VisibleEnemiesCount--;
-	                		if(target.VisibleEnemiesCount<=0)
-	                		{
-	                			target.VisibleEnemiesCount=0;
-	                		}
+                			target.VisibleEnemies.remove(current.Owner);
                 		}
                 	}
                 }  
@@ -203,16 +200,12 @@ public strictfp class Weapon {
                 {
                 	Visor current = ((Visor)x2.getUserData());
                 	Unit target = ((Unit)(x1.getUserData()));
-                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam))
+                	if(!(target instanceof Tower) && !target.team.equals(GameScreen.LocalPlayerTeam) && current.Owner.team.equals(GameScreen.LocalPlayerTeam))
                 	{
                 		if(current.Owner.VisibleEnemies.contains(target))
                 		{
                 			current.Owner.VisibleEnemies.remove(target);
-                			target.VisibleEnemiesCount--;
-	                		if(target.VisibleEnemiesCount<=0)
-	                		{
-	                			target.VisibleEnemiesCount=0;
-	                		}
+                			target.VisibleEnemies.remove(current.Owner);
                 		}
                 	}
                 }  

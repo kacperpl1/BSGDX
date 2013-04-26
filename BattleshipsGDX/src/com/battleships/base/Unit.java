@@ -32,11 +32,13 @@ public strictfp abstract class Unit extends Actor {
 	
 	Weapon gun = null;
 	Visor visor;
-	protected int VisibleEnemiesCount = 0;
-	protected LinkedList<Unit> VisibleEnemies = new LinkedList<Unit>(); //used by allies
+	protected LinkedList<Unit> VisibleEnemies = new LinkedList<Unit>();
 	Actor icon;
 	protected Vector2 CurrentPosition;
 	static BodyPool bodyPool = new BodyPool();
+	
+	//static float checksum = 0;
+	//static float checkHealth = 0;
 	
 	Unit(String Team, float InitialX, float InitialY)
 	{
@@ -69,7 +71,7 @@ public strictfp abstract class Unit extends Actor {
 		icon = new Actor(){
 			float scale = GameScreen.miniMap.getWidth()/2048;
 	        public void draw (SpriteBatch batch, float parentAlpha) {
-	    		if(team != GameScreen.LocalPlayerTeam && VisibleEnemiesCount<=0 && !(Unit.this instanceof Tower || Unit.this instanceof Citadel) || Health <= 0 )
+	    		if(team != GameScreen.LocalPlayerTeam && VisibleEnemies.size()==0 && !(Unit.this instanceof Tower || Unit.this instanceof Citadel) || Health <= 0 )
 	    			return;
 	    		
         		batch.setColor(colorSprite.getColor());
@@ -122,7 +124,7 @@ public strictfp abstract class Unit extends Actor {
 				return;
 			}
 		}
-		if(team == GameScreen.LocalPlayerTeam || VisibleEnemiesCount>0 && Health>0)
+		if(team == GameScreen.LocalPlayerTeam || VisibleEnemies.size()>0 && Health>0)
 		{
 		
 			float widthScaled = baseSprite.getWidth()*baseSprite.getScaleX();
@@ -177,16 +179,13 @@ public strictfp abstract class Unit extends Actor {
 		}
 		CollisionBody.setUserData(null);
 		bodyPool.free(CollisionBody);
-    	if(team.equals(GameScreen.LocalPlayerTeam))
+		Unit current;
+		Iterator<Unit> iter = VisibleEnemies.iterator();
+		while(iter.hasNext())
 		{
-        	Unit current;
-    		Iterator<Unit> iter = VisibleEnemies.iterator();
-    		while(iter.hasNext())
-    		{
-    			current = iter.next();
-    			current.VisibleEnemiesCount--;
-    			iter.remove();
-    		}
+			current = iter.next();
+			current.VisibleEnemies.remove(this);
+			iter.remove();
 		}
 	}
     

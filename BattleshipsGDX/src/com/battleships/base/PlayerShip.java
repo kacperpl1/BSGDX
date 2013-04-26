@@ -1,6 +1,7 @@
 package com.battleships.base;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
@@ -150,8 +151,26 @@ public strictfp class PlayerShip extends Unit {
 	{
 		switch(deathcounter)
 		{
-			case 1: hide(); break;
+			case 1: 
+				System.out.println("Player died");
+				hide(); break;
 			case 10: 
+				System.out.println("Player respawned");
+		    	if(team == "red")
+		    	{
+		    		CollisionBody.setTransform(0, 768*GameScreen.WORLD_TO_BOX, 0);
+		    		this.setPosition(0, 768);
+		    		CurrentVelocity.set(0, -1);
+		    		VisualVelocity.set(0, -1);
+		    	}
+		    	else
+		    	{
+		    		CollisionBody.setTransform(0, -768*GameScreen.WORLD_TO_BOX, 0);
+		    		this.setPosition(0, -768);
+		    		CurrentVelocity.set(0, 1);
+		    		VisualVelocity.set(0, 1);
+		    	}
+		    	setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
 				Health = MaxHealth; deathcounter = 0; 
 				CurrentPosition.set(getX(),getY()); 
 				break;
@@ -210,26 +229,27 @@ public strictfp class PlayerShip extends Unit {
 	void hide()
 	{
     	CollisionBody.setLinearVelocity(0, 0);
-    	if(team.equals(GameScreen.LocalPlayerTeam))
+    	
+    	Unit current;
+		Iterator<Unit> iter = VisibleEnemies.iterator();
+		while(iter.hasNext())
 		{
-			for(Unit current : VisibleEnemies)
-			{
-				if(current.gun != null && current.gun.Enemies.contains(this))
-					current.gun.Enemies.remove(this);
-				current.VisibleEnemiesCount--;
-			}
-			VisibleEnemies.clear();
-		}  
+			current = iter.next();
+			current.VisibleEnemies.remove(this);
+			if(current.gun!=null)
+				current.gun.Enemies.remove(this);
+			iter.remove();
+		} 
 
     	if(team == "red")
     	{
-    		CollisionBody.setTransform(0, 768*GameScreen.WORLD_TO_BOX, 0);
-    		this.setPosition(0, 768);
+    		CollisionBody.setTransform(0, 1024*GameScreen.WORLD_TO_BOX, 0);
+    		this.setPosition(0, 1024);
     	}
     	else
     	{
-    		CollisionBody.setTransform(0, -768*GameScreen.WORLD_TO_BOX, 0);
-    		this.setPosition(0, -768);
+    		CollisionBody.setTransform(0, -1024*GameScreen.WORLD_TO_BOX, 0);
+    		this.setPosition(0, -1024);
     	}
 	}
 	

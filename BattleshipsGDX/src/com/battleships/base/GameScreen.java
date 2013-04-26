@@ -439,7 +439,14 @@ public class GameScreen implements Screen {
 		 
 	    public strictfp int compare(Actor emp1, Actor emp2){ 
 	    	if(emp1 instanceof Projectile && emp2 instanceof Projectile)
-	    		return 0;
+	    	{
+	    		if(((Projectile)emp1).Instigator.unitID > ((Projectile)emp2).Instigator.unitID)
+	    			return 1;
+	    		else if(((Projectile)emp1).Instigator.unitID < ((Projectile)emp2).Instigator.unitID)
+	    			return -1;
+	    		else
+	    			return 0;
+	    	}
 	    		
 	    	if(emp1 instanceof Projectile)
 	    		return 1;
@@ -497,6 +504,9 @@ public class GameScreen implements Screen {
 				MathUtils.clamp(localPlayerShip.CurrentPosition.x, -1024+w/2, 1024-w/2), 
 				MathUtils.clamp(localPlayerShip.CurrentPosition.y-centerOffsetY, -1024+h/2, 1024-h/2), 0);
 		gameStage.getCamera().update();
+		
+		if(localPlayerShip.Health<=0)
+			localPlayerDirection.set(0,0);
 		
 		worldStep(delta);
 		
