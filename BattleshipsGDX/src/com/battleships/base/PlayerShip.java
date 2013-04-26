@@ -36,9 +36,15 @@ public strictfp class PlayerShip extends Unit {
     	}
     	visor = new Visor(this);
     	if(team == "red")
+    	{
     		CurrentVelocity.set(0, -1);
+    		VisualVelocity.set(0, -1);
+    	}
 		else
+		{
     		CurrentVelocity.set(0, 1);
+    		VisualVelocity.set(0, 1);
+		}
     	setVisualRotation(CurrentVelocity.x, CurrentVelocity.y);
     	Inventory.put(0,new PlayerWeapon(this, 2));
     	CollisionBody.setSleepingAllowed(false);
