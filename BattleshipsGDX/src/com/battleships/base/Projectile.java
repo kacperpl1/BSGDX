@@ -19,6 +19,7 @@ public strictfp class Projectile extends Actor{
 	private BalisticMoveModifier moveModifier;
 	public boolean destroyed;
 	private float stepTime;
+	private Vector2 lastTargetPos = new Vector2(0,0);
 
 	public static ProjectilePool projectilepool = new ProjectilePool();
 	
@@ -95,7 +96,9 @@ public strictfp class Projectile extends Actor{
 			final float x = (uuu * this.mX1) + (ut3 * this.mX2) + (utt3 * this.mX3) + (ttt * this.mX4);
 			final float y = (uuu * this.mY1) + (ut3 * this.mY2) + (utt3 * this.mY3) + (ttt * this.mY4);
 			
-			setRotation((float) Math.toDegrees(-Math.atan2(x-getX(), y-getY())));
+			setRotation((float) Math.toDegrees(-Math.atan2(
+					(x-Target.getX()+lastTargetPos.x)-getX(), 
+					(y-Target.getY()+lastTargetPos.y)-getY())));
 			setPosition(x, y);
 			
 	        batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, Projectile.this.getRotation());
@@ -119,6 +122,8 @@ public strictfp class Projectile extends Actor{
 			
 			if(stepTime > TravelTime)
 				explode();
+			
+			lastTargetPos.set(Target.getX(),Target.getY());
 		}
 	}
 	
@@ -137,6 +142,7 @@ public strictfp class Projectile extends Actor{
 		TravelTime = new Vector2(HitX-LaunchX,HitY-LaunchY).len() / PlayerWeapon.Speed[type];
 		destroyed = false;
 		stepTime = 0;
+		lastTargetPos.set(Target.getX(),Target.getY());
 		
 		Damage = dmg;
 		

@@ -103,10 +103,9 @@ public class GameScreen implements Screen {
 								(current.y-1024 +current.height/2)*GameScreen.WORLD_TO_BOX), 0);
 		        FixtureDef fixtureDef = new FixtureDef();  
 		        fixtureDef.shape = staticRectangle;  
-		        fixtureDef.density = 1.0f;  
+		        fixtureDef.density = 0.0f;  
 		        fixtureDef.friction = 0.0f;  
 		        fixtureDef.restitution = 0.0f;
-		        fixtureDef.filter.categoryBits = Unit.CATEGORY_OTHER;
 		        WorldCollisionBody.createFixture(fixtureDef);  
 			}
 	    }

@@ -1,6 +1,7 @@
 package com.battleships.base;
 
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
@@ -36,9 +37,6 @@ public strictfp abstract class Unit extends Actor {
 	Actor icon;
 	protected Vector2 CurrentPosition;
 	static BodyPool bodyPool = new BodyPool();
-	
-	final static short CATEGORY_PLAYER = 0x0001;  // 0000000000000001 in binary
-	final static short CATEGORY_OTHER = 0x0002; // 0000000000000010 in binary
 	
 	Unit(String Team, float InitialX, float InitialY)
 	{
@@ -97,13 +95,10 @@ public strictfp abstract class Unit extends Actor {
         if(this instanceof PlayerShip)
         {
         	fixtureDef.density = 1.0f;  
-        	fixtureDef.filter.categoryBits = CATEGORY_PLAYER;
-        	fixtureDef.filter.maskBits = CATEGORY_OTHER;
         }
         else
         {
         	fixtureDef.density = Integer.MAX_VALUE;
-        	fixtureDef.filter.categoryBits = CATEGORY_OTHER;
         }
         fixtureDef.friction = 0.0f;  
         fixtureDef.restitution = 0.0f;
@@ -184,10 +179,14 @@ public strictfp abstract class Unit extends Actor {
 		bodyPool.free(CollisionBody);
     	if(team.equals(GameScreen.LocalPlayerTeam))
 		{
-			for(Unit current : VisibleEnemies)
-			{
-				current.VisibleEnemiesCount--;
-			}
+        	Unit current;
+    		Iterator<Unit> iter = VisibleEnemies.iterator();
+    		while(iter.hasNext())
+    		{
+    			current = iter.next();
+    			current.VisibleEnemiesCount--;
+    			iter.remove();
+    		}
 		}
 	}
     

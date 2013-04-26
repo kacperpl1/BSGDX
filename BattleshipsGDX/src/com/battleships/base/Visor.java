@@ -17,15 +17,14 @@ public class Visor {
 	public Visor(Unit o)
 	{
 		Owner = o;
+		visionArea = new Sprite(Resources.VisorTextureRegion);
+		if(Owner instanceof Cruiser)
+			visionArea.setScale(0.75f);
+		
 		if(Owner.team == GameScreen.LocalPlayerTeam)
-		{
-			visionArea = new Sprite(Resources.VisorTextureRegion);
-			if(Owner instanceof Cruiser)
-				visionArea.setScale(0.75f);
-				
 			VisorList.add(this);
-			createVisor();
-		}
+		
+		createVisor();
 
 	}
 	void createVisor()
@@ -34,11 +33,10 @@ public class Visor {
         dynamicCircle.setRadius(256*visionArea.getScaleX()*0.9f*GameScreen.WORLD_TO_BOX);  
         FixtureDef fixtureDef = new FixtureDef();  
         fixtureDef.shape = dynamicCircle;  
-        fixtureDef.density = 1.0f;  
+        fixtureDef.density = 0.0f;  
         fixtureDef.friction = 0.0f;  
         fixtureDef.restitution = 0.0f;
         fixtureDef.isSensor = true;
-    	fixtureDef.filter.categoryBits = Unit.CATEGORY_OTHER;
 		
 	    SensorFixture = Owner.CollisionBody.createFixture(fixtureDef);
 	    SensorFixture.setUserData(this);
