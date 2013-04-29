@@ -68,6 +68,8 @@ public class GameScreen implements Screen {
     private float m_fboScaler = 0.1f;
     private FrameBuffer m_fbo = null;
     private TextureRegion m_fboRegion = null;
+    private FrameBuffer m_fbo2 = null;
+    private TextureRegion m_fboRegion2 = null;
 	static int w;
 	static int h;
 	static int centerOffsetY = 0;
@@ -379,6 +381,31 @@ public class GameScreen implements Screen {
 		return shader;
 	}
 	
+	void renderFow()
+	{
+		if(m_fbo == null)
+		{
+			m_fbo = new FrameBuffer(Format.RGB565, (int)(w * m_fboScaler), (int)(h * m_fboScaler), false);
+		    m_fboRegion = new TextureRegion(m_fbo.getColorBufferTexture());
+		    m_fboRegion.flip(false, true);
+		}
+		m_fbo.begin();
+	    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		batch.begin();
+		for (Visor current : Visor.VisorList)
+		{
+		   current.draw(batch);
+		}
+		batch.end();
+		m_fbo.end();
+
+		batch.setShader(fowShader);
+	    batch.begin();         
+	    batch.draw(m_fboRegion, -w/2-1, -h/2-1, w+2, h+2);               
+	    batch.end();
+		batch.setShader(null);
+	}
+	
 	public ShaderProgram createWaterShader () {
 		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
 			+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
@@ -405,7 +432,7 @@ public class GameScreen implements Screen {
 			+ "uniform float timedelta;\n" //
 			+ "void main()\n"//
 			+ "{\n" //
-			+ "  float t=v_texCoords.y + (sin(v_texCoords.x * 30.0 +timedelta) * 0.005); \n" //
+			+ "  float t=v_texCoords.y + (sin(v_texCoords.x * 30.0 +timedelta) * 0.003); \n" //
 			+ "  gl_FragColor = v_color * texture2D(u_texture, vec2(v_texCoords.x ,t));\n"
 			+ "}";
 
@@ -415,34 +442,32 @@ public class GameScreen implements Screen {
 		return shader;
 	}
 	
-	void renderFow()
+	void renderWater()
 	{
-		if(m_fbo == null)
+		if(m_fbo2 == null)
 		{
-			m_fbo = new FrameBuffer(Format.RGB565, (int)(w * m_fboScaler), (int)(h * m_fboScaler), false);
-		    m_fboRegion = new TextureRegion(m_fbo.getColorBufferTexture());
-		    m_fboRegion.flip(false, true);
+			m_fbo2 = new FrameBuffer(Format.RGB565, 512, 512, false);
+		    m_fboRegion2 = new TextureRegion(m_fbo2.getColorBufferTexture());
+		    m_fboRegion2.flip(false, true);
 		}
-		m_fbo.begin();
+	    
+	    waterShader.begin();
+	    waterShaderDelta+=Gdx.graphics.getDeltaTime();
+	    waterShader.setUniformf("timedelta", waterShaderDelta);
+	    waterShader.end();
+	    
+		m_fbo2.begin();
 	    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		batch.begin();
-		for (Visor current : Visor.VisorList)
-		{
-		   current.draw(batch);
-		}
-		batch.end();
+	    batch.setShader(waterShader);
+	    batch.begin();         
+	    batch.draw(Resources.waterTexture, -512,-512,1024,1024);         
+	    batch.end();
+	    batch.setShader(null);
+		m_fbo2.end();
 		
-		if(m_fbo != null)
-	    {
-	        m_fbo.end();
-
-		    batch.setShader(fowShader);
-	        batch.begin();         
-	        batch.draw(m_fboRegion, -w/2-1, -h/2-1, w+2, h+2);               
-	        batch.end();
-		    batch.setShader(null);
-	    }
+	    batch.begin();         
+	    batch.draw(m_fboRegion2, -1024-camera.position.x,-1024-camera.position.y,2048,2048);      
+	    batch.end();
 	}
 
 	@Override
@@ -558,18 +583,8 @@ public class GameScreen implements Screen {
 	    camera.update();
 
 	    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-	    
-	    waterShader.begin();
-	    waterShaderDelta+=delta;
-	    waterShader.setUniformf("timedelta", waterShaderDelta);
-	    waterShader.end();
-	    
-	    batch.setShader(waterShader);
-	    batch.begin();         
-	    batch.draw(Resources.waterTexture,-1024-camera.position.x,-1024-camera.position.y,2048,2048);               
-	    batch.end();
-	    batch.setShader(null);
 		
+	    renderWater();
 		gameStage.draw();
 		renderFow(); 
 

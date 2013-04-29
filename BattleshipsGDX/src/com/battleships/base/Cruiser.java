@@ -22,6 +22,15 @@ public strictfp class Cruiser extends Unit {
     	Health = MaxHealth;
     	visor = new Visor(this);
     	gun = new Weapon(this,0);
+    	if(team == "red")
+    	{
+    		DesiredVelocity.set(0, -1);
+    	}
+		else
+		{
+			DesiredVelocity.set(0, 1);
+		}
+    	setVisualRotation(DesiredVelocity.x, DesiredVelocity.y);
     }	
 	
 	void updateVelocity(){
