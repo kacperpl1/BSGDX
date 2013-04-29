@@ -14,13 +14,14 @@ public class Resources {
 	static Texture touchpadBase;
 	static Texture touchpadKnob;
 	static Texture mapTexture;
+	static Texture waterTexture;
 	static Texture miniMapTexture;
 	static Texture iconTexture;
 	static Texture shopToggleTexture;
 	static Texture shopGridTexture;
 	static Texture inventoryGridTexture;
-	static TextureRegion[] ItemTextureRegion;
 	
+	static TextureRegion[] ItemTextureRegion;
 	static TextureRegion[] BaseTextureRegion;
 	static TextureRegion[] ColorTextureRegion;
 	static TextureRegion[] HealthbarTextureRegion;
@@ -35,9 +36,12 @@ public class Resources {
         splashTexture = new Texture( "data/splash.png" );
         splashTexture.setFilter( TextureFilter.Linear, TextureFilter.Linear );
 
-		mapTexture = new Texture(Gdx.files.internal("data/Map.jpg"));
+		mapTexture = new Texture(Gdx.files.internal("data/map.png"));
 		mapTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
+		waterTexture = new Texture(Gdx.files.internal("data/water.png"));
+		waterTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		
 		miniMapTexture = new Texture(Gdx.files.internal("data/minimap.png"));
 		miniMapTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 

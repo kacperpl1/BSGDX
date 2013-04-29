@@ -60,7 +60,9 @@ public class GameScreen implements Screen {
 	private SpriteBatch batch;
 	private BitmapFont font;
 	private SpriteBatch fontBatch;
-	private ShaderProgram shader;
+	private ShaderProgram fowShader;
+	private ShaderProgram waterShader;
+	private float waterShaderDelta = 0;
 	static OrthographicCamera camera;
     
     private float m_fboScaler = 0.1f;
@@ -150,7 +152,7 @@ public class GameScreen implements Screen {
 		gl = Gdx.graphics.getGL20();
 	    gl.glEnable(GL20.GL_TEXTURE_2D);
 	    gl.glActiveTexture(GL20.GL_TEXTURE0);
-	    gl.glClearColor(0f,0f,0f,1f);
+	    gl.glClearColor(0.14f,0.39f,0.52f,1f);
 	    
 	    font = new BitmapFont(Gdx.files.internal("data/font.fnt"),Gdx.files.internal("data/font.png"),false);
 	    font.setScale(1);
@@ -330,11 +332,12 @@ public class GameScreen implements Screen {
 	    camera.update();
 	    batch.setProjectionMatrix(camera.combined);
 	    ShaderProgram.pedantic=true;
-	    shader = createFowShader();
-	    if(!shader.isCompiled()) {
-	        Gdx.app.log("Problem loading shader:", shader.getLog());
+	    fowShader = createFowShader();
+	    waterShader = createWaterShader();
+	    if(!fowShader.isCompiled()) {
+	        Gdx.app.log("Problem loading shader:", fowShader.getLog());
 	    }
-	    batch.setShader(shader);
+	    batch.setShader(fowShader);
 	    
 		GLUH = new GameLoopUpdateHandler();
 		
@@ -376,6 +379,42 @@ public class GameScreen implements Screen {
 		return shader;
 	}
 	
+	public ShaderProgram createWaterShader () {
+		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+			+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+			+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+			+ "uniform mat4 u_projTrans;\n" //
+			+ "varying vec4 v_color;\n" //
+			+ "varying vec2 v_texCoords;\n" //
+			+ "\n" //
+			+ "void main()\n" //
+			+ "{\n" //
+			+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+			+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+			+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+			+ "}\n";
+		String fragmentShader = "#ifdef GL_ES\n" //
+			+ "#define LOWP lowp\n" //
+			+ "precision mediump float;\n" //
+			+ "#else\n" //
+			+ "#define LOWP \n" //
+			+ "#endif\n" //
+			+ "varying LOWP vec4 v_color;\n" //
+			+ "varying vec2 v_texCoords;\n" //
+			+ "uniform sampler2D u_texture;\n" //
+			+ "uniform float timedelta;\n" //
+			+ "void main()\n"//
+			+ "{\n" //
+			+ "  float t=v_texCoords.y + (sin(v_texCoords.x * 30.0 +timedelta) * 0.005); \n" //
+			+ "  gl_FragColor = v_color * texture2D(u_texture, vec2(v_texCoords.x ,t));\n"
+			+ "}";
+
+		ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
+		shader.setUniformf("timedelta", 0);
+		if (shader.isCompiled() == false) throw new IllegalArgumentException("couldn't compile shader: " + shader.getLog());
+		return shader;
+	}
+	
 	void renderFow()
 	{
 		if(m_fbo == null)
@@ -398,7 +437,7 @@ public class GameScreen implements Screen {
 	    {
 	        m_fbo.end();
 
-		    batch.setShader(shader);
+		    batch.setShader(fowShader);
 	        batch.begin();         
 	        batch.draw(m_fboRegion, -w/2-1, -h/2-1, w+2, h+2);               
 	        batch.end();
@@ -519,6 +558,17 @@ public class GameScreen implements Screen {
 	    camera.update();
 
 	    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+	    
+	    waterShader.begin();
+	    waterShaderDelta+=delta;
+	    waterShader.setUniformf("timedelta", waterShaderDelta);
+	    waterShader.end();
+	    
+	    batch.setShader(waterShader);
+	    batch.begin();         
+	    batch.draw(Resources.waterTexture,-1024-camera.position.x,-1024-camera.position.y,2048,2048);               
+	    batch.end();
+	    batch.setShader(null);
 		
 		gameStage.draw();
 		renderFow(); 
