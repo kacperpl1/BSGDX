@@ -10,16 +10,11 @@ public strictfp class Projectile extends Actor{
 	Unit Instigator;
 	Unit Target;
 	int Damage;
-	float HitX;
-	float HitY;
-	float LaunchX;
-	float LaunchY;
 	float TravelTime;
 	private Sprite sprite;
 	private BalisticMoveModifier moveModifier;
 	public boolean destroyed;
 	private float stepTime;
-	private Vector2 lastTargetPos = new Vector2(0,0);
 
 	public static ProjectilePool projectilepool = new ProjectilePool();
 	
@@ -38,33 +33,26 @@ public strictfp class Projectile extends Actor{
 	private class BalisticMoveModifier{
 
 		private float Duration;
-		private float mX1;
-		private float mY1;
-		private float mX2;
-		private float mY2;
-		private float mX3;
-		private float mY3;
-		private float mX4;
-		private float mY4;
-		private float yOffset;
+		private float X;
+		private float Y;
+		private float tX;
+		private float tY;		
 		private float timer;
+		private float yOffset;
 		
-		public void Init(final float pDuration, final float pX1, final float pY1, final float pX2, final float pY2, final float pX3, final float pY3, final float pX4, final float pY4, final float yOff) {
-			this.yOffset = yOff;
+		public void Init(final float pDuration, final float pOffset) {
 			this.Duration = pDuration;
+			this.yOffset = pOffset;
 			this.timer = 0;
-			this.mX1 = pX1;
-			this.mY1 = pY1;
-			this.mX2 = pX2;
-			this.mY2 = pY2;
-			this.mX3 = pX3;
-			this.mY3 = pY3;
-			this.mX4 = pX4;
-			this.mY4 = pY4;
-			setPosition(2*this.mX1-this.mX4, 2*this.mY1-this.mY4);
+			this.X = Instigator.CurrentPosition.x;
+			this.Y = Instigator.CurrentPosition.y;
+			this.tX = Target.getX();
+			this.tY = Target.getY();
 		}
 		
 		protected void onManagedUpdate(SpriteBatch batch, final float pSecondsElapsed) {
+			final float forwardStep = pSecondsElapsed/(this.Duration-this.timer);
+			
 			this.timer += pSecondsElapsed;
 			final float percentageDone = this.timer/this.Duration;
 			
@@ -75,33 +63,22 @@ public strictfp class Projectile extends Actor{
 			
 			if(!destroyed)
 			{
-				this.mX3 = (LaunchX+3*Target.getX())/4;
-				this.mY3 = (LaunchY+3*Target.getY())/4 + yOffset*TravelTime;
-				this.mX4 = Target.getX();
-				this.mY4 = Target.getY();
+				this.tX = Target.getX();
+				this.tY = Target.getY();
 			}
 			
-			final float u = 1 - percentageDone;
-			final float tt = percentageDone * percentageDone;
-			final float uu = u * u;
-			final float uuu = uu * u;
-			final float ttt = tt * percentageDone;
-
-			final float ut3 = 3 * uu * percentageDone;
-			final float utt3 = 3 * u * tt;
-
-			/*
-			 * Formula: ((1-t)^3 * P1) + (3*(t)*(1-t)^2 * P2) + (3*(tt)*(1-t) * P3) + (ttt * P4)
-			 */
-			final float x = (uuu * this.mX1) + (ut3 * this.mX2) + (utt3 * this.mX3) + (ttt * this.mX4);
-			final float y = (uuu * this.mY1) + (ut3 * this.mY2) + (utt3 * this.mY3) + (ttt * this.mY4);
+			this.X = this.X + (this.tX - this.X)*forwardStep;
+			this.Y = this.Y + (this.tY - this.Y)*forwardStep;
 			
-			setRotation((float) Math.toDegrees(-Math.atan2(
-					(x-Target.getX()+lastTargetPos.x)-getX(), 
-					(y-Target.getY()+lastTargetPos.y)-getY())));
+			
+			final float x = X;
+			final float y = Y + yOffset*(-(float)Math.pow((2*percentageDone-1), 2)+1);
+			
+			setRotation((float) Math.toDegrees(-Math.atan2(x-getX(),y-getY())));
 			setPosition(x, y);
 			
-	        batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, Projectile.this.getRotation());
+			if(this.timer > pSecondsElapsed)
+				batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, Projectile.this.getRotation());
 		}
 		
 	}
@@ -122,8 +99,6 @@ public strictfp class Projectile extends Actor{
 			
 			if(stepTime > TravelTime)
 				explode();
-			
-			lastTargetPos.set(Target.getX(),Target.getY());
 		}
 	}
 	
@@ -134,40 +109,22 @@ public strictfp class Projectile extends Actor{
 		this.toFront();
 		Instigator = inst;
 		Target = targ;
-		HitX = Target.getX();
-		HitY = Target.getY();
-		LaunchX = Instigator.getX();
-		LaunchY = Instigator.getY();
-		sprite.setPosition(Instigator.getX(), Instigator.getY());
-		TravelTime = new Vector2(HitX-LaunchX,HitY-LaunchY).len() / PlayerWeapon.Speed[type];
+		setPosition(Instigator.getX(), Instigator.getY());
+		TravelTime = new Vector2(Target.getX()-Instigator.getX(),Target.getY()-Instigator.getY()).len() / PlayerWeapon.Speed[type];
 		destroyed = false;
 		stepTime = 0;
-		lastTargetPos.set(Target.getX(),Target.getY());
 		
 		Damage = dmg;
 		
-		if(type<4 || type>=6 && type<12)
-		{
-			moveModifier.Init(TravelTime, 
-					LaunchX - sprite.getWidth()/2, LaunchY, 
-					(3*LaunchX+HitX)/4 - sprite.getWidth()/2, (3*LaunchY+HitY)/4 + 64*TravelTime, 
-					(LaunchX+3*HitX)/4 - sprite.getWidth()/2, (LaunchY+3*HitY)/4 + 64*TravelTime, 
-					HitX - sprite.getWidth()/2, HitY,64);
+		if(type<4){
+			moveModifier.Init(TravelTime, 32);
 		}
 		else if(type>=6 && type<12){
-			moveModifier.Init(TravelTime, 
-					LaunchX - sprite.getWidth()/2, LaunchY, 
-					(3*LaunchX+HitX)/4 - sprite.getWidth()/2, (3*LaunchY+HitY)/4 + 64*TravelTime, 
-					(LaunchX+3*HitX)/4 - sprite.getWidth()/2, (LaunchY+3*HitY)/4 + 64*TravelTime, 
-					HitX - sprite.getWidth()/2, HitY,16);
+			moveModifier.Init(TravelTime, 64);
 		}
 		else
 		{
-			moveModifier.Init(TravelTime, 
-					LaunchX - sprite.getWidth()/2, LaunchY, 
-					(3*LaunchX+HitX)/4 - sprite.getWidth()/2, (3*LaunchY+HitY)/4, 
-					(LaunchX+3*HitX)/4 - sprite.getWidth()/2, (LaunchY+3*HitY)/4, 
-					HitX - sprite.getWidth()/2, HitY,0);
+			moveModifier.Init(TravelTime,0);
 		}
 	}
 	
