@@ -70,9 +70,9 @@ public strictfp class Projectile extends Actor{
 			this.X = this.X + (this.tX - this.X)*forwardStep;
 			this.Y = this.Y + (this.tY - this.Y)*forwardStep;
 			
-			
 			final float x = X;
-			final float y = Y + yOffset*(-(float)Math.pow((2*percentageDone-1), 2)+1);
+			final float d=(2*percentageDone-1);
+			final float y = Y + yOffset*(-(d*d)+1);
 			
 			setRotation((float) Math.toDegrees(-Math.atan2(x-getX(),y-getY())));
 			setPosition(x, y);
