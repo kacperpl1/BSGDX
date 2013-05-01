@@ -151,11 +151,9 @@ public strictfp class PlayerShip extends Unit {
 	{
 		switch(deathcounter)
 		{
-			case 1: 
-				System.out.println("Player died");
+			case 1:
 				hide(); break;
 			case 10: 
-				System.out.println("Player respawned");
 		    	if(team == "red")
 		    	{
 		    		CollisionBody.setTransform(0, 768*GameScreen.WORLD_TO_BOX, 0);

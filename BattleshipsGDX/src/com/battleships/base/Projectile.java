@@ -3,7 +3,6 @@ package com.battleships.base;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public strictfp class Projectile extends Actor{
@@ -110,7 +109,9 @@ public strictfp class Projectile extends Actor{
 		Instigator = inst;
 		Target = targ;
 		setPosition(Instigator.getX(), Instigator.getY());
-		TravelTime = new Vector2(Target.getX()-Instigator.getX(),Target.getY()-Instigator.getY()).len() / PlayerWeapon.Speed[type];
+		float x=Target.getX()-Instigator.getX();
+		float y=Target.getY()-Instigator.getY();
+		TravelTime = (float)Math.sqrt(x * x + y * y) / PlayerWeapon.Speed[type];
 		destroyed = false;
 		stepTime = 0;
 		

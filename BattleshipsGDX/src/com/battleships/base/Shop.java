@@ -86,7 +86,7 @@ public class Shop {
 	        	itemY=shop_grid.getY()+shop_grid.getHeight()*0.75f -(selected_item/4)*tileWidth;
 
 	        	if((shop_grid.getX()+x) > inventory_grid.getX() && (shop_grid.getX()+x)< inventory_grid.getX() + inventory_grid.getWidth()
-						&& (shop_grid.getY()+y) < (inventory_grid.getY()+tileWidth) && (shop_grid.getY()+y) > inventory_grid.getY())
+						&& (shop_grid.getY()+y) < (inventory_grid.getY()+1.5f*tileWidth) && (shop_grid.getY()+y) > inventory_grid.getY()-0.5f*tileWidth)
 				{
 					if(inventory.size() < 6 && owner.PlayerGold >= PlayerWeapon.CostData[selected_item])
 					{

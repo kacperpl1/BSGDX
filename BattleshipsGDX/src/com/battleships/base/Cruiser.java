@@ -4,8 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 
 
 public strictfp class Cruiser extends Unit {
-	
-	Vector2 networkPosition = new Vector2(0,0);
 
 	private String lane;
 	private Unit Target = null;
