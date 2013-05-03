@@ -1,6 +1,7 @@
 package com.battleships.base;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -14,6 +15,8 @@ public strictfp class Projectile extends Actor{
 	private BalisticMoveModifier moveModifier;
 	public boolean destroyed;
 	private float stepTime;
+	private ParticleEffect particleEffect;
+	private boolean exploded;
 
 	public static ProjectilePool projectilepool = new ProjectilePool();
 	
@@ -27,6 +30,10 @@ public strictfp class Projectile extends Actor{
 		sprite = new Sprite();
 		moveModifier = new BalisticMoveModifier();
 		GameScreen.gameStage.addActor(this);
+		
+		particleEffect = new ParticleEffect();
+	    particleEffect.load(Gdx.files.internal("data/explosion.p"), 
+	            Gdx.files.internal("data"));
 	}
 	
 	private class BalisticMoveModifier{
@@ -53,6 +60,7 @@ public strictfp class Projectile extends Actor{
 			final float forwardStep = pSecondsElapsed/(this.Duration-this.timer);
 			
 			this.timer += pSecondsElapsed;
+			
 			final float percentageDone = this.timer/this.Duration;
 			
 			if(percentageDone >=0.95f)
@@ -83,11 +91,18 @@ public strictfp class Projectile extends Actor{
 	}
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
-		if(GameScreen.box_accu < GameScreen.BOX_STEP)
-			moveModifier.onManagedUpdate(batch, Gdx.graphics.getDeltaTime());
+		if(!exploded)
+		{
+			if(GameScreen.box_accu < GameScreen.BOX_STEP)
+				moveModifier.onManagedUpdate(batch, Gdx.graphics.getDeltaTime());
+			else
+		        batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, Projectile.this.getRotation());
+		}
 		else
-	        batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, Projectile.this.getRotation());
-			
+		{
+			particleEffect.setPosition(getX(),getY());
+		    particleEffect.draw(batch, Gdx.graphics.getDeltaTime());
+		}
 		
 		if(GameScreen.stepNow)
 		{
@@ -96,8 +111,13 @@ public strictfp class Projectile extends Actor{
 			
 			stepTime += GameScreen.BOX_STEP;
 			
-			if(stepTime > TravelTime)
+			if(stepTime > TravelTime && !exploded)
 				explode();
+			if(exploded && particleEffect.isComplete())
+			{
+				this.setVisible(false);
+		    	projectilepool.free(this);
+			}
 		}
 	}
 	
@@ -113,6 +133,7 @@ public strictfp class Projectile extends Actor{
 		float y=Target.getY()-Instigator.getY();
 		TravelTime = (float)Math.sqrt(x * x + y * y) / PlayerWeapon.Speed[type];
 		destroyed = false;
+		exploded = false;
 		stepTime = 0;
 		
 		Damage = dmg;
@@ -132,9 +153,15 @@ public strictfp class Projectile extends Actor{
     void explode()
     {
     	if(!destroyed)
+    	{
     		Target.TakeDamage(Damage, Instigator);
-    	
-		this.setVisible(false);
-    	projectilepool.free(this);
+    		exploded = true;
+    		particleEffect.start();
+    	}
+    	else
+    	{
+			this.setVisible(false);
+	    	projectilepool.free(this);
+    	}
     }
 }
