@@ -79,6 +79,7 @@ public class GameScreen implements Screen {
 	protected Vector2 localPlayerDirection;
 	private Vector2 knobOffset = new Vector2();
 	private Shop weaponShop;
+	private int tileWidth;
 	static boolean stepNow;
 	static Actor miniMap;
 	static String LocalPlayerTeam;
@@ -150,6 +151,7 @@ public class GameScreen implements Screen {
 			w = 480;
 			h = 480*Gdx.graphics.getHeight()/Gdx.graphics.getWidth();
 		}
+		tileWidth = Gdx.graphics.getHeight()/10;
 		
 		gl = Gdx.graphics.getGL20();
 	    gl.glEnable(GL20.GL_TEXTURE_2D);
@@ -200,6 +202,8 @@ public class GameScreen implements Screen {
 	        public void draw (SpriteBatch batch, float parentAlpha) {
     	    	waterShader.begin();
     	    	waterShaderDelta+=Gdx.graphics.getDeltaTime();
+    	    	if(waterShaderDelta > 2*Math.PI)
+    	    		waterShaderDelta -=2*Math.PI;
     	    	waterShader.setUniformf("timedelta", waterShaderDelta);
     	    	waterShader.end();
     	    
@@ -614,18 +618,17 @@ public class GameScreen implements Screen {
 		
 		if(weaponShop.shop_toggle)
 		{
-			float lineScale = Gdx.graphics.getHeight()/480f;
 			font.setColor(Color.WHITE);
-			font.draw(fontBatch, "PRICE:", -64*lineScale, Gdx.graphics.getHeight()/2 - font.getLineHeight()*3); 
-			font.draw(fontBatch, "DAMAGE:", -64*lineScale, Gdx.graphics.getHeight()/2 - font.getLineHeight()*4); 
-			font.draw(fontBatch, "COOLDOWN:", -64*lineScale, Gdx.graphics.getHeight()/2 - font.getLineHeight()*5); 
-			font.draw(fontBatch, "RANGE:", -64*lineScale, Gdx.graphics.getHeight()/2 - font.getLineHeight()*6); 
+			font.draw(fontBatch, "PRICE:", -tileWidth*2, tileWidth*4f); 
+			font.draw(fontBatch, "DAMAGE:", -tileWidth*2, tileWidth*3.5f); 
+			font.draw(fontBatch, "COOLDOWN:", -tileWidth*2, tileWidth*3f); 
+			font.draw(fontBatch, "RANGE:", -tileWidth*2, tileWidth*2.5f); 
 			
 			font.setColor(Color.RED);
-			font.draw(fontBatch, PlayerWeapon.CostData[weaponShop.selected_item]+"$", 64*lineScale-font.getBounds(PlayerWeapon.CostData[weaponShop.selected_item]+"&").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*3); 
-			font.draw(fontBatch, PlayerWeapon.DamageData[weaponShop.selected_item]+"", 64*lineScale-font.getBounds(PlayerWeapon.DamageData[weaponShop.selected_item]+"").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*4); 
-			font.draw(fontBatch, PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s", 64*lineScale-font.getBounds(PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*5); 
-			font.draw(fontBatch, PlayerWeapon.RangeData[weaponShop.selected_item]+"m", 64*lineScale-font.getBounds(PlayerWeapon.RangeData[weaponShop.selected_item]+"m").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*6); 
+			font.draw(fontBatch, PlayerWeapon.CostData[weaponShop.selected_item]+"$", tileWidth*2-font.getBounds(PlayerWeapon.CostData[weaponShop.selected_item]+"&").width, tileWidth*4f); 
+			font.draw(fontBatch, PlayerWeapon.DamageData[weaponShop.selected_item]+"", tileWidth*2-font.getBounds(PlayerWeapon.DamageData[weaponShop.selected_item]+"").width, tileWidth*3.5f); 
+			font.draw(fontBatch, PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s", tileWidth*2-font.getBounds(PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s").width, tileWidth*3f); 
+			font.draw(fontBatch, PlayerWeapon.RangeData[weaponShop.selected_item]+"m", tileWidth*2-font.getBounds(PlayerWeapon.RangeData[weaponShop.selected_item]+"m").width, tileWidth*2.5f); 
 		}
 		fontBatch.end();
 		
