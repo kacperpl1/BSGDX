@@ -39,6 +39,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 
 public class GameScreen implements Screen {
 	static Stage hudStage;
@@ -68,8 +69,6 @@ public class GameScreen implements Screen {
     private float m_fboScaler = 0.1f;
     private FrameBuffer m_fbo = null;
     private TextureRegion m_fboRegion = null;
-    private FrameBuffer m_fbo2 = null;
-    private TextureRegion m_fboRegion2 = null;
 	static int w;
 	static int h;
 	static int centerOffsetY = 0;
@@ -86,6 +85,7 @@ public class GameScreen implements Screen {
 	
 	static int BlueFrags = 0;
 	static int RedFrags = 0;
+	//static ArrayList<String> ChatArray = new ArrayList<String>();
 	
 	public void loadMapData()
 	{
@@ -156,7 +156,13 @@ public class GameScreen implements Screen {
 	    gl.glActiveTexture(GL20.GL_TEXTURE0);
 	    gl.glClearColor(0.14f,0.39f,0.52f,1f);
 	    
-	    font = new BitmapFont(Gdx.files.internal("data/font.fnt"),Gdx.files.internal("data/font.png"),false);
+	    if(Gdx.graphics.getWidth()<800)
+	    	font = new BitmapFont(Gdx.files.internal("data/font10.fnt"),Gdx.files.internal("data/font10.png"),false);
+	    else if (Gdx.graphics.getWidth()<1024)
+    		font = new BitmapFont(Gdx.files.internal("data/font14.fnt"),Gdx.files.internal("data/font14.png"),false);
+	    else
+	    	font = new BitmapFont(Gdx.files.internal("data/font18.fnt"),Gdx.files.internal("data/font18.png"),false);
+	    	
 	    font.setScale(1);
 	    fontBatch = new SpriteBatch();
 	    fontBatch.setProjectionMatrix(new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()).combined);
@@ -184,10 +190,28 @@ public class GameScreen implements Screen {
 		gameStage = new Stage(w,h,true);
 		Gdx.input.setInputProcessor(hudStage);
 		
+	    ShaderProgram.pedantic=true;
+	    fowShader = createFowShader();
+	    waterShader = createWaterShader();
+	    
 		Map = new Actor(){
 			Texture region = Resources.mapTexture;
+			//OrthogonalTiledMapRenderer renderer = new OrthogonalTiledMapRenderer(new TmxMapLoader().load("data/BattleShips.tmx"), 1);
 	        public void draw (SpriteBatch batch, float parentAlpha) {
-	                batch.draw(region, -1024,-1024,2048,2048);
+    	    	waterShader.begin();
+    	    	waterShaderDelta+=Gdx.graphics.getDeltaTime();
+    	    	waterShader.setUniformf("timedelta", waterShaderDelta);
+    	    	waterShader.end();
+    	    
+    	    	batch.setShader(waterShader);     
+    	    	batch.draw(Resources.waterTexture, -1024,-1024,2048,2048); 
+    	    	batch.setShader(null);
+                batch.draw(region, -1024,-1024,2048,2048);
+                
+    	    	/*batch.end();
+    	    	renderer.setView(camera.combined.translate(-1024, -1024, 0), 0, 0, 2048, 2048);
+                renderer.render();
+    	    	batch.begin();*/
 	        }
 		};
 		gameStage.addActor(Map);
@@ -333,13 +357,6 @@ public class GameScreen implements Screen {
 	    camera.position.set(0,0,0);
 	    camera.update();
 	    batch.setProjectionMatrix(camera.combined);
-	    ShaderProgram.pedantic=true;
-	    fowShader = createFowShader();
-	    waterShader = createWaterShader();
-	    if(!fowShader.isCompiled()) {
-	        Gdx.app.log("Problem loading shader:", fowShader.getLog());
-	    }
-	    batch.setShader(fowShader);
 	    
 		GLUH = new GameLoopUpdateHandler();
 		
@@ -440,34 +457,6 @@ public class GameScreen implements Screen {
 		shader.setUniformf("timedelta", 0);
 		if (shader.isCompiled() == false) throw new IllegalArgumentException("couldn't compile shader: " + shader.getLog());
 		return shader;
-	}
-	
-	void renderWater()
-	{
-		if(m_fbo2 == null)
-		{
-			m_fbo2 = new FrameBuffer(Format.RGB565, 512, 512, false);
-		    m_fboRegion2 = new TextureRegion(m_fbo2.getColorBufferTexture());
-		    m_fboRegion2.flip(false, true);
-		}
-	    
-	    waterShader.begin();
-	    waterShaderDelta+=Gdx.graphics.getDeltaTime();
-	    waterShader.setUniformf("timedelta", waterShaderDelta);
-	    waterShader.end();
-	    
-		m_fbo2.begin();
-	    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-	    batch.setShader(waterShader);
-	    batch.begin();         
-	    batch.draw(Resources.waterTexture, -512,-512,1024,1024);         
-	    batch.end();
-	    batch.setShader(null);
-		m_fbo2.end();
-		
-	    batch.begin();         
-	    batch.draw(m_fboRegion2, -1024-camera.position.x,-1024-camera.position.y,2048,2048);      
-	    batch.end();
 	}
 
 	@Override
@@ -577,15 +566,21 @@ public class GameScreen implements Screen {
 		if(stepNow)
 			gameStage.getRoot().getChildren().sort(ActorComparator);
 		
-		Map.toBack();		
+		Map.toBack();
+		//RainActor.toFront();
 
 	    camera.position.set(gameStage.getCamera().position);
 	    camera.update();
 
 	    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-	    renderWater();
+	    
+	    Rectangle scissors = new Rectangle();
+	    Rectangle clipBounds = new Rectangle(camera.position.x-w/2,camera.position.y-h/2,w,h);
+	    ScissorStack.calculateScissors(camera, new Matrix4(), clipBounds, scissors);
+	    ScissorStack.pushScissors(scissors);
 		gameStage.draw();
+	    ScissorStack.popScissors();
+	    
 		renderFow(); 
 
 		if(debug_mode)
@@ -594,13 +589,21 @@ public class GameScreen implements Screen {
 			debugMatrix.scale(BOX_TO_WORLD, BOX_TO_WORLD, 1);
 	        debugRenderer.render(physicsWorld, debugMatrix); 
 		}
-		hudStage.draw();
 		
 		fontBatch.begin();  
 		font.setColor(Color.WHITE);
 		font.draw(fontBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), -Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2); 
 		font.setColor(1,0.9f,0,1);
 		font.draw(fontBatch, localPlayerShip.PlayerGold+"$", -font.getBounds(localPlayerShip.PlayerGold+".").width/2, Gdx.graphics.getHeight()/2 - font.getLineHeight()); 
+
+		/*float offset=48;
+		for(int i=0; i<Math.min(ChatArray.size(),20); i++)
+		{
+			font.setColor(1,1,1,(float) (20f-i)*(20f-i)/400f);
+			offset+= font.getWrappedBounds(ChatArray.get(ChatArray.size()-i-1),Gdx.graphics.getWidth()).height;
+			font.drawWrapped(fontBatch, ChatArray.get(ChatArray.size()-i-1),
+					-Gdx.graphics.getWidth()/2, offset,Gdx.graphics.getWidth());
+		}*/
 		
 		font.setColor(Color.BLUE);
 		font.draw(fontBatch, BlueFrags+" ", -font.getBounds(BlueFrags+" ").width, Gdx.graphics.getHeight()/2);
@@ -613,18 +616,20 @@ public class GameScreen implements Screen {
 		{
 			float lineScale = Gdx.graphics.getHeight()/480f;
 			font.setColor(Color.WHITE);
-			font.draw(fontBatch, "PRICE:", -64, Gdx.graphics.getHeight()/2 - font.getLineHeight()*3*lineScale); 
-			font.draw(fontBatch, "DAMAGE:", -64, Gdx.graphics.getHeight()/2 - font.getLineHeight()*4*lineScale); 
-			font.draw(fontBatch, "COOLDOWN:", -64, Gdx.graphics.getHeight()/2 - font.getLineHeight()*5*lineScale); 
-			font.draw(fontBatch, "RANGE:", -64, Gdx.graphics.getHeight()/2 - font.getLineHeight()*6*lineScale); 
+			font.draw(fontBatch, "PRICE:", -64*lineScale, Gdx.graphics.getHeight()/2 - font.getLineHeight()*3); 
+			font.draw(fontBatch, "DAMAGE:", -64*lineScale, Gdx.graphics.getHeight()/2 - font.getLineHeight()*4); 
+			font.draw(fontBatch, "COOLDOWN:", -64*lineScale, Gdx.graphics.getHeight()/2 - font.getLineHeight()*5); 
+			font.draw(fontBatch, "RANGE:", -64*lineScale, Gdx.graphics.getHeight()/2 - font.getLineHeight()*6); 
 			
 			font.setColor(Color.RED);
-			font.draw(fontBatch, PlayerWeapon.CostData[weaponShop.selected_item]+"$", 64-font.getBounds(PlayerWeapon.CostData[weaponShop.selected_item]+"&").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*3*lineScale); 
-			font.draw(fontBatch, PlayerWeapon.DamageData[weaponShop.selected_item]+"", 64-font.getBounds(PlayerWeapon.DamageData[weaponShop.selected_item]+"").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*4*lineScale); 
-			font.draw(fontBatch, PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s", 64-font.getBounds(PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*5*lineScale); 
-			font.draw(fontBatch, PlayerWeapon.RangeData[weaponShop.selected_item]+"m", 64-font.getBounds(PlayerWeapon.RangeData[weaponShop.selected_item]+"m").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*6*lineScale); 
+			font.draw(fontBatch, PlayerWeapon.CostData[weaponShop.selected_item]+"$", 64*lineScale-font.getBounds(PlayerWeapon.CostData[weaponShop.selected_item]+"&").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*3); 
+			font.draw(fontBatch, PlayerWeapon.DamageData[weaponShop.selected_item]+"", 64*lineScale-font.getBounds(PlayerWeapon.DamageData[weaponShop.selected_item]+"").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*4); 
+			font.draw(fontBatch, PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s", 64*lineScale-font.getBounds(PlayerWeapon.FireDelayData[weaponShop.selected_item]+"s").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*5); 
+			font.draw(fontBatch, PlayerWeapon.RangeData[weaponShop.selected_item]+"m", 64*lineScale-font.getBounds(PlayerWeapon.RangeData[weaponShop.selected_item]+"m").width, Gdx.graphics.getHeight()/2 - font.getLineHeight()*6); 
 		}
 		fontBatch.end();
+		
+		hudStage.draw();
 	}
 
 	@Override

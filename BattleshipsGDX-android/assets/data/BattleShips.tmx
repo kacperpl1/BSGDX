@@ -62,11 +62,6 @@
   <object x="1504" y="1600" width="32" height="32"/>
   <object x="1504" y="384" width="32" height="32"/>
  </objectgroup>
- <layer name="SeaLevel" width="64" height="64">
-  <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3SMQ0AMAgAQYzUQBP82+uOAGjCDbf/8BkRCQAAAAAAAACscovpnm6nmO75Tf1j2yf1D48AAAAAAAAAXR5+fDXSAEAAAA==
-  </data>
- </layer>
  <layer name="Ground" width="64" height="64">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAC+2aS07DMBCGw0MgsUspjy0UKNtSXlskoGxZsIWeADgB9ApcAHqCwgmAozGWamlk2a4ndmKbzuKTqiZO8mfG/mfctoqiaDEMwzBB2QB2PWknoKMq68CRJ2UCOnz0r3mSg35TnncC6N8xXDuleWHK834A/T3DtVPKC9c8XwAWgSXgQgEfy21euOov0fmq/rLitVLA9ZnlXO5o9ONjTer39WfKM8u53Nfox8d81kUqurWFSoh1LtS6SKXp52bmD4q3UX0wByjeRvXBlJGxXC3cfUKu6ytF/nmAY+nqE3JdTz0P3oEPYOwQyyp9kM/YJpgAn8CXQyyr1Ae6sbfKOXeJ668DkXfjyLGPqX8S4Z46voEf4HdO9duQvocJ4WNv0/fe9DunoutNU/Ux1u/OJrCF2K5B/z3wADwpiO+GlnF4ztVVMx4AXcRhDfofNdolz5ZxZYV7VdF/ApwBxxr9MgbL/1T/KXAODNDnWXFvSr+ol9vEe1G5Bm40n7F+9bcQ6jPp9L9OGVnG9Yr4PZOIgehX8P4atY9R9ds0m+ZALP0iBmqvQ+2BXhzjbXr/KfeMTbz/WPvRzHzisg9UB7JOHEbWH2sfQPqErSZoAts+gOwXTH2CjVljU9FvQ/YLpj7BZ6z0yVECOk2IGln0CpczYqmL+9V0rFpj54SokQcOsTTFXYxVa+wckXngEkvKubkg88AllpRzGcaXrQBU8Xdf1L3IqnQD4OrvuKZR//9ErZXUvciYuOrH3qbqp9ZKOerH3qbqp/pejvqxt6n6qb6Xkv79or510bTO7SWgO1Re5BJn1k/DNC8o5JDnDMMwTH78ASwt1VAAQAAA

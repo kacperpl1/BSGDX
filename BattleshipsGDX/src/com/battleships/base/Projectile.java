@@ -17,6 +17,7 @@ public strictfp class Projectile extends Actor{
 	private float stepTime;
 	private ParticleEffect particleEffect;
 	private boolean exploded;
+	private float distFromCamera;
 
 	public static ProjectilePool projectilepool = new ProjectilePool();
 	
@@ -91,19 +92,23 @@ public strictfp class Projectile extends Actor{
 	}
 	
 	public void draw (SpriteBatch batch, float parentAlpha) {
-		if(!exploded)
-		{
-			if(GameScreen.box_accu < GameScreen.BOX_STEP)
-				moveModifier.onManagedUpdate(batch, Gdx.graphics.getDeltaTime());
-			else
-		        batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, Projectile.this.getRotation());
-		}
-		else
-		{
-			particleEffect.setPosition(getX(),getY());
-		    particleEffect.draw(batch, Gdx.graphics.getDeltaTime());
-		}
+		distFromCamera = GameScreen.camera.position.dst(this.getX(), this.getY(), 0);
 		
+		if(distFromCamera<512)	
+		{
+			if(!exploded)
+			{
+				if(GameScreen.box_accu < GameScreen.BOX_STEP)
+					moveModifier.onManagedUpdate(batch, Gdx.graphics.getDeltaTime());
+				else
+			        batch.draw(sprite, getX()-8,getY()-8,8, 8, 16, 16, 1, 1, Projectile.this.getRotation());
+			}
+			else
+			{
+				particleEffect.setPosition(getX(),getY());
+			    particleEffect.draw(batch, Gdx.graphics.getDeltaTime());
+			}
+		}
 		if(GameScreen.stepNow)
 		{
 			if(Target.Health <=0)
@@ -156,7 +161,10 @@ public strictfp class Projectile extends Actor{
     	{
     		Target.TakeDamage(Damage, Instigator);
     		exploded = true;
-    		particleEffect.start();
+    		if(distFromCamera<512)
+    		{
+	    		particleEffect.start();
+    		}
     	}
     	else
     	{
