@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public strictfp class Projectile extends Actor{
@@ -31,6 +32,8 @@ public strictfp class Projectile extends Actor{
 		sprite = new Sprite();
 		moveModifier = new BalisticMoveModifier();
 		GameScreen.gameStage.addActor(this);
+		this.setVisible(false);
+		//Instigator = GameScreen.localPlayerShip;
 		
 		particleEffect = new ParticleEffect();
 	    particleEffect.load(Gdx.files.internal("data/explosion.p"), 
@@ -82,7 +85,7 @@ public strictfp class Projectile extends Actor{
 			final float d=(2*percentageDone-1);
 			final float y = Y + yOffset*(-(d*d)+1);
 			
-			setRotation((float) Math.toDegrees(-Math.atan2(x-getX(),y-getY())));
+			setRotation(-MathUtils.atan2(x-getX(),y-getY())* MathUtils.radiansToDegrees);
 			setPosition(x, y);
 			
 			if(this.timer > pSecondsElapsed)

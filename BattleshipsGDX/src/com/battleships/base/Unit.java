@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -209,7 +210,7 @@ public strictfp abstract class Unit extends Actor {
     
     void setVisualRotation(float X, float Y)
     {
-    	int Angle = (int) Math.toDegrees(-Math.atan2(X+0.0001f, -Y));
+    	int Angle = (int)(-MathUtils.atan2(X+0.0001f, -Y)* MathUtils.radiansToDegrees);
     	if(Angle < 0) 
     		Angle += 360;
 

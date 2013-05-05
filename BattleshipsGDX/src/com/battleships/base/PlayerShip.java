@@ -62,9 +62,9 @@ public strictfp class PlayerShip extends Unit {
     		return;
     	}
     	
-    	float CurrentAngle = (float) Math.toDegrees(MathUtils.atan2(CurrentVelocity.x, CurrentVelocity.y));
-		float DesiredAngle = (float) Math.toDegrees(MathUtils.atan2(DesiredVelocity.x, DesiredVelocity.y));
-		float DeltaAngle = (float) (DesiredAngle-CurrentAngle);
+    	float CurrentAngle = MathUtils.atan2(CurrentVelocity.x, CurrentVelocity.y)* MathUtils.radiansToDegrees;
+		float DesiredAngle = MathUtils.atan2(DesiredVelocity.x, DesiredVelocity.y)* MathUtils.radiansToDegrees;
+		float DeltaAngle = DesiredAngle-CurrentAngle;
 		if(Math.abs(DeltaAngle) < rotationRate * GameScreen.BOX_STEP)
 		{
 	        CurrentVelocity.set(DesiredVelocity);
@@ -91,7 +91,7 @@ public strictfp class PlayerShip extends Unit {
 			{
 				TempAngle = CurrentAngle - (rotationRate * GameScreen.BOX_STEP);
 			}
-	        CurrentVelocity.set((float)Math.sin(Math.toRadians(TempAngle)), (float)Math.cos(Math.toRadians(TempAngle)));
+	        CurrentVelocity.set(MathUtils.sin(TempAngle * MathUtils.degreesToRadians), MathUtils.cos(TempAngle * MathUtils.degreesToRadians));
 		}
 		CollisionBody.setLinearVelocity(CurrentVelocity.x*moveSpeed/CurrentVelocity.len(), CurrentVelocity.y*moveSpeed/CurrentVelocity.len());
 	}
@@ -101,9 +101,9 @@ public strictfp class PlayerShip extends Unit {
     	if(DesiredVelocity.len()<=0)
     		return;
     	
-		float CurrentAngle = (float) Math.toDegrees(MathUtils.atan2(VisualVelocity.x, VisualVelocity.y));
-		float DesiredAngle = (float) Math.toDegrees(MathUtils.atan2(DesiredVelocity.x, DesiredVelocity.y));
-		float DeltaAngle = (float) (DesiredAngle-CurrentAngle);
+		float CurrentAngle = MathUtils.atan2(VisualVelocity.x, VisualVelocity.y)* MathUtils.radiansToDegrees;
+		float DesiredAngle = MathUtils.atan2(DesiredVelocity.x, DesiredVelocity.y)* MathUtils.radiansToDegrees;
+		float DeltaAngle = DesiredAngle-CurrentAngle;
 		if(Math.abs(DeltaAngle) < rotationRate * Gdx.graphics.getDeltaTime())
 		{
 			VisualVelocity.set(DesiredVelocity);
@@ -130,7 +130,7 @@ public strictfp class PlayerShip extends Unit {
 			{
 				TempAngle = CurrentAngle - (rotationRate * Gdx.graphics.getDeltaTime());
 			}
-			VisualVelocity.set((float)Math.sin(Math.toRadians(TempAngle)), (float)Math.cos(Math.toRadians(TempAngle)));
+			VisualVelocity.set(MathUtils.sin(TempAngle * MathUtils.degreesToRadians), MathUtils.cos(TempAngle * MathUtils.degreesToRadians));
 		}
 		setVisualRotation(VisualVelocity.x, VisualVelocity.y);
     }

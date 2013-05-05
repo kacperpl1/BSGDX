@@ -1,5 +1,6 @@
 package com.battleships.base;
 
+import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.KeyEvent;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
+@SuppressLint("InlinedApi")
 public class MainActivity extends AndroidApplication {
 	
     @Override

@@ -1,6 +1,6 @@
 package com.battleships.base;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,7 +12,7 @@ public class Visor {
 	Unit Owner;
 	Sprite visionArea;
 	private Fixture SensorFixture;
-	static LinkedList<Visor> VisorList = new LinkedList<Visor>();	
+	static ArrayList<Visor> VisorList = new ArrayList<Visor>();	
 	
 	public Visor(Unit o)
 	{

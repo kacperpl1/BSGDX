@@ -87,6 +87,10 @@ public class GameScreen implements Screen {
 	static int BlueFrags = 0;
 	static int RedFrags = 0;
 	//static ArrayList<String> ChatArray = new ArrayList<String>();
+
+    Rectangle scissors = new Rectangle();
+    Rectangle clipBounds = new Rectangle();
+    Matrix4 EmptyMatrix =  new Matrix4();
 	
 	public void loadMapData()
 	{
@@ -131,6 +135,9 @@ public class GameScreen implements Screen {
 			
 		new Citadel("blue",0,-900);
 		new Citadel("red",0,900);
+
+		//for(int i=0; i<32; i++)
+		//	Projectile.projectilepool.free(new Projectile());
 	}
 	
 	public void loadPlayers()
@@ -152,6 +159,7 @@ public class GameScreen implements Screen {
 			h = 480*Gdx.graphics.getHeight()/Gdx.graphics.getWidth();
 		}
 		tileWidth = Gdx.graphics.getHeight()/10;
+	    scissors.set(0, 0,w,h);
 		
 		gl = Gdx.graphics.getGL20();
 	    gl.glEnable(GL20.GL_TEXTURE_2D);
@@ -284,7 +292,7 @@ public class GameScreen implements Screen {
         		if(offset.len()>0)
         		{
     	        	camToggle = true;
-        			desiredRotation = (int) Math.toDegrees(-Math.atan2(offset.x,offset.y));
+        			desiredRotation = (int)(-MathUtils.atan2(offset.x,offset.y)* MathUtils.radiansToDegrees);
 	        		float DeltaAngle = (float) (desiredRotation-rotation);
 	        		if(Math.abs(DeltaAngle)>180)
             		{
@@ -413,9 +421,9 @@ public class GameScreen implements Screen {
 		m_fbo.begin();
 	    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		for (Visor current : Visor.VisorList)
+		for(int i=0; i<Visor.VisorList.size(); i++)
 		{
-		   current.draw(batch);
+			Visor.VisorList.get(i).draw(batch);
 		}
 		batch.end();
 		m_fbo.end();
@@ -578,9 +586,8 @@ public class GameScreen implements Screen {
 
 	    gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	    
-	    Rectangle scissors = new Rectangle();
-	    Rectangle clipBounds = new Rectangle(camera.position.x-w/2,camera.position.y-h/2,w,h);
-	    ScissorStack.calculateScissors(camera, new Matrix4(), clipBounds, scissors);
+	    clipBounds.set(camera.position.x-w/2,camera.position.y-h/2,w,h);
+	    ScissorStack.calculateScissors(camera, EmptyMatrix, clipBounds, scissors);
 	    ScissorStack.pushScissors(scissors);
 		gameStage.draw();
 	    ScissorStack.popScissors();
