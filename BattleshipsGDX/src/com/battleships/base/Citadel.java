@@ -2,6 +2,8 @@ package com.battleships.base;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 public class Citadel extends Unit {
 
@@ -11,6 +13,14 @@ public class Citadel extends Unit {
     	Health = MaxHealth;
     	visor = new Visor(this);
     	CollisionBody.setType(BodyType.StaticBody);
+    	
+    	PolygonShape staticRectangle = new PolygonShape();
+		staticRectangle.setAsBox(128*GameScreen.WORLD_TO_BOX, 32*GameScreen.WORLD_TO_BOX);
+    	FixtureDef fixtureDef = new FixtureDef();  
+        fixtureDef.shape = staticRectangle;
+        CollisionBody.createFixture(fixtureDef);
+        CollisionBody.getFixtureList().get(CollisionBody.getFixtureList().size()-1).setUserData(this);
+        
     	this.setPosition(CollisionBody.getPosition().x*GameScreen.BOX_TO_WORLD,CollisionBody.getPosition().y*GameScreen.BOX_TO_WORLD);
 	}
 	
