@@ -70,17 +70,17 @@ public class GameLobbyScreen implements Screen {
         } );
 		
 		setLayout();
-		
-		team1Table.add(team1Label);
+
+        team1Table.add(disconnectButton);
 		team1Table.addActor(team1PlayerListTable);
 		team1Table.row();
-		team1Table.add(disconnectButton).align(Align.bottom);
-		
-		team2Table.add(team2Label);
+        team1Table.add(team1Label).align(Align.bottom);
+
+        team2Table.add(readyButton);
 		team2Table.addActor(team2PlayerListTable);
 		team2Table.row();
-		team2Table.add(readyButton).align(Align.bottom);
-		
+        team2Table.add(team2Label).align(Align.bottom);
+
 		stage.addActor(team1Table);
 		stage.addActor(team2Table);
 		

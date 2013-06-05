@@ -97,15 +97,16 @@ public class MainLobbyScreen implements Screen {
 		playerListTable.clear();
 		gameListTable.clear();
 		setLayout();
-		
-		leftTable.add(playerListLabel);
+
+        leftTable.add(disconnectButton);
 		leftTable.row();
-		leftTable.add(disconnectButton).align(Align.bottom);
+        leftTable.add(playerListLabel).align(Align.bottom);
+
 		leftTable.addActor(playerListTable);
-		
-		rightTable.add(gameListLabel);
+
+        rightTable.add(createGameButton);
 		rightTable.row();
-		rightTable.add(createGameButton).align(Align.bottom);
+        rightTable.add(gameListLabel).align(Align.bottom);
 		rightTable.addActor(gameListTable);
 		
 		stage.addActor(leftTable);
